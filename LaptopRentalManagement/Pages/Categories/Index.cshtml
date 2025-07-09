@@ -14,97 +14,96 @@
 
     <!-- Main Categories Grid -->
     <div class="row">
-        <!-- Gaming Laptops -->
-        <div class="col-lg-6 col-md-6 mb-4">
-            <a href="/laptops?category=gaming" class="category-card-large">
-                <div class="category-image-large">
-                    <img src="https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=600&h=400&fit=crop" 
-                         alt="Gaming Laptops" class="img-fluid">
-                    <div class="category-overlay">
-                        <div class="category-icon">
-                            <i class="fas fa-gamepad"></i>
-                        </div>
-                        <div class="category-content">
-                            <h3 class="category-title">Gaming Laptops</h3>
-                            <p class="category-description">High-performance laptops for gaming and VR experiences</p>
-                            <div class="category-stats">
-                                <span class="laptop-count">45 laptops</span>
-                                <span class="price-range">₫350,000 - ₫800,000/day</span>
+        @if (Model.Categories.Any())
+        {
+            @foreach (var category in Model.Categories)
+            {
+                <div class="col-lg-6 col-md-6 mb-4">
+                    <a href="/laptops?category=@category.CategoryId" class="category-card-large">
+                        <div class="category-image-large">
+                            @{
+                                string categoryImage = "";
+                                string categoryIcon = "fas fa-laptop";
+                                
+                                // Dynamic images and icons based on category name
+                                var lowerName = category.Name.ToLower();
+                                if (lowerName.Contains("gaming"))
+                                {
+                                    categoryImage = "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=600&h=400&fit=crop";
+                                    categoryIcon = "fas fa-gamepad";
+                                }
+                                else if (lowerName.Contains("business") || lowerName.Contains("office"))
+                                {
+                                    categoryImage = "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=600&h=400&fit=crop";
+                                    categoryIcon = "fas fa-briefcase";
+                                }
+                                else if (lowerName.Contains("student") || lowerName.Contains("học"))
+                                {
+                                    categoryImage = "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=600&h=400&fit=crop";
+                                    categoryIcon = "fas fa-graduation-cap";
+                                }
+                                else if (lowerName.Contains("ultrabook") || lowerName.Contains("thin"))
+                                {
+                                    categoryImage = "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&h=400&fit=crop";
+                                    categoryIcon = "fas fa-laptop";
+                                }
+                                else if (lowerName.Contains("workstation"))
+                                {
+                                    categoryImage = "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&h=400&fit=crop";
+                                    categoryIcon = "fas fa-desktop";
+                                }
+                                else
+                                {
+                                    categoryImage = "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=600&h=400&fit=crop";
+                                    categoryIcon = "fas fa-laptop";
+                                }
+                            }
+                            
+                            <img src="@categoryImage" alt="@category.Name" class="img-fluid">
+                            <div class="category-overlay">
+                                <div class="category-icon">
+                                    <i class="@categoryIcon"></i>
+                                </div>
+                                <div class="category-content">
+                                    <h3 class="category-title">@category.Name</h3>
+                                    <p class="category-description">
+                                        @if (!string.IsNullOrEmpty(category.Description))
+                                        {
+                                            @(category.Description.Length > 80 ? category.Description.Substring(0, 80) + "..." : category.Description)
+                                        }
+                                        else
+                                        {
+                                            <text>Khám phá các laptop chất lượng trong danh mục @category.Name</text>
+                                        }
+                                    </p>
+                                    <div class="category-stats">
+                                        <span class="laptop-count">@category.LaptopCount laptop@(category.LaptopCount > 1 ? "s" : "")</span>
+                                        @if (category.LaptopCount > 0)
+                                        {
+                                            <span class="price-range">Xem chi tiết giá</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="price-range">Sắp có laptop</span>
+                                        }
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
-            </a>
-        </div>
-
-        <!-- Business Laptops -->
-        <div class="col-lg-6 col-md-6 mb-4">
-            <a href="/laptops?category=business" class="category-card-large">
-                <div class="category-image-large">
-                    <img src="https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=600&h=400&fit=crop" 
-                         alt="Business Laptops" class="img-fluid">
-                    <div class="category-overlay">
-                        <div class="category-icon">
-                            <i class="fas fa-briefcase"></i>
-                        </div>
-                        <div class="category-content">
-                            <h3 class="category-title">Business Laptops</h3>
-                            <p class="category-description">Professional laptops for productivity and presentations</p>
-                            <div class="category-stats">
-                                <span class="laptop-count">78 laptops</span>
-                                <span class="price-range">₫180,000 - ₫400,000/day</span>
-                            </div>
-                        </div>
-                    </div>
+            }
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">Chưa có danh mục nào</h4>
+                    <p class="text-muted">Các danh mục laptop sẽ được cập nhật sớm.</p>
                 </div>
-            </a>
-        </div>
-
-        <!-- Student Laptops -->
-        <div class="col-lg-6 col-md-6 mb-4">
-            <a href="/laptops?category=student" class="category-card-large">
-                <div class="category-image-large">
-                    <img src="https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=600&h=400&fit=crop" 
-                         alt="Student Laptops" class="img-fluid">
-                    <div class="category-overlay">
-                        <div class="category-icon">
-                            <i class="fas fa-graduation-cap"></i>
-                        </div>
-                        <div class="category-content">
-                            <h3 class="category-title">Student Laptops</h3>
-                            <p class="category-description">Affordable laptops perfect for studying and research</p>
-                            <div class="category-stats">
-                                <span class="laptop-count">92 laptops</span>
-                                <span class="price-range">₫120,000 - ₫300,000/day</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <!-- Ultrabooks -->
-        <div class="col-lg-6 col-md-6 mb-4">
-            <a href="/laptops?category=ultrabook" class="category-card-large">
-                <div class="category-image-large">
-                    <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&h=400&fit=crop" 
-                         alt="Ultrabooks" class="img-fluid">
-                    <div class="category-overlay">
-                        <div class="category-icon">
-                            <i class="fas fa-laptop"></i>
-                        </div>
-                        <div class="category-content">
-                            <h3 class="category-title">Ultrabooks</h3>
-                            <p class="category-description">Ultra-thin, lightweight laptops for mobility</p>
-                            <div class="category-stats">
-                                <span class="laptop-count">34 laptops</span>
-                                <span class="price-range">₫200,000 - ₫500,000/day</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
+            </div>
+        }
     </div>
 
     <!-- Popular Brands Section -->
