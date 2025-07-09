@@ -1,0 +1,242 @@
+@page
+@model LaptopRentalManagement.Pages.Categories.IndexModel
+@{
+    ViewData["Title"] = "Categories";
+    Layout = "~/Pages/Shared/_CustomerLayout.cshtml";
+}
+
+<div class="container py-4">
+    <!-- Page Header -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-gradient">Browse by Category</h1>
+        <p class="lead text-muted">Find the perfect laptop for your specific needs and use case</p>
+    </div>
+
+    <!-- Main Categories Grid -->
+    <div class="row">
+        <!-- Gaming Laptops -->
+        <div class="col-lg-6 col-md-6 mb-4">
+            <a href="/laptops?category=gaming" class="category-card-large">
+                <div class="category-image-large">
+                    <img src="https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=600&h=400&fit=crop" 
+                         alt="Gaming Laptops" class="img-fluid">
+                    <div class="category-overlay">
+                        <div class="category-icon">
+                            <i class="fas fa-gamepad"></i>
+                        </div>
+                        <div class="category-content">
+                            <h3 class="category-title">Gaming Laptops</h3>
+                            <p class="category-description">High-performance laptops for gaming and VR experiences</p>
+                            <div class="category-stats">
+                                <span class="laptop-count">45 laptops</span>
+                                <span class="price-range">₫350,000 - ₫800,000/day</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Business Laptops -->
+        <div class="col-lg-6 col-md-6 mb-4">
+            <a href="/laptops?category=business" class="category-card-large">
+                <div class="category-image-large">
+                    <img src="https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=600&h=400&fit=crop" 
+                         alt="Business Laptops" class="img-fluid">
+                    <div class="category-overlay">
+                        <div class="category-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <div class="category-content">
+                            <h3 class="category-title">Business Laptops</h3>
+                            <p class="category-description">Professional laptops for productivity and presentations</p>
+                            <div class="category-stats">
+                                <span class="laptop-count">78 laptops</span>
+                                <span class="price-range">₫180,000 - ₫400,000/day</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Student Laptops -->
+        <div class="col-lg-6 col-md-6 mb-4">
+            <a href="/laptops?category=student" class="category-card-large">
+                <div class="category-image-large">
+                    <img src="https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=600&h=400&fit=crop" 
+                         alt="Student Laptops" class="img-fluid">
+                    <div class="category-overlay">
+                        <div class="category-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="category-content">
+                            <h3 class="category-title">Student Laptops</h3>
+                            <p class="category-description">Affordable laptops perfect for studying and research</p>
+                            <div class="category-stats">
+                                <span class="laptop-count">92 laptops</span>
+                                <span class="price-range">₫120,000 - ₫300,000/day</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Ultrabooks -->
+        <div class="col-lg-6 col-md-6 mb-4">
+            <a href="/laptops?category=ultrabook" class="category-card-large">
+                <div class="category-image-large">
+                    <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&h=400&fit=crop" 
+                         alt="Ultrabooks" class="img-fluid">
+                    <div class="category-overlay">
+                        <div class="category-icon">
+                            <i class="fas fa-laptop"></i>
+                        </div>
+                        <div class="category-content">
+                            <h3 class="category-title">Ultrabooks</h3>
+                            <p class="category-description">Ultra-thin, lightweight laptops for mobility</p>
+                            <div class="category-stats">
+                                <span class="laptop-count">34 laptops</span>
+                                <span class="price-range">₫200,000 - ₫500,000/day</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Popular Brands Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h2 class="text-center mb-4">Shop by Brand</h2>
+            <div class="brands-grid">
+                <a href="/laptops?brand=apple" class="brand-card">
+                    <div class="brand-logo">
+                        <i class="fab fa-apple"></i>
+                    </div>
+                    <div class="brand-info">
+                        <h5 class="brand-name">Apple</h5>
+                        <p class="brand-count">23 laptops</p>
+                    </div>
+                </a>
+
+                <a href="/laptops?brand=dell" class="brand-card">
+                    <div class="brand-logo">
+                        <i class="fas fa-laptop"></i>
+                    </div>
+                    <div class="brand-info">
+                        <h5 class="brand-name">Dell</h5>
+                        <p class="brand-count">45 laptops</p>
+                    </div>
+                </a>
+
+                <a href="/laptops?brand=hp" class="brand-card">
+                    <div class="brand-logo">
+                        <i class="fas fa-laptop"></i>
+                    </div>
+                    <div class="brand-info">
+                        <h5 class="brand-name">HP</h5>
+                        <p class="brand-count">38 laptops</p>
+                    </div>
+                </a>
+
+                <a href="/laptops?brand=lenovo" class="brand-card">
+                    <div class="brand-logo">
+                        <i class="fas fa-laptop"></i>
+                    </div>
+                    <div class="brand-info">
+                        <h5 class="brand-name">Lenovo</h5>
+                        <p class="brand-count">52 laptops</p>
+                    </div>
+                </a>
+
+                <a href="/laptops?brand=asus" class="brand-card">
+                    <div class="brand-logo">
+                        <i class="fas fa-laptop"></i>
+                    </div>
+                    <div class="brand-info">
+                        <h5 class="brand-name">ASUS</h5>
+                        <p class="brand-count">31 laptops</p>
+                    </div>
+                </a>
+
+                <a href="/laptops?brand=msi" class="brand-card">
+                    <div class="brand-logo">
+                        <i class="fas fa-laptop"></i>
+                    </div>
+                    <div class="brand-info">
+                        <h5 class="brand-name">MSI</h5>
+                        <p class="brand-count">19 laptops</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="features-section bg-light p-5 rounded">
+                <h2 class="text-center mb-4">Why Choose Category-Specific Rentals?</h2>
+                <div class="row">
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="feature-item text-center">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-cog fa-2x text-primary"></i>
+                            </div>
+                            <h5>Optimized Performance</h5>
+                            <p class="text-muted">Each laptop is configured for specific use cases and requirements</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="feature-item text-center">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-download fa-2x text-primary"></i>
+                            </div>
+                            <h5>Pre-installed Software</h5>
+                            <p class="text-muted">Comes with essential software for your specific needs</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="feature-item text-center">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-user-graduate fa-2x text-primary"></i>
+                            </div>
+                            <h5>Expert Support</h5>
+                            <p class="text-muted">Category-specific technical support and guidance</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="feature-item text-center">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-dollar-sign fa-2x text-primary"></i>
+                            </div>
+                            <h5>Best Value</h5>
+                            <p class="text-muted">Competitive pricing tailored to each category</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="row mt-5">
+        <div class="col-12 text-center">
+            <div class="cta-section bg-primary text-white p-5 rounded">
+                <h3>Can't Find What You're Looking For?</h3>
+                <p class="lead mb-4">Contact our experts for personalized laptop recommendations</p>
+                <div class="cta-buttons">
+                    <a href="/contact" class="btn btn-light btn-lg me-3">
+                        <i class="fas fa-phone me-2"></i>Contact Expert
+                    </a>
+                    <a href="/laptops" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-search me-2"></i>Browse All Laptops
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
