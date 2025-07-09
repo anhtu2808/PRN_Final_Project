@@ -1,6 +1,7 @@
 using LaptopRentalManagement.BLL.Mappings;
 using LaptopRentalManagement.BLL.Interfaces;
 using LaptopRentalManagement.BLL.Services;
+using LaptopRentalManagement.BLL.Hubs;
 using LaptopRentalManagement.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);

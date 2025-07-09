@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
+using LaptopRentalManagement.BLL.Hubs;
 
 namespace LaptopRentalManagement.Hubs
 {

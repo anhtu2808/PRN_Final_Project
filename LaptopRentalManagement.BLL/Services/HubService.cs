@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
 using LaptopRentalManagement.BLL.Interfaces;
-using LaptopRentalManagement.Hubs;
+using LaptopRentalManagement.BLL.Hubs;
 using System.Collections.Concurrent;
 
 namespace LaptopRentalManagement.BLL.Services
@@ -8,7 +8,6 @@ namespace LaptopRentalManagement.BLL.Services
     public class HubService : IHubService
     {
         private readonly IHubContext<BaseHub> _hubContext;
-        private static readonly ConcurrentDictionary<string, string> _userConnections = new();
         private static readonly ConcurrentDictionary<string, HashSet<string>> _groupConnections = new();
 
         public HubService(IHubContext<BaseHub> hubContext)
@@ -18,7 +17,8 @@ namespace LaptopRentalManagement.BLL.Services
 
         public async Task SendToUserAsync(string userId, string method, object data)
         {
-            if (_userConnections.TryGetValue(userId, out string? connectionId))
+            var connectionId = BaseHub.GetConnectionId(userId);
+            if (!string.IsNullOrEmpty(connectionId))
             {
                 await _hubContext.Clients.Client(connectionId).SendAsync(method, data);
             }
@@ -61,29 +61,12 @@ namespace LaptopRentalManagement.BLL.Services
 
         public Task<bool> IsUserOnlineAsync(string userId)
         {
-            return Task.FromResult(_userConnections.ContainsKey(userId));
+            return Task.FromResult(BaseHub.IsUserOnline(userId));
         }
 
         public Task<List<string>> GetOnlineUsersAsync()
         {
-            return Task.FromResult(_userConnections.Keys.ToList());
-        }
-
-        // Internal methods for connection management
-        internal static void AddUserConnection(string userId, string connectionId)
-        {
-            _userConnections[userId] = connectionId;
-        }
-
-        internal static void RemoveUserConnection(string userId)
-        {
-            _userConnections.TryRemove(userId, out _);
-        }
-
-        internal static string? GetConnectionId(string userId)
-        {
-            _userConnections.TryGetValue(userId, out string? connectionId);
-            return connectionId;
+            return Task.FromResult(BaseHub.GetOnlineUsers());
         }
     }
 } 

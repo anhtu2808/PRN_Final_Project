@@ -3,10 +3,15 @@
 ## 🚀 Setup hoàn tất với các components:
 
 ### 📁 Hubs Available:
-- **BaseHub** (`/baseHub`) - Hub chung, auto connection management
+- **BaseHub** (`/baseHub`) - Hub chung, auto connection management (trong BLL.Hubs)
 - **NotificationHub** (`/notificationHub`) - Cho notifications
 - **ChatHub** (`/chatHub`) - Cho messaging features  
 - **OrderHub** (`/orderHub`) - Cho real-time order tracking
+
+### 🔧 Project Structure:
+- **BaseHub** - Nằm trong `LaptopRentalManagement.BLL.Hubs`
+- **HubService** - Nằm trong `LaptopRentalManagement.BLL.Services`
+- **Specialized Hubs** - Nằm trong `LaptopRentalManagement.Hubs`, inherit từ BLL.BaseHub
 
 ### 🔧 Services:
 - **IHubService** - Service chung để gửi messages từ business logic
