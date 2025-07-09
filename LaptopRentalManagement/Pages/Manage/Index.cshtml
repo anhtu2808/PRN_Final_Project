@@ -1,0 +1,356 @@
+@page
+@model LaptopRentalManagement.Pages.Manage.IndexModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+
+<!-- Dashboard Stats -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <h6 class="card-title mb-1">Total Orders</h6>
+                        <h3 class="mb-0">1,234</h3>
+                        <small class="text-white-50">+12% from last month</small>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-shopping-cart fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <h6 class="card-title mb-1">Revenue</h6>
+                        <h3 class="mb-0">₫156M</h3>
+                        <small class="text-white-50">+8% from last month</small>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-dollar-sign fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <h6 class="card-title mb-1">Active Rentals</h6>
+                        <h3 class="mb-0">89</h3>
+                        <small class="text-white-50">45 due today</small>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-laptop fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <h6 class="card-title mb-1">Customers</h6>
+                        <h3 class="mb-0">567</h3>
+                        <small class="text-white-50">+23 new this week</small>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-users fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+    <div class="col-lg-8 mb-3">
+        <div class="card">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h5 class="card-title mb-0">Revenue Overview</h5>
+                <div class="btn-group btn-group-sm" role="group">
+                    <input type="radio" class="btn-check" name="period" id="week" checked>
+                    <label class="btn btn-outline-primary" for="week">Week</label>
+
+                    <input type="radio" class="btn-check" name="period" id="month">
+                    <label class="btn btn-outline-primary" for="month">Month</label>
+
+                    <input type="radio" class="btn-check" name="period" id="year">
+                    <label class="btn btn-outline-primary" for="year">Year</label>
+                </div>
+            </div>
+            <div class="card-body">
+                <canvas id="revenueChart" height="120"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Popular Laptops</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="popularChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Orders & Quick Actions -->
+<div class="row">
+    <div class="col-lg-8 mb-3">
+        <div class="card">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h5 class="card-title mb-0">Recent Orders</h5>
+                <a href="/manage/orders" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Laptop</th>
+                                <th>Duration</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="badge bg-light text-dark">#ORD-001</span></td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://ui-avatars.com/api/?name=Nguyen+Van+A&size=32" 
+                                             class="rounded-circle me-2" width="32" height="32">
+                                        <div>
+                                            <div class="fw-medium">Nguyen Van A</div>
+                                            <small class="text-muted">nguyenvana@email.com</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>MacBook Pro M2</td>
+                                <td>7 days</td>
+                                <td class="fw-medium">₫2,100,000</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-light text-dark">#ORD-002</span></td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://ui-avatars.com/api/?name=Tran+Thi+B&size=32" 
+                                             class="rounded-circle me-2" width="32" height="32">
+                                        <div>
+                                            <div class="fw-medium">Tran Thi B</div>
+                                            <small class="text-muted">tranthib@email.com</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Dell XPS 13</td>
+                                <td>3 days</td>
+                                <td class="fw-medium">₫900,000</td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-light text-dark">#ORD-003</span></td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://ui-avatars.com/api/?name=Le+Van+C&size=32" 
+                                             class="rounded-circle me-2" width="32" height="32">
+                                        <div>
+                                            <div class="fw-medium">Le Van C</div>
+                                            <small class="text-muted">levanc@email.com</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>HP Pavilion Gaming</td>
+                                <td>14 days</td>
+                                <td class="fw-medium">₫4,200,000</td>
+                                <td><span class="badge bg-danger">Overdue</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="/manage/orders/create" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>New Order
+                    </a>
+                    <a href="/manage/laptops/create" class="btn btn-outline-primary">
+                        <i class="fas fa-laptop me-2"></i>Add Laptop
+                    </a>
+                    <a href="/manage/customers/create" class="btn btn-outline-primary">
+                        <i class="fas fa-user-plus me-2"></i>Add Customer
+                    </a>
+                    <a href="/manage/reports" class="btn btn-outline-secondary">
+                        <i class="fas fa-chart-bar me-2"></i>Generate Report
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Status -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">System Status</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <small class="text-muted">Server Health</small>
+                        <small class="text-success fw-medium">Excellent</small>
+                    </div>
+                    <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-success" style="width: 95%"></div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <small class="text-muted">Database</small>
+                        <small class="text-success fw-medium">Good</small>
+                    </div>
+                    <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-success" style="width: 87%"></div>
+                    </div>
+                </div>
+
+                <div class="mb-0">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <small class="text-muted">Storage</small>
+                        <small class="text-warning fw-medium">78%</small>
+                    </div>
+                    <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-warning" style="width: 78%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Revenue Chart
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(revenueCtx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Revenue',
+                    data: [12, 19, 15, 25, 22, 30, 28],
+                    borderColor: 'rgb(79, 70, 229)',
+                    backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Popular Laptops Chart
+        const popularCtx = document.getElementById('popularChart').getContext('2d');
+        new Chart(popularCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['MacBook Pro', 'Dell XPS', 'HP Pavilion', 'Lenovo ThinkPad', 'Others'],
+                datasets: [{
+                    data: [30, 25, 20, 15, 10],
+                    backgroundColor: [
+                        'rgb(79, 70, 229)',
+                        'rgb(16, 185, 129)',
+                        'rgb(245, 158, 11)',
+                        'rgb(239, 68, 68)',
+                        'rgb(107, 114, 128)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+} 
