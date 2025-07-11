@@ -30,8 +30,8 @@ builder.Services.AddSignalR();
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 
 // Register services
-builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 
 // Register Hub Service
