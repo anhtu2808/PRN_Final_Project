@@ -3,17 +3,36 @@ using LaptopRentalManagement.BLL.Interfaces;
 using LaptopRentalManagement.BLL.Services;
 using LaptopRentalManagement.BLL.Hubs;
 using LaptopRentalManagement.Hubs;
+using LaptopRentalManagement.DAL.LaptopRentalManagement.DAL.Context;
+using Microsoft.EntityFrameworkCore;
+using LaptopRentalManagement.DAL.LaptopRentalManagement.DAL.Interfaces;
+using LaptopRentalManagement.DAL.LaptopRentalManagement.DAL.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 
+// Add DbContext
+builder.Services.AddDbContext<LaptopRentalDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
 // Add AutoMapper
-builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile), typeof(AutoMapperProfile));
+        
 
 // Add SignalR
 builder.Services.AddSignalR();
+
+
+// Register repositories
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+
+// Register services
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IFeedbackService, FeedbackService>();
+
 
 // Register Hub Service
 builder.Services.AddScoped<IHubService, HubService>();
