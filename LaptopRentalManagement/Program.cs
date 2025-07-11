@@ -3,11 +3,18 @@ using LaptopRentalManagement.BLL.Interfaces;
 using LaptopRentalManagement.BLL.Services;
 using LaptopRentalManagement.BLL.Hubs;
 using LaptopRentalManagement.Hubs;
+using LaptopRentalManagement.DAL.LaptopRentalManagement.DAL.Context;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+
+// Add Entity Framework
+builder.Services.AddDbContext<LaptopRentalDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection") ?? 
+        "Server=localhost,1433;Database=LaptopRentalDB;User Id=sa;Password=YourStr0ng!Pass;TrustServerCertificate=True;Encrypt=False"));
 
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
@@ -20,6 +27,9 @@ builder.Services.AddScoped<IHubService, HubService>();
 
 // Register other services using SignalR
 builder.Services.AddScoped<INotificationService, NotificationService>();
+
+// Register Dashboard Service
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 var app = builder.Build();
 

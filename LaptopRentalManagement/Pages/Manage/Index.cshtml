@@ -13,8 +13,8 @@
                 <div class="d-flex align-items-center">
                     <div class="flex-grow-1">
                         <h6 class="card-title mb-1">Total Orders</h6>
-                        <h3 class="mb-0">1,234</h3>
-                        <small class="text-white-50">+12% from last month</small>
+                        <h3 class="mb-0">@Model.Stats.TotalOrders.ToString("N0")</h3>
+                        <small class="text-white-50">@Model.Stats.FormattedOrdersChange from last month</small>
                     </div>
                     <div class="flex-shrink-0">
                         <i class="fas fa-shopping-cart fa-2x opacity-50"></i>
@@ -30,8 +30,8 @@
                 <div class="d-flex align-items-center">
                     <div class="flex-grow-1">
                         <h6 class="card-title mb-1">Revenue</h6>
-                        <h3 class="mb-0">₫156M</h3>
-                        <small class="text-white-50">+8% from last month</small>
+                        <h3 class="mb-0">@Model.Stats.FormattedRevenue</h3>
+                        <small class="text-white-50">@Model.Stats.FormattedRevenueChange from last month</small>
                     </div>
                     <div class="flex-shrink-0">
                         <i class="fas fa-dollar-sign fa-2x opacity-50"></i>
@@ -47,8 +47,8 @@
                 <div class="d-flex align-items-center">
                     <div class="flex-grow-1">
                         <h6 class="card-title mb-1">Active Rentals</h6>
-                        <h3 class="mb-0">89</h3>
-                        <small class="text-white-50">45 due today</small>
+                        <h3 class="mb-0">@Model.Stats.ActiveRentals</h3>
+                        <small class="text-white-50">@Model.Stats.DueToday due today</small>
                     </div>
                     <div class="flex-shrink-0">
                         <i class="fas fa-laptop fa-2x opacity-50"></i>
@@ -64,8 +64,8 @@
                 <div class="d-flex align-items-center">
                     <div class="flex-grow-1">
                         <h6 class="card-title mb-1">Customers</h6>
-                        <h3 class="mb-0">567</h3>
-                        <small class="text-white-50">+23 new this week</small>
+                        <h3 class="mb-0">@Model.Stats.TotalCustomers</h3>
+                        <small class="text-white-50">+@Model.Stats.NewCustomersThisWeek new this week</small>
                     </div>
                     <div class="flex-shrink-0">
                         <i class="fas fa-users fa-2x opacity-50"></i>
@@ -134,81 +134,43 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td><span class="badge bg-light text-dark">#ORD-001</span></td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <img src="https://ui-avatars.com/api/?name=Nguyen+Van+A&size=32" 
-                                             class="rounded-circle me-2" width="32" height="32">
-                                        <div>
-                                            <div class="fw-medium">Nguyen Van A</div>
-                                            <small class="text-muted">nguyenvana@email.com</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>MacBook Pro M2</td>
-                                <td>7 days</td>
-                                <td class="fw-medium">₫2,100,000</td>
-                                <td><span class="badge bg-success">Active</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary" title="View">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-secondary" title="Edit">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><span class="badge bg-light text-dark">#ORD-002</span></td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <img src="https://ui-avatars.com/api/?name=Tran+Thi+B&size=32" 
-                                             class="rounded-circle me-2" width="32" height="32">
-                                        <div>
-                                            <div class="fw-medium">Tran Thi B</div>
-                                            <small class="text-muted">tranthib@email.com</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>Dell XPS 13</td>
-                                <td>3 days</td>
-                                <td class="fw-medium">₫900,000</td>
-                                <td><span class="badge bg-warning">Pending</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary" title="View">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-secondary" title="Edit">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><span class="badge bg-light text-dark">#ORD-003</span></td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <img src="https://ui-avatars.com/api/?name=Le+Van+C&size=32" 
-                                             class="rounded-circle me-2" width="32" height="32">
-                                        <div>
-                                            <div class="fw-medium">Le Van C</div>
-                                            <small class="text-muted">levanc@email.com</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>HP Pavilion Gaming</td>
-                                <td>14 days</td>
-                                <td class="fw-medium">₫4,200,000</td>
-                                <td><span class="badge bg-danger">Overdue</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary" title="View">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-secondary" title="Edit">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                </td>
-                            </tr>
+                            @if (Model.RecentOrders.Any())
+                            {
+                                @foreach (var order in Model.RecentOrders)
+                                {
+                                    <tr>
+                                        <td><span class="badge bg-light text-dark">@order.FormattedOrderId</span></td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="https://ui-avatars.com/api/?name=@order.CustomerInitials&size=32" 
+                                                     class="rounded-circle me-2" width="32" height="32">
+                                                <div>
+                                                    <div class="fw-medium">@order.CustomerName</div>
+                                                    <small class="text-muted">@order.CustomerEmail</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>@order.LaptopName</td>
+                                        <td>@order.FormattedDuration</td>
+                                        <td class="fw-medium">@order.FormattedAmount</td>
+                                        <td><span class="badge @order.StatusBadgeClass">@order.Status</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" title="View">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-secondary" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted">No recent orders found</td>
+                                </tr>
+                            }
                         </tbody>
                     </table>
                 </div>
@@ -282,15 +244,26 @@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        // Get real data from the model
+        var revenueData = {
+            weekly: @Html.Raw(Json.Serialize(Model.RevenueData.WeeklyData.Select(d => new { label = d.Label, revenue = d.FormattedRevenue }))),
+            monthly: @Html.Raw(Json.Serialize(Model.RevenueData.MonthlyData.Select(d => new { label = d.Label, revenue = d.FormattedRevenue }))),
+            yearly: @Html.Raw(Json.Serialize(Model.RevenueData.YearlyData.Select(d => new { label = d.Label, revenue = d.FormattedRevenue })))
+        };
+
+        var popularLaptops = @Html.Raw(Json.Serialize(Model.PopularLaptops.Select(l => new { name = l.DisplayName, percentage = l.Percentage })));
+
         // Revenue Chart
         const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-        new Chart(revenueCtx, {
+        let currentData = revenueData.weekly;
+        
+        const revenueChart = new Chart(revenueCtx, {
             type: 'line',
             data: {
-                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                labels: currentData.map(d => d.label),
                 datasets: [{
-                    label: 'Revenue',
-                    data: [12, 19, 15, 25, 22, 30, 28],
+                    label: 'Revenue (Millions VND)',
+                    data: currentData.map(d => parseFloat(d.revenue)),
                     borderColor: 'rgb(79, 70, 229)',
                     backgroundColor: 'rgba(79, 70, 229, 0.1)',
                     tension: 0.4,
@@ -321,14 +294,27 @@
             }
         });
 
+        // Handle period change
+        document.querySelectorAll('input[name="period"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                let period = this.id;
+                let data = period === 'week' ? revenueData.weekly : 
+                          period === 'month' ? revenueData.monthly : revenueData.yearly;
+                
+                revenueChart.data.labels = data.map(d => d.label);
+                revenueChart.data.datasets[0].data = data.map(d => parseFloat(d.revenue));
+                revenueChart.update();
+            });
+        });
+
         // Popular Laptops Chart
         const popularCtx = document.getElementById('popularChart').getContext('2d');
         new Chart(popularCtx, {
             type: 'doughnut',
             data: {
-                labels: ['MacBook Pro', 'Dell XPS', 'HP Pavilion', 'Lenovo ThinkPad', 'Others'],
+                labels: popularLaptops.map(l => l.name),
                 datasets: [{
-                    data: [30, 25, 20, 15, 10],
+                    data: popularLaptops.map(l => l.percentage),
                     backgroundColor: [
                         'rgb(79, 70, 229)',
                         'rgb(16, 185, 129)',
@@ -347,6 +333,13 @@
                         labels: {
                             padding: 20,
                             usePointStyle: true
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.parsed.toFixed(1) + '%';
+                            }
                         }
                     }
                 }
