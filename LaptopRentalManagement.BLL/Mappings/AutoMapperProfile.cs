@@ -46,7 +46,7 @@ namespace LaptopRentalManagement.BLL.Mappings
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.Laptops, opt => opt.Ignore());
 
-            CreateMap<Category, CategoryResponseDto>()
+            CreateMap<Category, CategoryResponse>()
                 .ForMember(dest => dest.LaptopCount, opt => opt.Ignore()); // Will be set manually in service
 
             CreateMap<Category, CategorySelectDto>();

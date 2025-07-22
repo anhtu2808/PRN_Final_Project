@@ -28,6 +28,14 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <AdditionalFiles Include="Pages\Manage\Categories\Index.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Areas\Manage\Pages\Categories\Index.cshtml" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>

@@ -1,5 +1,6 @@
 @page
-@model LaptopRentalManagement.Pages.Manage.IndexModel
+@using System.Globalization
+@model IndexModel
 @{
     ViewData["Title"] = "Admin Dashboard";
     Layout = "~/Pages/Shared/_AdminLayout.cshtml";
@@ -15,7 +16,9 @@
                     <div class="flex-grow-1">
                         <h6 class="card-title mb-1">Total Orders</h6>
                         <h3 class="mb-0">@Model.DashboardData.Stats.TotalOrders.ToString("N0")</h3>
-                        <small class="text-white-50">@Model.DashboardData.Stats.OrderGrowth.ToString("+#,##0.0;-#,##0.0;0")% from last month</small>
+                        <small
+                            class="text-white-50">@Model.DashboardData.Stats.OrderGrowth.ToString("+#,##0.0;-#,##0.0;0")%
+                            from last month</small>
                     </div>
                     <div class="flex-shrink-0">
                         <i class="fas fa-shopping-cart fa-2x opacity-50"></i>
@@ -32,8 +35,10 @@
                 <div class="d-flex align-items-center">
                     <div class="flex-grow-1">
                         <h6 class="card-title mb-1">Revenue</h6>
-                        <h3 class="mb-0">@Model.DashboardData.Stats.Revenue.ToString("c0", new System.Globalization.CultureInfo("vi-VN"))</h3>
-                        <small class="text-white-50">@Model.DashboardData.Stats.RevenueGrowth.ToString("+#,##0.0;-#,##0.0;0")% from last month</small>
+                        <h3 class="mb-0">@Model.DashboardData.Stats.Revenue.ToString("c0", new CultureInfo("vi-VN"))</h3>
+                        <small
+                            class="text-white-50">@Model.DashboardData.Stats.RevenueGrowth.ToString("+#,##0.0;-#,##0.0;0")%
+                            from last month</small>
                     </div>
                     <div class="flex-shrink-0">
                         <i class="fas fa-dollar-sign fa-2x opacity-50"></i>
@@ -69,7 +74,8 @@
                     <div class="flex-grow-1">
                         <h6 class="card-title mb-1">Customers</h6>
                         <h3 class="mb-0">@Model.DashboardData.Stats.TotalCustomers</h3>
-                        <small class="text-white-50">+@Model.DashboardData.Stats.NewCustomersThisWeek new this week</small>
+                        <small class="text-white-50">+@Model.DashboardData.Stats.NewCustomersThisWeek new this
+                            week</small>
                     </div>
                     <div class="flex-shrink-0">
                         <i class="fas fa-users fa-2x opacity-50"></i>
@@ -85,14 +91,18 @@
     <div class="col-lg-8 mb-3">
         <div class="card">
             <div class="card-header"><h5 class="card-title mb-0">Revenue Overview (Last 12 Months)</h5></div>
-            <div class="card-body"><canvas id="revenueChart" height="120"></canvas></div>
+            <div class="card-body">
+                <canvas id="revenueChart" height="120"></canvas>
+            </div>
         </div>
     </div>
 
     <div class="col-lg-4 mb-3">
         <div class="card">
             <div class="card-header"><h5 class="card-title mb-0">Order Status</h5></div>
-            <div class="card-body"><canvas id="orderStatusChart" height="200"></canvas></div>
+            <div class="card-body">
+                <canvas id="orderStatusChart" height="200"></canvas>
+            </div>
         </div>
     </div>
 </div>
@@ -109,44 +119,46 @@
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead class="table-light">
-                            <tr>
-                                <th>Order ID</th>
-                                <th>Customer</th>
-                                <th>Laptop</th>
-                                <th>Order Date</th>
-                                <th>Amount</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Laptop</th>
+                            <th>Order Date</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            @if (Model.DashboardData.RecentOrders != null && Model.DashboardData.RecentOrders.Any())
-                            {
-                                @foreach (var order in Model.DashboardData.RecentOrders)
-                                {
-                                    <tr>
-                                        <td><span class="badge bg-light text-dark">#ORD-@order.Id</span></td>
-                                        <td>
-                                            <div class="fw-medium">@order.CustomerName</div>
-                                        </td>
-                                        <td>@order.LaptopModel</td>
-                                        <td>@order.OrderDate.ToString("dd MMM yyyy")</td>
-                                        <td class="fw-medium">@order.Amount.ToString("c0", new System.Globalization.CultureInfo("vi-VN"))</td>
-                                        <td><span class="badge bg-@GetStatusBadgeClass(order.Status)">@order.Status</span></td>
-                                        <td>
-                                            <a href="/manage/orders/details/@order.Id" class="btn btn-sm btn-outline-primary" title="View">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                }
-                            }
-                            else
+                        @if (Model.DashboardData.RecentOrders != null && Model.DashboardData.RecentOrders.Any())
+                        {
+                            @foreach (var order in Model.DashboardData.RecentOrders)
                             {
                                 <tr>
-                                    <td colspan="7" class="text-center">No recent orders found.</td>
+                                    <td><span class="badge bg-light text-dark">#ORD-@order.Id</span></td>
+                                    <td>
+                                        <div class="fw-medium">@order.CustomerName</div>
+                                    </td>
+                                    <td>@order.LaptopModel</td>
+                                    <td>@order.OrderDate.ToString("dd MMM yyyy")</td>
+                                    <td class="fw-medium">@order.Amount.ToString("c0", new CultureInfo("vi-VN"))</td>
+                                    <td><span class="badge bg-@GetStatusBadgeClass(order.Status)">@order.Status</span>
+                                    </td>
+                                    <td>
+                                        <a href="/manage/orders/details/@order.Id"
+                                           class="btn btn-sm btn-outline-primary" title="View">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
                                 </tr>
                             }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center">No recent orders found.</td>
+                            </tr>
+                        }
                         </tbody>
                     </table>
                 </div>
@@ -156,6 +168,7 @@
 </div>
 
 @functions {
+
     // Helper function để chọn màu cho badge status
     private string GetStatusBadgeClass(string status)
     {
@@ -167,9 +180,10 @@
             "pending" => "warning",
             "overdue" => "danger",
             "cancelled" => "secondary",
-            _ => "light",
+            _ => "light"
         };
     }
+
 }
 
 
@@ -200,10 +214,10 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
+                        plugins: {legend: {display: false}},
                         scales: {
-                            y: { beginAtZero: true, grid: { color: 'rgba(0, 0, 0, 0.05)' } },
-                            x: { grid: { display: false } }
+                            y: {beginAtZero: true, grid: {color: 'rgba(0, 0, 0, 0.05)'}},
+                            x: {grid: {display: false}}
                         }
                     }
                 });
@@ -230,7 +244,7 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: { legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true } } }
+                        plugins: {legend: {position: 'bottom', labels: {padding: 20, usePointStyle: true}}}
                     }
                 });
             }
