@@ -18,5 +18,7 @@ namespace LaptopRentalManagement.BLL.DTOs.Request
 
         [MaxLength(1000, ErrorMessage = "Comment cannot exceed 1000 characters")]
         public string? Comment { get; set; }
+
+
     }
 }

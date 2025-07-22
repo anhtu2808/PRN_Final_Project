@@ -15,4 +15,12 @@ public interface IReviewRepository
     Task<int> GetTotalReviewsByLaptopIdAsync(int laptopId);
     Task<Dictionary<int, int>> GetRatingDistributionByLaptopIdAsync(int laptopId);
     Task<bool> CanUserReviewOrderAsync(int orderId, int userId);
+
+    Task<(IEnumerable<Review> Reviews, int TotalCount)> GetFilteredAsync(
+    string? searchTerm, int? selectedRating, DateTime? dateFrom, DateTime? dateTo, int currentPage, int pageSize);
+
+    Task<int> CountAllAsync();
+    Task<double> GetAverageRatingAllAsync();
+    Task<int> CountPositiveReviewsAsync();
+    Task<int> CountThisMonthReviewsAsync();
 }
