@@ -1,0 +1,123 @@
+﻿@page
+@model LaptopRentalManagement.Pages.Brands.IndexModel
+@{
+    ViewData["Title"] = "Brands";
+    Layout = "~/Pages/Shared/_CustomerLayout.cshtml";
+}
+
+<div class="container py-4">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-gradient">Browse by Brand</h1>
+        <p class="lead text-muted">Discover laptops from the world's leading brands</p>
+    </div>
+
+    <div class="row">
+        @if (Model.Brands.Any())
+        {
+            @foreach (var brand in Model.Brands)
+            {
+                // Sử dụng LogoUrl của thương hiệu nếu có, nếu không thì dùng ảnh dự phòng
+                string brandImage = !string.IsNullOrEmpty(brand.LogoUrl)
+                ? brand.LogoUrl
+                : $"https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?w=600&h=400&fit=crop&q=80"; // Ảnh chung cho laptop
+
+                // Chọn icon dựa trên tên thương hiệu
+                string brandIcon = "fas fa-laptop-code"; // Icon mặc định
+                var lowerName = brand.Name.ToLower();
+
+                if (lowerName.Contains("apple")) { brandIcon = "fab fa-apple"; }
+                else if (lowerName.Contains("dell")) { brandIcon = "fab fa-dell"; }
+                else if (lowerName.Contains("hp")) { brandIcon = "fab fa-hp"; }
+                else if (lowerName.Contains("lenovo")) { brandIcon = "fab fa-linux"; } // Gần đúng
+                else if (lowerName.Contains("microsoft")) { brandIcon = "fab fa-windows"; }
+
+
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <a href="/laptops?brandId=@brand.BrandId" class="category-card-large text-decoration-none">
+                        <div class="category-image-large">
+                            <img src="@brandImage" alt="@brand.Name" class="img-fluid rounded" style="object-fit: cover; width: 100%; height: 100%;">
+                            <div class="category-overlay">
+                                <div class="category-icon"><i class="@brandIcon fa-2x"></i></div>
+                                <div class="category-content">
+                                    <h4>@brand.Name</h4>
+                                    <p class="mb-2">@(brand.Description ?? $"Explore top laptops from {brand.Name}")</p>
+                                    <span class="badge bg-light text-dark">@brand.LaptopCount laptop(s) available</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center">
+                <p class="lead">No brands are available at the moment. Please check back later.</p>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    /* Bạn có thể giữ nguyên CSS từ trang Category hoặc đặt nó vào file site.css chung */
+    .category-card-large {
+        display: block;
+        overflow: hidden;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .category-card-large:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .category-image-large {
+        position: relative;
+        height: 250px;
+    }
+
+    .category-image-large img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .category-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0) 100%);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 1.5rem;
+        transition: background 0.3s ease;
+    }
+
+    .category-card-large:hover .category-overlay {
+        background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0) 100%);
+    }
+
+    .category-icon {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        font-size: 1.5rem;
+        opacity: 0.7;
+    }
+
+    .category-content h4 {
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+
+    .category-content p {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+</style>
