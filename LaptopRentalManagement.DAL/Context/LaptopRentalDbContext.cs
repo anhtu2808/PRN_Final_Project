@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using LaptopRentalManagement.DAL.LaptopRentalManagement.DAL.Entities;
+﻿using LaptopRentalManagement.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace LaptopRentalManagement.DAL.LaptopRentalManagement.DAL.Context;
+namespace LaptopRentalManagement.DAL.Context;
 
 public partial class LaptopRentalDbContext : DbContext
 {
@@ -32,9 +30,7 @@ public partial class LaptopRentalDbContext : DbContext
 
     public virtual DbSet<Slot> Slots { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=localhost,1433;Database=LaptopRentalDB;User Id=sa;Password=YourStr0ng!Pass;TrustServerCertificate=True;Encrypt=False");
+    
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

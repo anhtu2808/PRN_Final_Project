@@ -1,0 +1,485 @@
+@page
+@model LaptopRentalManagement.Areas.Manage.Pages.Categories.IndexModel
+@{
+    ViewData["Title"] = "Quản lý Danh mục";
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-0">Quản lý Danh mục</h1>
+                    <p class="text-muted mb-0">Quản lý các danh mục laptop trong hệ thống</p>
+                </div>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCategoryModal">
+                    <i class="fas fa-plus"></i> Thêm Danh mục
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-primary text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="small text-white-50">Tổng Danh mục</div>
+                            <div class="h4 mb-0">@Model.Categories.Count()</div>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-list fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-success text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="small text-white-50">Có Laptop</div>
+                            <div class="h4 mb-0">@Model.Categories.Count(c => c.LaptopCount > 0)</div>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-laptop fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-warning text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="small text-white-50">Trống</div>
+                            <div class="h4 mb-0">@Model.Categories.Count(c => c.LaptopCount == 0)</div>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-folder-open fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-info text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="small text-white-50">Tổng Laptop</div>
+                            <div class="h4 mb-0">@Model.Categories.Sum(c => c.LaptopCount)</div>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-calculator fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categories Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Danh sách Danh mục</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.Categories.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Tên Danh mục</th>
+                                        <th>Mô tả</th>
+                                        <th>Số Laptop</th>
+                                        <th>Ngày Tạo</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var category in Model.Categories)
+                                    {
+                                        <tr>
+                                            <td>@category.CategoryId</td>
+                                            <td>
+                                                <strong>@category.Name</strong>
+                                            </td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(category.Description))
+                                                {
+                                                    @(category.Description.Length > 50 ? category.Description.Substring(0, 50) + "..." : category.Description)
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">Không có mô tả</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <span class="badge @(category.LaptopCount > 0 ? "bg-success" : "bg-secondary")">
+                                                    @category.LaptopCount laptop
+                                                </span>
+                                            </td>
+                                            <td>@category.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <button type="button" class="btn btn-sm btn-outline-info" 
+                                                            title="Xem chi tiết" onclick="viewCategory(@category.CategoryId)">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-outline-warning" 
+                                                            title="Chỉnh sửa" onclick="editCategory(@category.CategoryId, '@category.Name', '@category.Description')">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    @if (category.LaptopCount == 0)
+                                                    {
+                                                        <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                                title="Xóa" onclick="confirmDelete(@category.CategoryId, '@category.Name')">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    }
+                                                    else
+                                                    {
+                                                        <button type="button" class="btn btn-sm btn-outline-secondary" 
+                                                                title="Không thể xóa (có laptop)" disabled>
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    }
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">Chưa có danh mục nào</h5>
+                            <p class="text-muted">Bấm nút "Thêm Danh mục" để tạo danh mục đầu tiên.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Category Modal -->
+<div class="modal fade" id="createCategoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Thêm Danh mục mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="createCategoryForm" method="post" asp-page-handler="Create">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="createName" class="form-label">
+                            Tên Danh mục <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" class="form-control" id="createName" name="Name" required 
+                               placeholder="Nhập tên danh mục" />
+                        <div class="invalid-feedback" id="createNameError"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="createDescription" class="form-label">Mô tả</label>
+                        <textarea class="form-control" id="createDescription" name="Description" rows="3"
+                                  placeholder="Nhập mô tả chi tiết về danh mục này..."></textarea>
+                        <div class="invalid-feedback" id="createDescriptionError"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Lưu Danh mục
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Category Modal -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chỉnh sửa Danh mục</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="editCategoryForm" method="post" asp-page-handler="Update">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <input type="hidden" id="editCategoryId" name="CategoryId" />
+                    <div class="mb-3">
+                        <label for="editName" class="form-label">
+                            Tên Danh mục <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" class="form-control" id="editName" name="Name" required 
+                               placeholder="Nhập tên danh mục" />
+                        <div class="invalid-feedback" id="editNameError"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editDescription" class="form-label">Mô tả</label>
+                        <textarea class="form-control" id="editDescription" name="Description" rows="3"
+                                  placeholder="Nhập mô tả chi tiết về danh mục này..."></textarea>
+                        <div class="invalid-feedback" id="editDescriptionError"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Cập nhật
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- View Category Modal -->
+<div class="modal fade" id="viewCategoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chi tiết Danh mục</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <dl class="row">
+                    <dt class="col-sm-4">ID:</dt>
+                    <dd class="col-sm-8" id="viewCategoryId"></dd>
+                    
+                    <dt class="col-sm-4">Tên Danh mục:</dt>
+                    <dd class="col-sm-8" id="viewCategoryName"></dd>
+                    
+                    <dt class="col-sm-4">Mô tả:</dt>
+                    <dd class="col-sm-8" id="viewCategoryDescription"></dd>
+                    
+                    <dt class="col-sm-4">Số Laptop:</dt>
+                    <dd class="col-sm-8" id="viewCategoryLaptopCount"></dd>
+                    
+                    <dt class="col-sm-4">Ngày tạo:</dt>
+                    <dd class="col-sm-8" id="viewCategoryCreatedAt"></dd>
+                </dl>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xác nhận xóa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa danh mục <strong id="deleteCategoryName"></strong>?</p>
+                <p class="text-warning">Hành động này không thể hoàn tác!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <form id="deleteForm" method="post" class="d-inline">
+                    <input type="hidden" name="id" id="deleteCategoryId" />
+                    <button type="submit" class="btn btn-danger">Xóa</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // View Category Function
+        async function viewCategory(categoryId) {
+            try {
+                const response = await fetch(`/Manage/Categories?handler=GetCategory&id=${categoryId}`);
+                if (response.ok) {
+                    const category = await response.json();
+                    
+                    document.getElementById('viewCategoryId').textContent = category.categoryId;
+                    document.getElementById('viewCategoryName').textContent = category.name;
+                    document.getElementById('viewCategoryDescription').textContent = category.description || 'Không có mô tả';
+                    document.getElementById('viewCategoryLaptopCount').innerHTML = 
+                        `<span class="badge ${category.laptopCount > 0 ? 'bg-success' : 'bg-secondary'}">${category.laptopCount} laptop</span>`;
+                    document.getElementById('viewCategoryCreatedAt').textContent = 
+                        new Date(category.createdAt).toLocaleDateString('vi-VN') + ' ' + 
+                        new Date(category.createdAt).toLocaleTimeString('vi-VN');
+                    
+                    var viewModal = new bootstrap.Modal(document.getElementById('viewCategoryModal'));
+                    viewModal.show();
+                }
+            } catch (error) {
+                console.error('Error fetching category details:', error);
+                alert('Lỗi khi tải thông tin danh mục');
+            }
+        }
+
+        // Edit Category Function
+        function editCategory(categoryId, categoryName, categoryDescription) {
+            document.getElementById('editCategoryId').value = categoryId;
+            document.getElementById('editName').value = categoryName;
+            document.getElementById('editDescription').value = categoryDescription || '';
+            
+            // Clear previous errors
+            clearValidationErrors('edit');
+            
+            var editModal = new bootstrap.Modal(document.getElementById('editCategoryModal'));
+            editModal.show();
+        }
+
+        // Delete Category Function
+        function confirmDelete(categoryId, categoryName) {
+            document.getElementById('deleteCategoryId').value = categoryId;
+            document.getElementById('deleteCategoryName').textContent = categoryName;
+            document.getElementById('deleteForm').action = '/Manage/Categories?handler=Delete';
+            
+            var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            deleteModal.show();
+        }
+
+        // Clear Validation Errors
+        function clearValidationErrors(prefix) {
+            const nameInput = document.getElementById(prefix + 'Name');
+            const descInput = document.getElementById(prefix + 'Description');
+            const nameError = document.getElementById(prefix + 'NameError');
+            const descError = document.getElementById(prefix + 'DescriptionError');
+            
+            nameInput.classList.remove('is-invalid');
+            descInput.classList.remove('is-invalid');
+            nameError.textContent = '';
+            descError.textContent = '';
+        }
+
+        // Handle Create Form Reset
+        document.getElementById('createCategoryModal').addEventListener('hidden.bs.modal', function () {
+            document.getElementById('createCategoryForm').reset();
+            clearValidationErrors('create');
+        });
+
+        // Handle Edit Form Reset  
+        document.getElementById('editCategoryModal').addEventListener('hidden.bs.modal', function () {
+            clearValidationErrors('edit');
+        });
+
+        // Handle Create Form Submission
+        document.getElementById('createCategoryForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            try {
+                const response = await fetch('/Manage/Categories?handler=Create', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('createCategoryModal')).hide();
+                    location.reload(); // Reload page to show updated data
+                } else {
+                    showValidationErrors('create', result.errors);
+                }
+            } catch (error) {
+                console.error('Error creating category:', error);
+                alert('Lỗi khi tạo danh mục');
+            }
+        });
+
+        // Handle Edit Form Submission
+        document.getElementById('editCategoryForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            try {
+                const response = await fetch('/Manage/Categories?handler=Update', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('editCategoryModal')).hide();
+                    location.reload(); // Reload page to show updated data
+                } else {
+                    showValidationErrors('edit', result.errors);
+                }
+            } catch (error) {
+                console.error('Error updating category:', error);
+                alert('Lỗi khi cập nhật danh mục');
+            }
+        });
+
+        // Show Validation Errors
+        function showValidationErrors(prefix, errors) {
+            clearValidationErrors(prefix);
+            
+            for (const [field, messages] of Object.entries(errors)) {
+                const fieldName = field.toLowerCase();
+                let inputElement, errorElement;
+                
+                if (fieldName === 'name') {
+                    inputElement = document.getElementById(prefix + 'Name');
+                    errorElement = document.getElementById(prefix + 'NameError');
+                } else if (fieldName === 'description') {
+                    inputElement = document.getElementById(prefix + 'Description');
+                    errorElement = document.getElementById(prefix + 'DescriptionError');
+                }
+                
+                if (inputElement && errorElement) {
+                    inputElement.classList.add('is-invalid');
+                    errorElement.textContent = messages[0];
+                }
+            }
+        }
+
+        // Show success/error messages if they exist
+        @if (TempData["Success"] != null)
+        {
+            <text>
+            document.addEventListener('DOMContentLoaded', function() {
+                var alert = document.createElement('div');
+                alert.className = 'alert alert-success alert-dismissible fade show';
+                alert.innerHTML = '@TempData["Success"] <button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+                document.querySelector('.container-fluid').insertAdjacentElement('afterbegin', alert);
+            });
+            </text>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <text>
+            document.addEventListener('DOMContentLoaded', function() {
+                var alert = document.createElement('div');
+                alert.className = 'alert alert-danger alert-dismissible fade show';
+                alert.innerHTML = '@TempData["Error"] <button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+                document.querySelector('.container-fluid').insertAdjacentElement('afterbegin', alert);
+            });
+            </text>
+        }
+    </script>
+} 
