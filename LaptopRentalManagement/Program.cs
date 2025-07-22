@@ -2,10 +2,10 @@ using LaptopRentalManagement.BLL.Mappings;
 using LaptopRentalManagement.BLL.Interfaces;
 using LaptopRentalManagement.BLL.Services;
 using LaptopRentalManagement.BLL.Hubs;
+using LaptopRentalManagement.DAL.Context;
+using LaptopRentalManagement.DAL.Interfaces;
+using LaptopRentalManagement.DAL.Repositories;
 using LaptopRentalManagement.Hubs;
-using LaptopRentalManagement.DAL.LaptopRentalManagement.DAL.Context;
-using LaptopRentalManagement.DAL.LaptopRentalManagement.DAL.Interfaces;
-using LaptopRentalManagement.DAL.LaptopRentalManagement.DAL.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,12 +13,14 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-// Add Entity Framework DbContext
+// Add DbContext
 builder.Services.AddDbContext<LaptopRentalDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+
 // Add AutoMapper
-builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile), typeof(AutoMapperProfile));
+        
 
 // Add SignalR
 builder.Services.AddSignalR();
@@ -28,6 +30,14 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 // Register Business Services
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+
+// Register repositories
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+
+// Register services
+builder.Services.AddScoped<IFeedbackService, FeedbackService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+
 
 // Register Hub Service
 builder.Services.AddScoped<IHubService, HubService>();

@@ -1,7 +1,9 @@
 using AutoMapper;
-using LaptopRentalManagement.DAL.LaptopRentalManagement.DAL.Entities;
 using LaptopRentalManagement.BLL.DTOs.Request;
 using LaptopRentalManagement.BLL.DTOs.Response;
+using LaptopRentalManagement.BLL.DTOs.Request;
+using LaptopRentalManagement.BLL.DTOs.Response;
+using LaptopRentalManagement.DAL.Entities;
 
 namespace LaptopRentalManagement.BLL.Mappings
 {
@@ -50,8 +52,21 @@ namespace LaptopRentalManagement.BLL.Mappings
             CreateMap<Category, CategorySelectDto>();
 
             // Review mappings
-            CreateMap<Review, Review>()
-                .ForMember(dest => dest.ReviewId, opt => opt.Ignore());
+
+            //CreateMap<Review, Review>()
+            //    .ForMember(dest => dest.ReviewId, opt => opt.Ignore());
+
+            // Review Entity -> ReviewResponse
+            CreateMap<Review, ReviewResponse>()
+                .ForMember(dest => dest.RaterName, opt => opt.MapFrom(src => src.Rater.Name ?? "Anonymous"))
+                .ForMember(dest => dest.LaptopName, opt => opt.MapFrom(src => src.Order.Laptop.Name))
+                .ForMember(dest => dest.LaptopImageUrl, opt => opt.MapFrom(src => src.Order.Laptop.ImageUrl))
+                .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => (int)src.Rating));
+
+            // CreateReviewRequest -> Review Entity
+            CreateMap<CreateReviewRequest, Review>()
+                .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => (byte)src.Rating))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
 
             // Slot mappings
             CreateMap<Slot, Slot>()
