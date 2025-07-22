@@ -18,14 +18,14 @@ namespace LaptopRentalManagement.BLL.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<CategoryResponseDto>> GetAllCategoriesAsync()
+        public async Task<IEnumerable<CategoryResponse>> GetAllCategoriesAsync()
         {
             var categories = await _categoryRepository.GetAllAsync();
-            var result = new List<CategoryResponseDto>();
+            var result = new List<CategoryResponse>();
 
             foreach (var category in categories)
             {
-                var dto = _mapper.Map<CategoryResponseDto>(category);
+                var dto = _mapper.Map<CategoryResponse>(category);
                 dto.LaptopCount = category.Laptops?.Count ?? 0;
                 result.Add(dto);
             }
@@ -39,29 +39,29 @@ namespace LaptopRentalManagement.BLL.Services
             return _mapper.Map<IEnumerable<CategorySelectDto>>(categories);
         }
 
-        public async Task<CategoryResponseDto?> GetCategoryByIdAsync(int id)
+        public async Task<CategoryResponse?> GetCategoryByIdAsync(int id)
         {
             var category = await _categoryRepository.GetByIdAsync(id);
             if (category == null)
                 return null;
 
-            var dto = _mapper.Map<CategoryResponseDto>(category);
+            var dto = _mapper.Map<CategoryResponse>(category);
             dto.LaptopCount = category.Laptops?.Count ?? 0;
             return dto;
         }
 
-        public async Task<CategoryResponseDto?> GetCategoryByNameAsync(string name)
+        public async Task<CategoryResponse?> GetCategoryByNameAsync(string name)
         {
             var category = await _categoryRepository.GetByNameAsync(name);
             if (category == null)
                 return null;
 
-            var dto = _mapper.Map<CategoryResponseDto>(category);
+            var dto = _mapper.Map<CategoryResponse>(category);
             dto.LaptopCount = category.Laptops?.Count ?? 0;
             return dto;
         }
 
-        public async Task<CategoryResponseDto> CreateCategoryAsync(CreateCategoryRequest request)
+        public async Task<CategoryResponse> CreateCategoryAsync(CreateCategoryRequest request)
         {
             // Kiểm tra tên category đã tồn tại chưa
             if (await _categoryRepository.ExistsByNameAsync(request.Name))
@@ -72,12 +72,12 @@ namespace LaptopRentalManagement.BLL.Services
             var category = _mapper.Map<Category>(request);
             var createdCategory = await _categoryRepository.CreateAsync(category);
 
-            var dto = _mapper.Map<CategoryResponseDto>(createdCategory);
+            var dto = _mapper.Map<CategoryResponse>(createdCategory);
             dto.LaptopCount = 0;
             return dto;
         }
 
-        public async Task<CategoryResponseDto> UpdateCategoryAsync(UpdateCategoryRequest request)
+        public async Task<CategoryResponse> UpdateCategoryAsync(UpdateCategoryRequest request)
         {
             // Kiểm tra category có tồn tại không
             var existingCategory = await _categoryRepository.GetByIdAsync(request.CategoryId);
@@ -98,7 +98,7 @@ namespace LaptopRentalManagement.BLL.Services
 
             var updatedCategory = await _categoryRepository.UpdateAsync(existingCategory);
 
-            var dto = _mapper.Map<CategoryResponseDto>(updatedCategory);
+            var dto = _mapper.Map<CategoryResponse>(updatedCategory);
             dto.LaptopCount = updatedCategory.Laptops?.Count ?? 0;
             return dto;
         }

@@ -13,21 +13,11 @@ namespace LaptopRentalManagement.Pages.Categories
             _categoryService = categoryService;
         }
 
-        public IEnumerable<CategoryResponseDto> Categories { get; set; } = new List<CategoryResponseDto>();
+        public IEnumerable<CategoryResponse> Categories { get; set; } = new List<CategoryResponse>();
 
         public async Task OnGetAsync()
         {
-            try
-            {
-                Categories = await _categoryService.GetAllCategoriesAsync();
-            }
-            catch (Exception ex)
-            {
-                // Log error and show empty list
-                Categories = new List<CategoryResponseDto>();
-                // In production, you would log this error
-                Console.WriteLine($"Error loading categories: {ex.Message}");
-            }
+            Categories = await _categoryService.GetAllCategoriesAsync();
         }
     }
-} 
+}
