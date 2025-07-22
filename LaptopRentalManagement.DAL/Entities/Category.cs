@@ -6,6 +6,8 @@ public partial class Category
 
     public string Name { get; set; } = null!;
 
+    public string IconClass    { get; set; } = "fas fa-tag";
+
     public string? Description { get; set; }
 
     public DateTime CreatedAt { get; set; }
