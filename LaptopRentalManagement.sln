@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LaptopRentalManagement.DAL"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LaptopRentalManagement.BLL", "LaptopRentalManagement.BLL\LaptopRentalManagement.BLL.csproj", "{0375CA89-FED0-4A02-AAA7-35D9CE4ACC41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaptopRentalManagement.Model", "LaptopRentalManagement.Model\LaptopRentalManagement.Model.csproj", "{7BC13693-E259-4414-A3CD-F982E8901A87}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LaptopRentalManagement.Model", "LaptopRentalManagement.Model\LaptopRentalManagement.Model.csproj", "{7BC13693-E259-4414-A3CD-F982E8901A87}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
