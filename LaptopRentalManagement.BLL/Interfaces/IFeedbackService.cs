@@ -17,5 +17,14 @@ namespace LaptopRentalManagement.BLL.Interfaces
         Task<ReviewResponse> UpdateReviewAsync(int reviewId, UpdateReviewRequest request, int userId);
         Task DeleteReviewAsync(int reviewId, int userId);
         Task<bool> CanUserReviewOrderAsync(int orderId, int userId);
+
+        Task<(IEnumerable<ReviewResponse> Reviews, int TotalPages)> GetFilteredReviewsAsync(
+    string? searchTerm, int? selectedRating, DateTime? dateFrom, DateTime? dateTo, int currentPage, int pageSize);
+
+        Task<ReviewStatisticsResponse> GetReviewStatisticsAsync();
+
+        Task<ReviewResponse> AdminUpdateReviewAsync(int reviewId, UpdateReviewRequest request);
+
+        Task AdminDeleteReviewAsync(int reviewId);
     }
 }

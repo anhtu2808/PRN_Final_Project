@@ -72,6 +72,8 @@ namespace LaptopRentalManagement.BLL.Mappings
                 .ForMember(dest => dest.LaptopName, opt => opt.MapFrom(src => src.Order.Laptop.Name))
                 .ForMember(dest => dest.LaptopImageUrl, opt => opt.MapFrom(src => src.Order.Laptop.ImageUrl))
                 .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => (int)src.Rating));
+            CreateMap<CreateReviewRequest, Review>();
+            CreateMap<UpdateReviewRequest, Review>();
 
             // CreateReviewRequest -> Review Entity
             CreateMap<CreateReviewRequest, Review>()

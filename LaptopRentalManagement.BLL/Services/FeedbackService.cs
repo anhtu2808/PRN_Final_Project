@@ -2,13 +2,11 @@
 using LaptopRentalManagement.BLL.DTOs.Request;
 using LaptopRentalManagement.BLL.DTOs.Response;
 using LaptopRentalManagement.BLL.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LaptopRentalManagement.DAL.Entities;
 using LaptopRentalManagement.DAL.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace LaptopRentalManagement.BLL.Services
 {
@@ -23,10 +21,12 @@ namespace LaptopRentalManagement.BLL.Services
             _mapper = mapper;
         }
 
+        // --- CÁC PHƯƠNG THỨC GỐC CỦA BẠN (KHÔNG THAY ĐỔI) ---
+
         public async Task<ReviewResponse?> GetReviewByIdAsync(int reviewId)
         {
             var review = await _reviewRepository.GetByIdAsync(reviewId);
-            return review != null ? _mapper.Map<ReviewResponse>(review) : null;
+            return _mapper.Map<ReviewResponse>(review);
         }
 
         public async Task<LaptopReviewSummaryResponse> GetLaptopReviewsAsync(int laptopId)
@@ -54,44 +54,27 @@ namespace LaptopRentalManagement.BLL.Services
 
         public async Task<ReviewResponse> CreateReviewAsync(CreateReviewRequest request, int userId)
         {
-            // Kiểm tra quyền review
             var canReview = await _reviewRepository.CanUserReviewOrderAsync(request.OrderId, userId);
             if (!canReview)
             {
                 throw new UnauthorizedAccessException("You cannot review this order.");
             }
 
-            var review = new Review
-            {
-                OrderId = request.OrderId,
-                RaterId = userId,
-                Rating = (byte)request.Rating,
-                Comment = request.Comment,
-                CreatedAt = DateTime.UtcNow
-            };
+            var review = _mapper.Map<Review>(request);
+            review.RaterId = userId;
+            review.CreatedAt = DateTime.UtcNow;
 
             var createdReview = await _reviewRepository.CreateAsync(review);
-            var result = await _reviewRepository.GetByIdAsync(createdReview.ReviewId);
-
-            return _mapper.Map<ReviewResponse>(result);
+            return _mapper.Map<ReviewResponse>(createdReview);
         }
 
         public async Task<ReviewResponse> UpdateReviewAsync(int reviewId, UpdateReviewRequest request, int userId)
         {
             var review = await _reviewRepository.GetByIdAsync(reviewId);
-            if (review == null)
-            {
-                throw new KeyNotFoundException("Review not found.");
-            }
+            if (review == null) throw new KeyNotFoundException("Review not found.");
+            if (review.RaterId != userId) throw new UnauthorizedAccessException("You can only update your own reviews.");
 
-            if (review.RaterId != userId)
-            {
-                throw new UnauthorizedAccessException("You can only update your own reviews.");
-            }
-
-            review.Rating = (byte)request.Rating;
-            review.Comment = request.Comment;
-
+            _mapper.Map(request, review);
             var updatedReview = await _reviewRepository.UpdateAsync(review);
             return _mapper.Map<ReviewResponse>(updatedReview);
         }
@@ -99,15 +82,8 @@ namespace LaptopRentalManagement.BLL.Services
         public async Task DeleteReviewAsync(int reviewId, int userId)
         {
             var review = await _reviewRepository.GetByIdAsync(reviewId);
-            if (review == null)
-            {
-                throw new KeyNotFoundException("Review not found.");
-            }
-
-            if (review.RaterId != userId)
-            {
-                throw new UnauthorizedAccessException("You can only delete your own reviews.");
-            }
+            if (review == null) return;
+            if (review.RaterId != userId) throw new UnauthorizedAccessException("You can only delete your own reviews.");
 
             await _reviewRepository.DeleteAsync(reviewId);
         }
@@ -115,6 +91,52 @@ namespace LaptopRentalManagement.BLL.Services
         public async Task<bool> CanUserReviewOrderAsync(int orderId, int userId)
         {
             return await _reviewRepository.CanUserReviewOrderAsync(orderId, userId);
+        }
+
+        // --- TRIỂN KHAI ĐẦY ĐỦ CÁC PHƯƠNG THỨC MỚI CHO TRANG QUẢN TRỊ ---
+
+        public async Task<(IEnumerable<ReviewResponse> Reviews, int TotalPages)> GetFilteredReviewsAsync(string? searchTerm, int? selectedRating, DateTime? dateFrom, DateTime? dateTo, int currentPage, int pageSize)
+        {
+            var (reviews, totalCount) = await _reviewRepository.GetFilteredAsync(searchTerm, selectedRating, dateFrom, dateTo, currentPage, pageSize);
+
+            var reviewResponses = _mapper.Map<IEnumerable<ReviewResponse>>(reviews);
+            var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+            return (reviewResponses, totalPages);
+        }
+
+        public async Task<ReviewStatisticsResponse> GetReviewStatisticsAsync()
+        {
+            // Thực thi tuần tự, mỗi lần chỉ một truy vấn
+            var totalReviews = await _reviewRepository.CountAllAsync();
+            var averageRating = await _reviewRepository.GetAverageRatingAllAsync();
+            var positiveReviews = await _reviewRepository.CountPositiveReviewsAsync();
+            var thisMonthReviews = await _reviewRepository.CountThisMonthReviewsAsync();
+
+            return new ReviewStatisticsResponse
+            {
+                TotalReviews = totalReviews,
+                AverageRating = Math.Round(averageRating, 1),
+                PositiveReviews = positiveReviews,
+                ThisMonthReviews = thisMonthReviews
+            };
+        }
+        public async Task<ReviewResponse> AdminUpdateReviewAsync(int reviewId, UpdateReviewRequest request)
+        {
+            var review = await _reviewRepository.GetByIdAsync(reviewId);
+            if (review == null)
+            {
+                throw new KeyNotFoundException("Review not found.");
+            }
+
+            _mapper.Map(request, review);
+            var updatedReview = await _reviewRepository.UpdateAsync(review);
+            return _mapper.Map<ReviewResponse>(updatedReview);
+        }
+
+        public async Task AdminDeleteReviewAsync(int reviewId)
+        {
+            await _reviewRepository.DeleteAsync(reviewId);
         }
     }
 }

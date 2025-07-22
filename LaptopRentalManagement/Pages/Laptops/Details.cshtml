@@ -2,82 +2,83 @@
 @using LaptopRentalManagement.BLL.DTOs.Response
 @model LaptopRentalManagement.Pages.Laptops.DetailsModel
 @{
-    ViewData["Title"] = "Laptop Details";
-    Layout = "~/Pages/Shared/_CustomerLayout.cshtml";
+	ViewData["Title"] = "Laptop Details";
+	Layout = "~/Pages/Shared/_CustomerLayout.cshtml";
+	var summary = Model.ReviewSummary;
 }
 
 <div class="container py-4">
-    <!-- Breadcrumb -->
-    <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/">Home</a></li>
-            <li class="breadcrumb-item"><a href="/laptops">Laptops</a></li>
-            <li class="breadcrumb-item active" aria-current="page">@Model.Laptop?.Name</li>
-        </ol>
-    </nav>
+	<!-- Breadcrumb -->
+	<nav aria-label="breadcrumb" class="mb-4">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="/">Home</a></li>
+			<li class="breadcrumb-item"><a href="/laptops">Laptops</a></li>
+			<li class="breadcrumb-item active" aria-current="page">@Model.Laptop?.Name</li>
+		</ol>
+	</nav>
 
-    <div class="row">
-        <!-- Laptop Images -->
-        <div class="col-lg-6 mb-4">
-            <div class="laptop-detail-images">
-                <!-- Main Image -->
-                <div class="main-image mb-3">
-                    <img
-                        src="https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=600&h=400&fit=crop"
-                        alt="@Model.Laptop?.Name" class="img-fluid rounded shadow">
-                    <div class="image-badges">
-                        @if (Model.Laptop?.Status == "Available")
-                        {
-                            <span class="badge bg-success">Available</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-secondary">Rented</span>
-                        }
-                    </div>
-                </div>
+	<div class="row">
+		<!-- Laptop Images -->
+		<div class="col-lg-6 mb-4">
+			<div class="laptop-detail-images">
+				<!-- Main Image -->
+				<div class="main-image mb-3">
+					<img src="https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=600&h=400&fit=crop"
+						 alt="@Model.Laptop?.Name" class="img-fluid rounded shadow">
+					<div class="image-badges">
+						@if (Model.Laptop?.Status == "Available")
+						{
+							<span class="badge bg-success">Available</span>
+						}
+						else
+						{
+							<span class="badge bg-secondary">Rented</span>
+						}
+					</div>
+				</div>
 
-            </div>
-        </div>
+			</div>
+		</div>
 
-        <!-- Laptop Info & Booking -->
-        <div class="col-lg-6">
-            <div class="laptop-detail-info">
-                <!-- Brand & Title -->
-                <div class="laptop-header mb-3">
-                    <div class="laptop-brand h6 text-primary">@Model.Laptop?.Brand?.Name</div>
-                    <h1 class="laptop-title h2 mb-2">@Model.Laptop?.Name</h1>
-                    <div class="laptop-subtitle text-muted">High-performance laptop suitable for work, study, and
-                        entertainment.
-                    </div>
-                </div>
-                <!--User Profile -->
-                <div class="laptop-owner mb-3">
-                    <div class="fw-bold">Rented by:</div>
-                    <div class="d-flex align-items-center mt-1">
-                        <div>
-                            <div>@Model.Laptop?.Owner.Name</div>
-                            <small class="text-muted">@Model.Laptop?.Owner?.Email</small>
-                        </div>
-                    </div>
-                </div>
+		<!-- Laptop Info & Booking -->
+		<div class="col-lg-6">
+			<div class="laptop-detail-info">
+				<!-- Brand & Title -->
+				<div class="laptop-header mb-3">
+					<div class="laptop-brand h6 text-primary">@Model.Laptop?.Brand?.Name</div>
+					<h1 class="laptop-title h2 mb-2">@Model.Laptop?.Name</h1>
+					<div class="laptop-subtitle text-muted">
+						High-performance laptop suitable for work, study, and
+						entertainment.
+					</div>
+				</div>
+				<!--User Profile -->
+				<div class="laptop-owner mb-3">
+					<div class="fw-bold">Rented by:</div>
+					<div class="d-flex align-items-center mt-1">
+						<div>
+							<div>@Model.Laptop?.Owner.Name</div>
+							<small class="text-muted">@Model.Laptop?.Owner?.Email</small>
+						</div>
+					</div>
+				</div>
 
-                <!-- Rating & Reviews -->
-                <div class="laptop-rating mb-3">
-                    <div class="stars">
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star-half-alt text-warning"></i>
-                    </div>
-                    <span class="rating-text ms-2">4.5 (127 reviews)</span>
-                </div>
+				<!-- Rating & Reviews -->
+				<div class="laptop-rating mb-3">
+					<div class="stars">
+						<i class="fas fa-star text-warning"></i>
+						<i class="fas fa-star text-warning"></i>
+						<i class="fas fa-star text-warning"></i>
+						<i class="fas fa-star text-warning"></i>
+						<i class="fas fa-star-half-alt text-warning"></i>
+					</div>
+					<span class="rating-text ms-2">4.5 (127 reviews)</span>
+				</div>
 
-                <!-- Pricing -->
-                <div class="price-daily h3 text-primary mb-2">
-                    @Model.Laptop?.PricePerDay.ToString("N0") ₫ <span class="price-label h6 text-muted">per day</span>
-                </div>
+				<!-- Pricing -->
+				<div class="price-daily h3 text-primary mb-2">
+					@Model.Laptop?.PricePerDay.ToString("N0") ₫ <span class="price-label h6 text-muted">per day</span>
+				</div>
 
                 <!-- Booking Form -->
                 <form method="post" class="booking-form bg-light p-4 rounded mb-4">
@@ -123,275 +124,257 @@
                     </button>
                 </form>
 
-                <!-- Quick Info -->
-                <div class="quick-info">
-                    <div class="row text-center">
-                        <div class="col-4">
-                            <div class="info-item">
-                                <i class="fas fa-truck text-primary"></i>
-                                <div class="info-text">Free Delivery</div>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="info-item">
-                                <i class="fas fa-shield-alt text-success"></i>
-                                <div class="info-text">Insured</div>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="info-item">
-                                <i class="fas fa-headset text-info"></i>
-                                <div class="info-text">24/7 Support</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+				<!-- Quick Info -->
+				<div class="quick-info">
+					<div class="row text-center">
+						<div class="col-4">
+							<div class="info-item">
+								<i class="fas fa-truck text-primary"></i>
+								<div class="info-text">Free Delivery</div>
+							</div>
+						</div>
+						<div class="col-4">
+							<div class="info-item">
+								<i class="fas fa-shield-alt text-success"></i>
+								<div class="info-text">Insured</div>
+							</div>
+						</div>
+						<div class="col-4">
+							<div class="info-item">
+								<i class="fas fa-headset text-info"></i>
+								<div class="info-text">24/7 Support</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
-    <!-- Detailed Info Tabs -->
-    <div class="row mt-5">
-        <div class="col-12">
-            <ul class="nav nav-tabs" id="laptopDetailTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="specs-tab" data-bs-toggle="tab" data-bs-target="#specs"
-                            type="button">
-                        <i class="fas fa-microchip me-2"></i>Specifications
-                    </button>
-                </li>
-                @* <li class="nav-item" role="presentation"> *@
-                @*     <button class="nav-link" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" *@
-                @*             type="button"> *@
-                @*         <i class="fas fa-info-circle me-2"></i>Description *@
-                @*     </button> *@
-                @* </li> *@
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews"
-                            type="button">
-                        <i class="fas fa-star me-2"></i>Reviews (127)
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="policies-tab" data-bs-toggle="tab" data-bs-target="#policies"
-                            type="button">
-                        <i class="fas fa-file-contract me-2"></i>Rental Policies
-                    </button>
-                </li>
-            </ul>
+	<!-- Detailed Info Tabs -->
+	<div class="row mt-5">
+		<div class="col-12">
+			<ul class="nav nav-tabs" id="laptopDetailTabs" role="tablist">
+				<li class="nav-item" role="presentation">
+					<button class="nav-link active" id="specs-tab" data-bs-toggle="tab" data-bs-target="#specs"
+							type="button">
+						<i class="fas fa-microchip me-2"></i>Specifications
+					</button>
+				</li>
+				@* <li class="nav-item" role="presentation"> *@
+				@*     <button class="nav-link" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" *@
+				@*             type="button"> *@
+				@*         <i class="fas fa-info-circle me-2"></i>Description *@
+				@*     </button> *@
+				@* </li> *@
+				<li class="nav-item" role="presentation">
+					<button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews"
+							type="button">
+						<i class="fas fa-star me-2"></i>Reviews (127)
+					</button>
+				</li>
+				<li class="nav-item" role="presentation">
+					<button class="nav-link" id="policies-tab" data-bs-toggle="tab" data-bs-target="#policies"
+							type="button">
+						<i class="fas fa-file-contract me-2"></i>Rental Policies
+					</button>
+				</li>
+			</ul>
 
-            <div class="tab-content" id="laptopDetailTabsContent">
-                <!-- Specifications -->
-                <div class="tab-pane fade show active" id="specs" role="tabpanel">
-                    <div class="specs-content p-4">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h6 class="fw-bold">Processor</h6>
-                                <p>@Model.Laptop?.Cpu</p>
+			<div class="tab-content" id="laptopDetailTabsContent">
+				<!-- Specifications -->
+				<div class="tab-pane fade show active" id="specs" role="tabpanel">
+					<div class="specs-content p-4">
+						<div class="row">
+							<div class="col-md-6">
+								<h6 class="fw-bold">Processor</h6>
+								<p>@Model.Laptop?.Cpu</p>
 
-                                <h6 class="fw-bold">Memory</h6>
-                                <p>@Model.Laptop?.Ram GB RAM</p>
+								<h6 class="fw-bold">Memory</h6>
+								<p>@Model.Laptop?.Ram GB RAM</p>
 
-                                <h6 class="fw-bold">Storage</h6>
-                                <p>@Model.Laptop?.Storage GB SSD</p>
-                            </div>
-                            <div class="col-md-6">
-                                <h6 class="fw-bold">Status</h6>
-                                <p>@Model.Laptop?.Status</p>
+								<h6 class="fw-bold">Storage</h6>
+								<p>@Model.Laptop?.Storage GB SSD</p>
+							</div>
+							<div class="col-md-6">
+								<h6 class="fw-bold">Status</h6>
+								<p>@Model.Laptop?.Status</p>
 
-                                <h6 class="fw-bold">Brand</h6>
-                                <p>@Model.Laptop?.Brand?.Name</p>
+								<h6 class="fw-bold">Brand</h6>
+								<p>@Model.Laptop?.Brand?.Name</p>
 
-                                <h6 class="fw-bold">Categories</h6>
-                                <p>
-                                    @foreach (var category in Model.Laptop?.Categories ?? new List<CategoryResponse>())
-                                    {
-                                        @category.Name<br/>
-                                    }
-                                </p>
+								<h6 class="fw-bold">Categories</h6>
+								<p>
+									@foreach (var category in Model.Laptop?.Categories ?? new List<CategoryResponse>())
+									{
+										@category.Name
 
-                                <h6 class="fw-bold">Listed On</h6>
-                                <p>@Model.Laptop?.CreatedAt.ToString("dd/MM/yyyy")</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+										<br />
+									}
+								</p>
+
+								<h6 class="fw-bold">Listed On</h6>
+								<p>@Model.Laptop?.CreatedAt.ToString("dd/MM/yyyy")</p>
+							</div>
+						</div>
+					</div>
+				</div>
 
 
-                <!-- Description -->
-                <div class="tab-pane fade" id="description" role="tabpanel">
-                    <div class="description-content p-4">
-                        <h5>About This Laptop</h5>
-                        <p>The MacBook Pro M2 14" is designed for professionals who demand the ultimate in performance
-                            and portability. With the revolutionary M2 Pro chip, this laptop delivers incredible speed
-                            and efficiency for demanding workflows.</p>
+				<!-- Description -->
+				<div class="tab-pane fade" id="description" role="tabpanel">
+					<div class="description-content p-4">
+						<h5>About This Laptop</h5>
+						<p>
+							The MacBook Pro M2 14" is designed for professionals who demand the ultimate in performance
+							and portability. With the revolutionary M2 Pro chip, this laptop delivers incredible speed
+							and efficiency for demanding workflows.
+						</p>
 
-                        <h6>Perfect For:</h6>
-                        <ul>
-                            <li>Software development and programming</li>
-                            <li>Video editing and content creation</li>
-                            <li>Graphic design and digital art</li>
-                            <li>Business presentations and productivity</li>
-                            <li>Scientific computing and data analysis</li>
-                        </ul>
+						<h6>Perfect For:</h6>
+						<ul>
+							<li>Software development and programming</li>
+							<li>Video editing and content creation</li>
+							<li>Graphic design and digital art</li>
+							<li>Business presentations and productivity</li>
+							<li>Scientific computing and data analysis</li>
+						</ul>
 
-                        <h6>Included Accessories:</h6>
-                        <ul>
-                            <li>MagSafe 3 charging cable</li>
-                            <li>67W USB-C Power Adapter</li>
-                            <li>Laptop carrying case</li>
-                            <li>Cleaning cloth</li>
-                        </ul>
-                    </div>
-                </div>
+						<h6>Included Accessories:</h6>
+						<ul>
+							<li>MagSafe 3 charging cable</li>
+							<li>67W USB-C Power Adapter</li>
+							<li>Laptop carrying case</li>
+							<li>Cleaning cloth</li>
+						</ul>
+					</div>
+				</div>
 
-                <!-- Reviews -->
-                <div class="tab-pane fade" id="reviews" role="tabpanel">
-                    <div class="reviews-content p-4">
-                        <div class="review-summary mb-4">
-                            <div class="row">
-                                <div class="col-md-3 text-center">
-                                    <div class="overall-rating">
-                                        <div class="rating-number h2">4.5</div>
-                                        <div class="stars mb-2">
-                                            <i class="fas fa-star text-warning"></i>
-                                            <i class="fas fa-star text-warning"></i>
-                                            <i class="fas fa-star text-warning"></i>
-                                            <i class="fas fa-star text-warning"></i>
-                                            <i class="fas fa-star-half-alt text-warning"></i>
-                                        </div>
-                                        <div class="text-muted">127 reviews</div>
-                                    </div>
-                                </div>
-                                <div class="col-md-9">
-                                    <div class="rating-breakdown">
-                                        <div class="rating-bar d-flex align-items-center mb-2">
-                                            <span class="rating-label">5 stars</span>
-                                            <div class="progress flex-grow-1 mx-3">
-                                                <div class="progress-bar bg-warning" style="width: 70%"></div>
-                                            </div>
-                                            <span class="rating-count">89</span>
-                                        </div>
-                                        <div class="rating-bar d-flex align-items-center mb-2">
-                                            <span class="rating-label">4 stars</span>
-                                            <div class="progress flex-grow-1 mx-3">
-                                                <div class="progress-bar bg-warning" style="width: 20%"></div>
-                                            </div>
-                                            <span class="rating-count">25</span>
-                                        </div>
-                                        <div class="rating-bar d-flex align-items-center mb-2">
-                                            <span class="rating-label">3 stars</span>
-                                            <div class="progress flex-grow-1 mx-3">
-                                                <div class="progress-bar bg-warning" style="width: 8%"></div>
-                                            </div>
-                                            <span class="rating-count">10</span>
-                                        </div>
-                                        <div class="rating-bar d-flex align-items-center mb-2">
-                                            <span class="rating-label">2 stars</span>
-                                            <div class="progress flex-grow-1 mx-3">
-                                                <div class="progress-bar bg-warning" style="width: 2%"></div>
-                                            </div>
-                                            <span class="rating-count">2</span>
-                                        </div>
-                                        <div class="rating-bar d-flex align-items-center">
-                                            <span class="rating-label">1 star</span>
-                                            <div class="progress flex-grow-1 mx-3">
-                                                <div class="progress-bar bg-warning" style="width: 1%"></div>
-                                            </div>
-                                            <span class="rating-count">1</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+				<!-- Reviews -->
+				<div class="tab-pane fade" id="reviews" role="tabpanel">
+					<div class="reviews-content p-4">
+						@if (summary != null && summary.TotalReviews > 0)
+						{
+							<div class="review-summary mb-4">
+								<div class="row align-items-center">
+									<div class="col-md-3 text-center">
+										<div class="overall-rating">
+											<div class="rating-number h2">@summary.AverageRating</div>
+											<div class="stars mb-2">
+												@for (int i = 1; i <= 5; i++)
+												{
+													if (i <= summary.AverageRating)
+													{
+														<i class="fas fa-star text-warning"></i>
+													}
+													else if (i - 0.5 <= summary.AverageRating)
+													{
+														<i class="fas fa-star-half-alt text-warning"></i>
+													}
+													else
+													{
+														<i class="far fa-star text-warning"></i>
+													}
+												}
+											</div>
+											<div class="text-muted">@summary.TotalReviews reviews</div>
+										</div>
+									</div>
+									<div class="col-md-9">
+										<div class="rating-breakdown">
+											@foreach (var dist in summary.RatingDistribution.OrderByDescending(d => d.Key))
+											{
+												var percentage = summary.TotalReviews > 0 ? (double)dist.Value / summary.TotalReviews * 100 : 0;
+												<div class="rating-bar d-flex align-items-center mb-2">
+													<span class="rating-label">@dist.Key stars</span>
+													<div class="progress flex-grow-1 mx-3">
+														<div class="progress-bar bg-warning" style="width: @percentage.ToString("F0")%"></div>
+													</div>
+													<span class="rating-count">@dist.Value</span>
+												</div>
+											}
+										</div>
+									</div>
+								</div>
+							</div>
+						}
 
-                        <!-- Individual Reviews -->
-                        <div class="individual-reviews">
-                            <div class="review-item border-bottom pb-3 mb-3">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <div>
-                                        <div class="reviewer-name fw-bold">John Doe</div>
-                                        <div class="review-stars">
-                                            <i class="fas fa-star text-warning"></i>
-                                            <i class="fas fa-star text-warning"></i>
-                                            <i class="fas fa-star text-warning"></i>
-                                            <i class="fas fa-star text-warning"></i>
-                                            <i class="fas fa-star text-warning"></i>
-                                        </div>
-                                    </div>
-                                    <div class="review-date text-muted">2 days ago</div>
-                                </div>
-                                <div class="review-text">
-                                    Perfect for my video editing work. The M2 chip handles 4K footage without any lag.
-                                    Great battery life and the display is stunning. Highly recommended!
-                                </div>
-                            </div>
+						<!-- Write a Review Form -->
+						<!-- Write a Review Form -->
+						<div class="write-review-section border-top pt-4 mt-4">
+							@* Để phục vụ mục đích test, chúng ta sẽ tạm thời luôn hiển thị form này *@
+							@* và ẩn đi các điều kiện kiểm tra đăng nhập. *@
 
-                            <div class="review-item border-bottom pb-3 mb-3">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <div>
-                                        <div class="reviewer-name fw-bold">Sarah Chen</div>
-                                        <div class="review-stars">
-                                            <i class="fas fa-star text-warning"></i>
-                                            <i class="fas fa-star text-warning"></i>
-                                            <i class="fas fa-star text-warning"></i>
-                                            <i class="fas fa-star text-warning"></i>
-                                            <i class="far fa-star text-warning"></i>
-                                        </div>
-                                    </div>
-                                    <div class="review-date text-muted">1 week ago</div>
-                                </div>
-                                <div class="review-text">
-                                    Excellent laptop for development work. Very fast compilation times and smooth
-                                    multitasking.
-                                    The rental process was smooth and delivery was on time.
-                                </div>
-                            </div>
-                        </div>
+							<h5>Write a Review</h5>
+							<form method="post" asp-page-handler="SubmitReview">
+								<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-                        <button class="btn btn-outline-primary">Load More Reviews</button>
-                    </div>
-                </div>
+								@* Giá trị này sẽ được gán ở backend để test *@
+								<input type="hidden" asp-for="NewReview.OrderId" />
 
-                <!-- Policies -->
-                <div class="tab-pane fade" id="policies" role="tabpanel">
-                    <div class="policies-content p-4">
-                        <h5>Rental Terms & Conditions</h5>
+								<div class="mb-3">
+									<label asp-for="NewReview.Rating" class="form-label">Your Rating</label>
+									<div class="star-rating-input">
+										<input type="radio" id="star5" asp-for="NewReview.Rating" value="5" /><label for="star5" title="5 stars"></label>
+										<input type="radio" id="star4" asp-for="NewReview.Rating" value="4" /><label for="star4" title="4 stars"></label>
+										<input type="radio" id="star3" asp-for="NewReview.Rating" value="3" /><label for="star3" title="3 stars"></label>
+										<input type="radio" id="star2" asp-for="NewReview.Rating" value="2" /><label for="star2" title="2 stars"></label>
+										<input type="radio" id="star1" asp-for="NewReview.Rating" value="1" /><label for="star1" title="1 star"></label>
+									</div>
+									<span asp-validation-for="NewReview.Rating" class="text-danger"></span>
+								</div>
 
-                        <h6>Rental Period</h6>
-                        <ul>
-                            <li>Minimum rental period: 1 day</li>
-                            <li>Maximum rental period: 6 months</li>
-                            <li>Extensions possible with advance notice</li>
-                        </ul>
+								<div class="mb-3">
+									<label asp-for="NewReview.Comment" class="form-label">Your Review</label>
+									<textarea asp-for="NewReview.Comment" class="form-control" rows="4" placeholder="Share your experience with this laptop..."></textarea>
+									<span asp-validation-for="NewReview.Comment" class="text-danger"></span>
+								</div>
+								<button type="submit" class="btn btn-primary">Submit Review</button>
+							</form>
+						</div>
 
-                        <h6>Damage Policy</h6>
-                        <ul>
-                            <li>Security deposit: ₫5,000,000 (refundable)</li>
-                            <li>Minor cosmetic damage: No charge</li>
-                            <li>Repair costs charged for functional damage</li>
-                            <li>Replacement cost for lost/stolen devices</li>
-                        </ul>
 
-                        <h6>Delivery & Pickup</h6>
-                        <ul>
-                            <li>Free delivery within 20km of city center</li>
-                            <li>Same-day delivery available for orders before 2 PM</li>
-                            <li>Free pickup at end of rental period</li>
-                            <li>Express delivery available for additional fee</li>
-                        </ul>
+						<!-- Individual Reviews -->
+						<div class="individual-reviews mt-4">
+							@if (summary != null && summary.Reviews.Any())
+							{
+								@foreach (var review in summary.Reviews)
+								{
+									<div class="review-item border-top pt-3 mt-3">
+										<div class="d-flex justify-content-between align-items-start mb-2">
+											<div>
+												<div class="reviewer-name fw-bold">@review.RaterName</div>
+												<div class="review-stars">
+													@for (int i = 0; i < review.Rating; i++)
+													{
+														<i class="fas fa-star text-warning"></i>
+													}
+													@for (int i = review.Rating; i < 5; i++)
+													{
+														<i class="far fa-star text-warning"></i>
+													}
+												</div>
+											</div>
+											<div class="review-date text-muted">@review.CreatedAt.ToString("dd MMM yyyy")</div>
+										</div>
+										<div class="review-text">@review.Comment</div>
+									</div>
+								}
+							}
+							else
+							{
+								<div class="text-center p-4">
+									<p class="text-muted">Be the first to review this laptop!</p>
+								</div>
+							}
+						</div>
+					</div>
+				</div>
 
-                        <h6>Cancellation Policy</h6>
-                        <ul>
-                            <li>Free cancellation up to 24 hours before start date</li>
-                            <li>50% refund for cancellations within 24 hours</li>
-                            <li>No refund for cancellations after delivery</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+				<!-- Policies -->
+				<div class="tab-pane fade" id="policies" role="tabpanel">
+					<div class="policies-content p-4">
+						<h5>Rental Terms & Conditions</h5>
 
     <!-- Related Laptops -->
     <div class="row mt-5">
