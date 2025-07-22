@@ -27,9 +27,11 @@ builder.Services.AddSignalR();
 
 // Register Repositories
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ILaptopRepository,LaptopRepository>();
 
 // Register Business Services
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ILaptopService, LaptopService>();
 
 // Register repositories
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();

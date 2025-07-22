@@ -26,11 +26,16 @@ public partial class Laptop
 
     public DateTime UpdatedAt { get; set; }
 
+    public int AccountId { get; set; }
+
     public virtual Brand Brand { get; set; } = null!;
+
 
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
     public virtual ICollection<Slot> Slots { get; set; } = new List<Slot>();
 
     public virtual ICollection<Category> Categories { get; set; } = new List<Category>();
+
+    public virtual Account Account { get; set; } = null!;
 }

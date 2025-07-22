@@ -12,15 +12,8 @@ namespace LaptopRentalManagement.BLL.Mappings
         public AutoMapperProfile()
         {
             // Account mappings
-            CreateMap<Account, Account>()
-                .ForMember(dest => dest.AccountId, opt => opt.Ignore())
-                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore());
-
-            // Laptop mappings  
-            CreateMap<Laptop, Laptop>()
-                .ForMember(dest => dest.LaptopId, opt => opt.Ignore())
-                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
-                .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
+            // Account → AccountResponse
+            CreateMap<Account, AccountResponse>();
 
             // Order mappings
             CreateMap<Order, Order>()
@@ -29,13 +22,12 @@ namespace LaptopRentalManagement.BLL.Mappings
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
 
             // Brand mappings
-            CreateMap<Brand, Brand>()
+            CreateMap<Brand, BrandResponse>()
                 .ForMember(dest => dest.BrandId, opt => opt.Ignore());
 
             // Category mappings
-            CreateMap<Category, Category>()
-                .ForMember(dest => dest.CategoryId, opt => opt.Ignore());
-            
+            CreateMap<Category, CategoryResponse>();
+
             // Category DTO mappings
             CreateMap<CreateCategoryRequest, Category>()
                 .ForMember(dest => dest.CategoryId, opt => opt.Ignore())
@@ -72,6 +64,17 @@ namespace LaptopRentalManagement.BLL.Mappings
             CreateMap<Slot, Slot>()
                 .ForMember(dest => dest.SlotId, opt => opt.Ignore());
 
+            CreateMap<Laptop, LaptopResponse>()
+                // map nested Brand → BrandResponse
+                .ForMember(dest => dest.Brand,
+                    opt => opt.MapFrom(src => src.Brand))
+                // map nested Account → AccountResponse
+                .ForMember(dest => dest.Owner,
+                    opt => opt.MapFrom(src => src.Account))
+                // map Categories collection → List<CategoryResponse>
+                .ForMember(dest => dest.Categories,
+                    opt => opt.MapFrom(src => src.Categories));
+
             // Notification mappings
             CreateMap<Notification, Notification>()
                 .ForMember(dest => dest.NotificationId, opt => opt.Ignore());
@@ -81,4 +84,4 @@ namespace LaptopRentalManagement.BLL.Mappings
             // If you need view models for API responses, create specific DTO classes instead
         }
     }
-} 
+}
