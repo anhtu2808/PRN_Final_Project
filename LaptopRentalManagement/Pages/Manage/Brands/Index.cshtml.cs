@@ -1,4 +1,5 @@
-﻿using LaptopRentalManagement.BLL.Interfaces;
+﻿using LaptopRentalManagement.BLL.DTOs.Response;
+using LaptopRentalManagement.BLL.Interfaces;
 using LaptopRentalManagement.Model.DTOs.Request;
 using LaptopRentalManagement.Model.DTOs.Response.Brand;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +23,7 @@ namespace LaptopRentalManagement.Pages.Manage.Brands
         [BindProperty]
         public UpdateBrandRequest BrandUpdate { get; set; }
 
-        public IList<BrandResponseDTO> Brands { get; set; } = new List<BrandResponseDTO>();
+        public IList<BrandResponse> Brands { get; set; } = new List<BrandResponse>();
 
         // Lấy danh sách ban đầu khi tải trang
         public async Task<IActionResult> OnGetAsync()
