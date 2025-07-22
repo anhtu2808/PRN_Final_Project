@@ -33,10 +33,12 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 // Register repositories
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 
 // Register services
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
 
 
 // Register Hub Service
