@@ -78,7 +78,7 @@ namespace LaptopRentalManagement.BLL.Services
 			if (order != null)
 			{
 				response = await buildOrderResponse(order);
-                IList<SlotResponse> slotResponse = _mapper.Map<IList<SlotResponse>>(await _slotRepository.GetByOrderIdAndStatus(orderId, "Unavailable"));
+                IList<SlotResponse> slotResponse = _mapper.Map<IList<SlotResponse>>(await _slotRepository.GetByOrderId(orderId));
 				response.Slots = slotResponse;
             }
 			return response;

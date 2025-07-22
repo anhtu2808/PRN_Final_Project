@@ -27,10 +27,10 @@ namespace LaptopRentalManagement.DAL.Repositories
 			return slot;
 		}
 
-        public async Task<IList<Slot>> GetByOrderIdAndStatus(int orderId, string status)
+        public async Task<IList<Slot>> GetByOrderId(int orderId)
         {
 			return await _context.Slots
-				.Where(s => s.OrderId == orderId && s.Status == status)
+				.Where(s => s.OrderId == orderId)
 				.ToListAsync();
         }
     }
