@@ -7,6 +7,10 @@ public class LaptopResponse
     public BrandResponse Brand { get; set; } = null!;
     public List<CategoryResponse> Categories { get; set; } = new();
     public AccountResponse Owner { get; set; } = null!;
+
+    public string ImageURL { get; set; } =
+        "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400&h=300&fit=crop";
+
     public decimal PricePerDay { get; set; }
     public string Cpu { get; set; } = null!;
     public int Ram { get; set; }

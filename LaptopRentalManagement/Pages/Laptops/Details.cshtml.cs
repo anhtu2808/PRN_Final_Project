@@ -1,3 +1,5 @@
+using LaptopRentalManagement.BLL.DTOs.Response;
+using LaptopRentalManagement.BLL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -5,18 +7,23 @@ namespace LaptopRentalManagement.Pages.Laptops
 {
     public class DetailsModel : PageModel
     {
-        public int LaptopId { get; set; }
-        
-        public void OnGet(int id)
+        public LaptopResponse? Laptop { get; set; } = new LaptopResponse();
+        private readonly ILaptopService _laptopService;
+
+        public DetailsModel(ILaptopService laptopService)
         {
-            LaptopId = id;
-            
-            // In a real application, you would load laptop details from database here
-            // var laptop = _laptopService.GetLaptopById(id);
-            // if (laptop == null)
-            // {
-            //     return NotFound();
-            // }
+            _laptopService = laptopService;
+        }
+
+        public async Task<IActionResult> OnGetAsync(int id)
+        {
+            Laptop = await _laptopService.GetByIdAsync(id);
+            if (Laptop == null)
+            {
+                return NotFound();
+            }
+
+            return Page();
         }
     }
-} 
+}

@@ -9,6 +9,7 @@ public interface ILaptopService
 {
     Task<IList<LaptopResponse>> GetAllAsync(LaptopFilter filter);
     Task<LaptopResponse?> GetByIdAsync(int id);
+    Task<IList<LaptopResponse>> GetTopRentedLaptopsAsync(int top = 3);
     Task<LaptopResponse> CreateAsync(CreateLaptopRequest request);
     Task<LaptopResponse> UpdateAsync(EditLaptopRequest request);
     Task DeleteAsync(int id);

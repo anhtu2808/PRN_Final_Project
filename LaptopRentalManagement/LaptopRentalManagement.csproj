@@ -34,6 +34,7 @@
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Areas\Manage\Pages\Categories\Index.cshtml" />
+    <_ContentIncludedByDefault Remove="Pages\LaptopDetail\Index.cshtml" />
   </ItemGroup>
 
   <PropertyGroup>

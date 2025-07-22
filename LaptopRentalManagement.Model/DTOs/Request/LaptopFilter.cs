@@ -3,6 +3,8 @@ namespace LaptopRentalManagement.Model.DTOs.Request;
 public class LaptopFilter
 {
     public int? CategoryId { get; set; }
+    public List<int>? CategoryIds { get; set; }
+    public List<int>? BrandIds { get; set; }
     public int? AccountId { get; set; }
     public int? BrandId { get; set; }
     public string? Name { get; set; }

@@ -1,0 +1,20 @@
+@model IEnumerable<LaptopRentalManagement.BLL.DTOs.Response.CategoryResponse>
+
+<ul class="dropdown-menu">
+    @foreach (var category in Model)
+    {
+        <li>
+            <a class="dropdown-item" href="/laptops?categoryId=@category.CategoryId">
+                <i class="@category.IconClass me-2"></i>@category.Name
+            </a>
+        </li>
+    }
+    <li>
+        <hr class="dropdown-divider">
+    </li>
+    <li>
+        <a class="dropdown-item" href="/categories">
+            <i class="fas fa-th-large me-2"></i>All Categories
+        </a>
+    </li>
+</ul>
