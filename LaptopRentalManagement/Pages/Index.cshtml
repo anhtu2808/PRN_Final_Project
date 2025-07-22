@@ -6,53 +6,25 @@
 }
 
 <!-- Hero Section -->
-<section class="hero-section">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-8">
-                <div class="hero-content">
-                    <h1 class="hero-title">Rent Premium Laptops for Every Need</h1>
-                    <p class="hero-subtitle">
-                        Access the latest laptops for work, gaming, or study.
-                        Flexible rental periods, competitive prices, and excellent support.
-                    </p>
-                    <div class="hero-actions">
-                        <a href="/laptops" class="btn btn-light btn-lg me-3">
-                            <i class="fas fa-laptop me-2"></i>Browse Laptops
-                        </a>
-                        <a href="/categories" class="btn btn-outline-light btn-lg">
-                            <i class="fas fa-th-large me-2"></i>View Categories
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="hero-stats">
-                    <div class="row text-center">
-                        <div class="col-4">
-                            <div class="stat-item">
-                                <span class="stat-number">500+</span>
-                                <span class="stat-label">Laptops Available</span>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="stat-item">
-                                <span class="stat-number">1K+</span>
-                                <span class="stat-label">Happy Customers</span>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="stat-item">
-                                <span class="stat-number">24/7</span>
-                                <span class="stat-label">Support</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<section class="hero-section position-relative"
+         style="background: url('https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=1200') no-repeat center center; background-size: cover;">
+
+    <div class="position-absolute top-0 start-0 w-100 h-100"
+         style="background: rgba(0,0,0,0.5); pointer-events: none;"></div>
+
+    <div class="container text-white py-5 position-relative">
+        <h1 class="display-4 fw-bold">Rent Premium Laptops for Every Need</h1>
+        <p class="lead">Access the latest laptops for work, gaming, or study. Flexible rental periods, competitive
+            prices, and excellent support.</p>
+        <a href="/laptops" class="btn btn-light btn-lg me-3">
+            <i class="fas fa-laptop me-2"></i>Browse Laptops
+        </a>
+        <a href="/categories" class="btn btn-outline-light btn-lg">
+            <i class="fas fa-th-large me-2"></i>View Categories
+        </a>
     </div>
 </section>
+
 
 <!-- Categories Section -->
 <section class="py-5">
@@ -63,48 +35,35 @@
         </div>
 
         <div class="category-grid">
-            <a href="/laptops?category=gaming" class="category-card fade-in-on-scroll">
-                <div class="category-image">
-                    <i class="fas fa-gamepad"></i>
-                </div>
-                <div class="category-info">
-                    <h5 class="category-name">Gaming Laptops</h5>
-                    <p class="category-count">45 laptops available</p>
-                </div>
-            </a>
+            @foreach (var category in Model.Categories)
+            {
+                var lowerName = category.Name.ToLower();
+                string iconClass = lowerName switch
+                {
+                    var n when n.Contains("gaming") => "fas fa-gamepad",
+                    var n when n.Contains("business") => "fas fa-briefcase",
+                    var n when n.Contains("student") => "fas fa-graduation-cap",
+                    var n when n.Contains("ultrabook") => "fas fa-laptop",
+                    _ => "fas fa-laptop"
+                };
 
-            <a href="/laptops?category=business" class="category-card fade-in-on-scroll">
-                <div class="category-image">
-                    <i class="fas fa-briefcase"></i>
-                </div>
-                <div class="category-info">
-                    <h5 class="category-name">Business Laptops</h5>
-                    <p class="category-count">78 laptops available</p>
-                </div>
-            </a>
-
-            <a href="/laptops?category=student" class="category-card fade-in-on-scroll">
-                <div class="category-image">
-                    <i class="fas fa-graduation-cap"></i>
-                </div>
-                <div class="category-info">
-                    <h5 class="category-name">Student Laptops</h5>
-                    <p class="category-count">92 laptops available</p>
-                </div>
-            </a>
-
-            <a href="/laptops?category=ultrabook" class="category-card fade-in-on-scroll">
-                <div class="category-image">
-                    <i class="fas fa-laptop"></i>
-                </div>
-                <div class="category-info">
-                    <h5 class="category-name">Ultrabooks</h5>
-                    <p class="category-count">34 laptops available</p>
-                </div>
-            </a>
+                <a href="/laptops?categoryIds=@category.CategoryId" class="category-card fade-in-on-scroll">
+                    <div class="category-image" style="
+                        background: url('@GetCategoryImage(lowerName)') no-repeat center center;
+                    background-size: cover;
+                    height: 150px;
+                    border-radius: 8px;">
+                    </div>
+                    <div class="category-info mt-2">
+                        <h5 class="category-name">@category.Name</h5>
+                        <p class="category-count">@category.LaptopCount laptops available</p>
+                    </div>
+                </a>
+            }
         </div>
     </div>
 </section>
+
 
 <!-- Featured Laptops Section -->
 <section class="py-5 bg-light">
@@ -226,3 +185,28 @@
         </div>
     </div>
 </section>
+
+@functions {
+
+    private string GetCategoryImage(string lowerName)
+    {
+        if (lowerName.Contains("gaming"))
+            return "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=600&h=400&fit=crop";
+        else if (lowerName.Contains("business") || lowerName.Contains("office"))
+            return "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=600&h=400&fit=crop";
+        else if (lowerName.Contains("student") || lowerName.Contains("education"))
+            return "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=600&h=400&fit=crop";
+        else if (lowerName.Contains("ultrabook") || lowerName.Contains(""))
+            return "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&h=400&fit=crop";
+        else if (lowerName.Contains("workstation"))
+            return "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&h=400&fit=crop";
+        else if (lowerName.Contains("developer") || lowerName.Contains("programming"))
+            return "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&h=400&fit=crop";
+        else if (lowerName.Contains("graphic") || lowerName.Contains("design"))
+            return "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&h=400&fit=crop";
+        else
+            return "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=600&h=400&fit=crop";
+    }
+
+}
+

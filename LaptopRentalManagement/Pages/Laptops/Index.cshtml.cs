@@ -23,11 +23,16 @@ namespace LaptopRentalManagement.Pages.Laptops
         public IList<BrandResponse> Brands { get; set; } = new List<BrandResponse>();
         [BindProperty(SupportsGet = true)] public LaptopFilter Filter { get; set; } = new();
 
+        public int CurrentPage { get; set; }
+        public int PageSize { get; set; } = 9; // 9 items per page
+        public int TotalPages { get; set; }
+
         public async Task OnGet(
             List<int>? categoryIds, List<int>? brandIds,
             decimal? minPrice, decimal? maxPrice,
-            bool availableOnly = false, string? name = null)
+            bool availableOnly = false, string? name = null,[FromQuery] int page = 1)
         {
+            CurrentPage = page;
             Categories = await _categoryService.GetAllCategoriesAsync();
             Brands = new List<BrandResponse> // Mock data for brands, replace with actual service call
             {
@@ -84,7 +89,9 @@ namespace LaptopRentalManagement.Pages.Laptops
                 Status = availableOnly ? "Available" : null
             };
 
-            Laptops = await _laptopService.GetAllAsync(filter);
+            var allLaptops = await _laptopService.GetAllAsync(filter);
+            TotalPages = (int)Math.Ceiling(allLaptops.Count / (double)PageSize);
+            Laptops = allLaptops.Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToList();
         }
     }
 }

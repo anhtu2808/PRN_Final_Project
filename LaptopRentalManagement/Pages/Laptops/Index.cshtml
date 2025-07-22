@@ -1,4 +1,21 @@
 @page
+
+@functions {
+
+    public string BuildPageUrl(int page)
+    {
+        var queryParams = new Dictionary<string, string>(
+            ViewContext.HttpContext.Request.Query.ToDictionary(k => k.Key, v => v.Value.ToString())
+        );
+
+        queryParams["page"] = page.ToString();
+
+        var queryString = string.Join("&", queryParams.Select(kvp => $"{kvp.Key}={kvp.Value}"));
+        return $"?{queryString}";
+    }
+
+}
+
 @model LaptopRentalManagement.Pages.Laptops.IndexModel
 @{
     ViewData["Title"] = "All Laptops";
@@ -51,10 +68,11 @@
                                    name="brandId" value="@brand.BrandId"
                                    id="brand_@brand.BrandId">
                             <label class="form-check-label d-flex align-items-center" for="brand_@brand.BrandId">
-                                <img src="@(brand.LogoUrl ?? "https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg")"
-                                     alt="@brand.Name Logo"
-                                     class="me-2"
-                                     style="width: 24px; height: 24px; object-fit: contain;">
+                                <img
+                                    src="@(brand.LogoUrl ?? "https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg")"
+                                    alt="@brand.Name Logo"
+                                    class="me-2"
+                                    style="width: 24px; height: 24px; object-fit: contain;">
                                 @brand.Name
                             </label>
                         </div>
@@ -163,7 +181,8 @@
                                     }
                                     else
                                     {
-                                        <button class="btn btn-secondary w-100 disabled opacity-50">Currently Rented</button>
+                                        <button class="btn btn-secondary w-100 disabled opacity-50">Currently Rented
+                                        </button>
                                     }
                                     <button class="btn-wishlist" data-laptop-id="@laptop.LaptopId">
                                         <i class="far fa-heart"></i>
@@ -179,23 +198,24 @@
             <!-- Pagination -->
             <nav aria-label="Laptop pagination" class="mt-4">
                 <ul class="pagination justify-content-center">
-                    <li class="page-item disabled">
-                        <a class="page-link" href="#" tabindex="-1">Previous</a>
+                    <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                        <a class="page-link" href="@BuildPageUrl(Model.CurrentPage - 1)">Previous</a>
                     </li>
-                    <li class="page-item active">
-                        <a class="page-link" href="#">1</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">2</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">3</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">Next</a>
+
+                    @for (var i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                            <a class="page-link" href="@BuildPageUrl(i)">@i</a>
+                        </li>
+                    }
+
+                    <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                        <a class="page-link" href="@BuildPageUrl(Model.CurrentPage + 1)">Next</a>
                     </li>
                 </ul>
             </nav>
+
+
         </div>
     </div>
 </div>
@@ -264,4 +284,6 @@
         }
     </script>
 }
+
+
 
