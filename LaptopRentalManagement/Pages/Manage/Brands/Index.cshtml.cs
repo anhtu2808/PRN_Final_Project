@@ -26,16 +26,19 @@ namespace LaptopRentalManagement.Pages.Manage.Brands
         public IList<BrandResponse> Brands { get; set; } = new List<BrandResponse>();
 
         // Lấy danh sách ban đầu khi tải trang
+   
         public async Task<IActionResult> OnGetAsync()
         {
             try
             {
                 var brands = await _brandService.GetAllBrandsAsync();
-                Brands = brands.ToList();
+                // Thêm .OrderBy() để sắp xếp danh sách theo BrandId tăng dần
+                Brands = brands.OrderBy(b => b.BrandId).ToList();
             }
             catch (Exception ex)
             {
                 // Ghi log lỗi (quan trọng)
+                // Ví dụ: _logger.LogError(ex, "Error loading brands");
                 TempData["Error"] = "Failed to load brands. Please try again.";
             }
             return Page();
