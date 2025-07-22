@@ -1,11 +1,6 @@
-﻿using LaptopRentalManagement.DAL.LaptopRentalManagement.DAL.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LaptopRentalManagement.DAL.Entities;
 
-namespace LaptopRentalManagement.DAL.LaptopRentalManagement.DAL.Interfaces
+namespace LaptopRentalManagement.DAL.Interfaces
 {
     public interface IReviewRepository
     {

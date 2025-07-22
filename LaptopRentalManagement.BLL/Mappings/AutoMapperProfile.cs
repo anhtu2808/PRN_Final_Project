@@ -1,7 +1,7 @@
 using AutoMapper;
 using LaptopRentalManagement.BLL.DTOs.Request;
 using LaptopRentalManagement.BLL.DTOs.Response;
-using LaptopRentalManagement.DAL.LaptopRentalManagement.DAL.Entities;
+using LaptopRentalManagement.DAL.Entities;
 
 namespace LaptopRentalManagement.BLL.Mappings
 {

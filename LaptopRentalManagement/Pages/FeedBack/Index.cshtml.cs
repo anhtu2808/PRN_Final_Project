@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using LaptopRentalManagement.DAL.LaptopRentalManagement.DAL.Entities;
-using LaptopRentalManagement.DAL.LaptopRentalManagement.DAL.Context;
 using System.Diagnostics;
+using LaptopRentalManagement.DAL.Context;
+using LaptopRentalManagement.DAL.Entities;
 
 namespace LaptopRentalManagement.Pages.FeedBack
 {

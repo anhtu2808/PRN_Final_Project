@@ -2,13 +2,13 @@
 using LaptopRentalManagement.BLL.DTOs.Request;
 using LaptopRentalManagement.BLL.DTOs.Response;
 using LaptopRentalManagement.BLL.Interfaces;
-using LaptopRentalManagement.DAL.LaptopRentalManagement.DAL.Entities;
-using LaptopRentalManagement.DAL.LaptopRentalManagement.DAL.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LaptopRentalManagement.DAL.Entities;
+using LaptopRentalManagement.DAL.Interfaces;
 
 namespace LaptopRentalManagement.BLL.Services
 {

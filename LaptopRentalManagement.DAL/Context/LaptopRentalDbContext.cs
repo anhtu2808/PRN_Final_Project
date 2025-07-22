@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using LaptopRentalManagement.DAL.LaptopRentalManagement.DAL.Entities;
+﻿using LaptopRentalManagement.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace LaptopRentalManagement.DAL.LaptopRentalManagement.DAL.Context;
+namespace LaptopRentalManagement.DAL.Context;
 
 public partial class LaptopRentalDbContext : DbContext
 {

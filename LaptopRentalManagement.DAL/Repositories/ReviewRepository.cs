@@ -1,14 +1,9 @@
-﻿using LaptopRentalManagement.DAL.LaptopRentalManagement.DAL.Context;
-using LaptopRentalManagement.DAL.LaptopRentalManagement.DAL.Entities;
-using LaptopRentalManagement.DAL.LaptopRentalManagement.DAL.Interfaces;
+﻿using LaptopRentalManagement.DAL.Context;
+using LaptopRentalManagement.DAL.Entities;
+using LaptopRentalManagement.DAL.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace LaptopRentalManagement.DAL.LaptopRentalManagement.DAL.Repositories
+namespace LaptopRentalManagement.DAL.Repositories
 {
     public class ReviewRepository : IReviewRepository
     {

@@ -2,11 +2,11 @@ using LaptopRentalManagement.BLL.Mappings;
 using LaptopRentalManagement.BLL.Interfaces;
 using LaptopRentalManagement.BLL.Services;
 using LaptopRentalManagement.BLL.Hubs;
+using LaptopRentalManagement.DAL.Context;
+using LaptopRentalManagement.DAL.Interfaces;
+using LaptopRentalManagement.DAL.Repositories;
 using LaptopRentalManagement.Hubs;
-using LaptopRentalManagement.DAL.LaptopRentalManagement.DAL.Context;
 using Microsoft.EntityFrameworkCore;
-using LaptopRentalManagement.DAL.LaptopRentalManagement.DAL.Interfaces;
-using LaptopRentalManagement.DAL.LaptopRentalManagement.DAL.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 

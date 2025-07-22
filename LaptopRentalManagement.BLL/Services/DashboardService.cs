@@ -1,6 +1,5 @@
 ﻿using LaptopRentalManagement.BLL.Interfaces;
 using LaptopRentalManagement.DAL;
-using LaptopRentalManagement.DAL.LaptopRentalManagement.DAL.Context;
 using LaptopRentalManagement.Models.Dashboard;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -8,6 +7,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using LaptopRentalManagement.DAL.Context;
 
 namespace LaptopRentalManagement.BLL.Services
 {
