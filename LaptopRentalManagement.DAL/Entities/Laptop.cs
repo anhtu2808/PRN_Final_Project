@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace LaptopRentalManagement.DAL.LaptopRentalManagement.DAL.Entities;
+﻿namespace LaptopRentalManagement.DAL.Entities;
 
 public partial class Laptop
 {
