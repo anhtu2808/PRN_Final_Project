@@ -21,6 +21,6 @@ public class IndexModel : PageModel
         // Load top 3 most rented laptops
         FeaturedLaptops = await _laptopService.GetTopRentedLaptopsAsync(3);
         // Load all categories for the sidebar
-        Categories = await _laptopService.();
+        // Categories = await _laptopService.();
     }
 }
