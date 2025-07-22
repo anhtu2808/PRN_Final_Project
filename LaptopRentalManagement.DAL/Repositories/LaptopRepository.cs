@@ -23,16 +23,21 @@ public class LaptopRepository : ILaptopRepository
             .Include(l => l.Account)
             .AsQueryable();
 
-
         if (filter.CategoryId.HasValue)
-            query = query.Where(l => l.Categories
-                .Any(c => c.CategoryId == filter.CategoryId.Value));
+            query = query.Where(l => l.Categories.Any(c => c.CategoryId == filter.CategoryId.Value));
 
-        if (filter.AccountId.HasValue)
-            query = query.Where(l => l.AccountId == filter.AccountId.Value);
+        if (filter.CategoryIds != null && filter.CategoryIds.Any())
+            query = query.Where(l => l.Categories.Any(c => filter.CategoryIds.Contains(c.CategoryId)));
 
         if (filter.BrandId.HasValue)
             query = query.Where(l => l.BrandId == filter.BrandId.Value);
+
+        if (filter.BrandIds != null && filter.BrandIds.Any())
+            query = query.Where(l => filter.BrandIds.Contains(l.BrandId));
+
+        // Các filter còn lại giữ nguyên
+        if (filter.AccountId.HasValue)
+            query = query.Where(l => l.AccountId == filter.AccountId.Value);
 
         if (!string.IsNullOrWhiteSpace(filter.Name))
             query = query.Where(l => EF.Functions.Like(l.Name, $"%{filter.Name}%"));
@@ -61,9 +66,9 @@ public class LaptopRepository : ILaptopRepository
         if (filter.CreatedTo.HasValue)
             query = query.Where(l => l.CreatedAt <= filter.CreatedTo.Value);
 
-
         return await query.ToListAsync();
     }
+
 
     public async Task<Laptop?> GetByIdAsync(int id)
     {
@@ -73,6 +78,16 @@ public class LaptopRepository : ILaptopRepository
             .Include(l => l.Account)
             .Include(l => l.Categories)
             .FirstOrDefaultAsync(l => l.LaptopId == id);
+    }
+
+    public async Task<List<Laptop>> GetTopRentedLaptopsAsync(int top = 3)
+    {
+        return await _context.Laptops
+            .AsNoTracking()
+            .Include(l => l.Brand)
+            .OrderByDescending(l => l.Orders.Count)
+            .Take(top)
+            .ToListAsync();
     }
 
     public async Task<Laptop> CreateAsync(Laptop laptop)
