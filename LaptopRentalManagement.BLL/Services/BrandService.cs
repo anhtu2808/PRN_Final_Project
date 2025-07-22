@@ -3,12 +3,13 @@ using LaptopRentalManagement.BLL.Interfaces;
 using LaptopRentalManagement.DAL.Interfaces;
 using LaptopRentalManagement.Model.DTOs.Request;
 using LaptopRentalManagement.Model.DTOs.Response.Brand;
-using LaptopRentalManagement.DAL.Entities;
+using LaptopRentalManagement.DAL.Entities; 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LaptopRentalManagement.BLL.DTOs.Response;
 
 namespace LaptopRentalManagement.BLL.Services
 {
@@ -23,10 +24,10 @@ namespace LaptopRentalManagement.BLL.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<BrandResponseDTO>> GetAllBrandsAsync()
+        public async Task<IEnumerable<BrandResponse>> GetAllBrandsAsync()
         {
             var brands = await _brandRepository.GetAllAsync();
-            var brandResponses = _mapper.Map<IEnumerable<BrandResponseDTO>>(brands);
+            var brandResponses = _mapper.Map<IEnumerable<BrandResponse>>(brands);
 
             // Set laptop count for each brand
             foreach (var brandResponse in brandResponses)
@@ -37,19 +38,19 @@ namespace LaptopRentalManagement.BLL.Services
             return brandResponses;
         }
 
-        public async Task<BrandResponseDTO?> GetBrandByIdAsync(int id)
+        public async Task<BrandResponse?> GetBrandByIdAsync(int id)
         {
             var brand = await _brandRepository.GetByIdWithLaptopsAsync(id);
             if (brand == null)
                 return null;
 
-            var brandResponse = _mapper.Map<BrandResponseDTO>(brand);
+            var brandResponse = _mapper.Map<BrandResponse>(brand);
             brandResponse.LaptopCount = brand.Laptops.Count;
 
             return brandResponse;
         }
 
-        public async Task<BrandResponseDTO> CreateBrandAsync(CreateBrandRequest request)
+        public async Task<BrandResponse> CreateBrandAsync(CreateBrandRequest request)
         {
             // Check if brand name already exists
             if (await _brandRepository.ExistsByNameAsync(request.Name))
@@ -60,13 +61,13 @@ namespace LaptopRentalManagement.BLL.Services
             var brand = _mapper.Map<Brand>(request);
             var createdBrand = await _brandRepository.CreateAsync(brand);
 
-            var brandResponse = _mapper.Map<BrandResponseDTO>(createdBrand);
+            var brandResponse = _mapper.Map<BrandResponse>(createdBrand);
             brandResponse.LaptopCount = 0;
 
             return brandResponse;
         }
 
-        public async Task<BrandResponseDTO> UpdateBrandAsync(UpdateBrandRequest request)
+        public async Task<BrandResponse> UpdateBrandAsync(UpdateBrandRequest request)
         {
             // Check if brand exists
             var existingBrand = await _brandRepository.GetByIdAsync(request.BrandId);
@@ -85,7 +86,7 @@ namespace LaptopRentalManagement.BLL.Services
             _mapper.Map(request, existingBrand);
             var updatedBrand = await _brandRepository.UpdateAsync(existingBrand);
 
-            var brandResponse = _mapper.Map<BrandResponseDTO>(updatedBrand);
+            var brandResponse = _mapper.Map<BrandResponse>(updatedBrand);
             brandResponse.LaptopCount = await _brandRepository.GetLaptopCountAsync(updatedBrand.BrandId);
 
             return brandResponse;
@@ -115,10 +116,10 @@ namespace LaptopRentalManagement.BLL.Services
             return _mapper.Map<IEnumerable<BrandSelectDto>>(brands);
         }
 
-        public async Task<IEnumerable<BrandResponseDTO>> SearchBrandsAsync(string searchTerm)
+        public async Task<IEnumerable<BrandResponse>> SearchBrandsAsync(string searchTerm)
         {
             var brands = await _brandRepository.SearchAsync(searchTerm);
-            var brandResponses = _mapper.Map<IEnumerable<BrandResponseDTO>>(brands);
+            var brandResponses = _mapper.Map<IEnumerable<BrandResponse>>(brands);
 
             // Set laptop count for each brand
             foreach (var brandResponse in brandResponses)

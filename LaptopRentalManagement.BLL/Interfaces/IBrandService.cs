@@ -11,12 +11,12 @@ namespace LaptopRentalManagement.BLL.Interfaces
 {
     public interface IBrandService
     {
-        Task<IEnumerable<BrandResponseDTO>> GetAllBrandsAsync();
-        Task<BrandResponseDTO?> GetBrandByIdAsync(int id);
-        Task<BrandResponseDTO> CreateBrandAsync(CreateBrandRequest request);
-        Task<BrandResponseDTO> UpdateBrandAsync(UpdateBrandRequest request);
+        Task<IEnumerable<BrandResponse>> GetAllBrandsAsync();
+        Task<BrandResponse?> GetBrandByIdAsync(int id);
+        Task<BrandResponse> CreateBrandAsync(CreateBrandRequest request);
+        Task<BrandResponse> UpdateBrandAsync(UpdateBrandRequest request);
         Task<bool> DeleteBrandAsync(int id);
         Task<IEnumerable<BrandSelectDto>> GetBrandsForSelectAsync();
-        Task<IEnumerable<BrandResponseDTO>> SearchBrandsAsync(string searchTerm);
+        Task<IEnumerable<BrandResponse>> SearchBrandsAsync(string searchTerm);
     }
 }
