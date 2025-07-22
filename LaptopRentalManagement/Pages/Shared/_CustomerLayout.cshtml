@@ -36,24 +36,8 @@
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                                 Categories
                             </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="/laptops?category=gaming">
-                                    <i class="fas fa-gamepad me-2"></i>Gaming Laptops
-                                </a></li>
-                                <li><a class="dropdown-item" href="/laptops?category=business">
-                                    <i class="fas fa-briefcase me-2"></i>Business Laptops
-                                </a></li>
-                                <li><a class="dropdown-item" href="/laptops?category=student">
-                                    <i class="fas fa-graduation-cap me-2"></i>Student Laptops
-                                </a></li>
-                                <li><a class="dropdown-item" href="/laptops?category=ultrabook">
-                                    <i class="fas fa-laptop me-2"></i>Ultrabooks
-                                </a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="/categories">
-                                    <i class="fas fa-th-large me-2"></i>All Categories
-                                </a></li>
-                            </ul>
+                            @await Component.InvokeAsync("CategoryMenu")
+
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">

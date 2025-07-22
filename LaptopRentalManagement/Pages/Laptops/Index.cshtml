@@ -28,66 +28,39 @@
                 <!-- Category Filter -->
                 <div class="filter-group">
                     <label class="filter-label">Category</label>
-                    <div class="form-check">
-                        <input class="form-check-input filter-input" type="checkbox" name="category" value="gaming" id="categoryGaming">
-                        <label class="form-check-label" for="categoryGaming">
-                            <i class="fas fa-gamepad me-2 text-primary"></i>Gaming
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input filter-input" type="checkbox" name="category" value="business" id="categoryBusiness">
-                        <label class="form-check-label" for="categoryBusiness">
-                            <i class="fas fa-briefcase me-2 text-primary"></i>Business
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input filter-input" type="checkbox" name="category" value="student" id="categoryStudent">
-                        <label class="form-check-label" for="categoryStudent">
-                            <i class="fas fa-graduation-cap me-2 text-primary"></i>Student
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input filter-input" type="checkbox" name="category" value="ultrabook" id="categoryUltrabook">
-                        <label class="form-check-label" for="categoryUltrabook">
-                            <i class="fas fa-laptop me-2 text-primary"></i>Ultrabook
-                        </label>
-                    </div>
+                    @foreach (var category in Model.Categories)
+                    {
+                        <div class="form-check">
+                            <input class="form-check-input filter-input" type="checkbox"
+                                   name="categoryId" value="@category.CategoryId"
+                                   id="category_@category.CategoryId">
+                            <label class="form-check-label" for="category_@category.CategoryId">
+                                <i class="@category.IconClass me-2 text-primary"></i>@category.Name
+                            </label>
+                        </div>
+                    }
                 </div>
 
                 <!-- Brand Filter -->
                 <div class="filter-group">
                     <label class="filter-label">Brand</label>
-                    <div class="form-check">
-                        <input class="form-check-input filter-input" type="checkbox" name="brand" value="apple" id="brandApple">
-                        <label class="form-check-label" for="brandApple">
-                            <i class="fab fa-apple me-2 text-primary"></i>Apple
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input filter-input" type="checkbox" name="brand" value="dell" id="brandDell">
-                        <label class="form-check-label" for="brandDell">
-                            <i class="fas fa-laptop me-2 text-primary"></i>Dell
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input filter-input" type="checkbox" name="brand" value="hp" id="brandHP">
-                        <label class="form-check-label" for="brandHP">
-                            <i class="fas fa-laptop me-2 text-primary"></i>HP
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input filter-input" type="checkbox" name="brand" value="lenovo" id="brandLenovo">
-                        <label class="form-check-label" for="brandLenovo">
-                            <i class="fas fa-laptop me-2 text-primary"></i>Lenovo
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input filter-input" type="checkbox" name="brand" value="asus" id="brandAsus">
-                        <label class="form-check-label" for="brandAsus">
-                            <i class="fas fa-laptop me-2 text-primary"></i>ASUS
-                        </label>
-                    </div>
+                    @foreach (var brand in Model.Brands)
+                    {
+                        <div class="form-check">
+                            <input class="form-check-input filter-input" type="checkbox"
+                                   name="brandId" value="@brand.BrandId"
+                                   id="brand_@brand.BrandId">
+                            <label class="form-check-label d-flex align-items-center" for="brand_@brand.BrandId">
+                                <img src="@(brand.LogoUrl ?? "https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg")"
+                                     alt="@brand.Name Logo"
+                                     class="me-2"
+                                     style="width: 24px; height: 24px; object-fit: contain;">
+                                @brand.Name
+                            </label>
+                        </div>
+                    }
                 </div>
+
 
                 <!-- Price Range -->
                 <div class="filter-group">
@@ -146,250 +119,62 @@
 
             <!-- Laptop Cards Grid -->
             <div class="row" id="laptopGrid">
-                <!-- Sample laptops - In real app, this would be populated from database -->
-                
-                <!-- MacBook Pro M2 -->
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="laptop-card" data-category="business" data-brand="apple" data-price="300000" data-available="true">
-                        <div class="laptop-image">
-                            <img src="https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400&h=300&fit=crop" alt="MacBook Pro M2" class="img-fluid">
-                            <div class="laptop-badge">Popular</div>
-                            <div class="availability-badge available">Available</div>
-                        </div>
-                        <div class="laptop-info">
-                            <div class="laptop-brand">Apple</div>
-                            <h5 class="laptop-title">MacBook Pro M2 14"</h5>
-                            <div class="laptop-specs">
-                                <div class="spec-item">
-                                    <i class="fas fa-microchip"></i>
-                                    Apple M2 Pro
-                                </div>
-                                <div class="spec-item">
-                                    <i class="fas fa-memory"></i>
-                                    16GB RAM
-                                </div>
-                                <div class="spec-item">
-                                    <i class="fas fa-hdd"></i>
-                                    512GB SSD
-                                </div>
-                            </div>
-                            <div class="laptop-pricing">
-                                <div>
-                                    <div class="price-daily">₫300,000</div>
-                                    <div class="price-label">per day</div>
-                                </div>
-                            </div>
-                            <div class="laptop-actions">
-                                <a href="/laptops/1" class="btn-rent">Rent Now</a>
-                                <button class="btn-wishlist" data-laptop-id="1">
-                                    <i class="far fa-heart"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                @foreach (var laptop in Model.Laptops)
+                {
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="laptop-card"
+                             data-category="@laptop.Categories.FirstOrDefault()?.Name?.ToLower()"
+                             data-brand="@laptop.Brand.Name.ToLower()"
+                             data-price="@laptop.PricePerDay"
+                             data-available="@((laptop.Status == "Available").ToString().ToLower())">
 
-                <!-- Dell XPS 13 -->
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="laptop-card" data-category="ultrabook" data-brand="dell" data-price="200000" data-available="true">
-                        <div class="laptop-image">
-                            <img src="https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=400&h=300&fit=crop" alt="Dell XPS 13" class="img-fluid">
-                            <div class="availability-badge available">Available</div>
-                        </div>
-                        <div class="laptop-info">
-                            <div class="laptop-brand">Dell</div>
-                            <h5 class="laptop-title">XPS 13 Plus</h5>
-                            <div class="laptop-specs">
-                                <div class="spec-item">
-                                    <i class="fas fa-microchip"></i>
-                                    Intel Core i7
-                                </div>
-                                <div class="spec-item">
-                                    <i class="fas fa-memory"></i>
-                                    16GB RAM
-                                </div>
-                                <div class="spec-item">
-                                    <i class="fas fa-hdd"></i>
-                                    1TB SSD
-                                </div>
+                            <div class="laptop-image">
+                                <img
+                                    src="@(string.IsNullOrEmpty(laptop.ImageURL) ? "https://techterms.com/img/xl/laptop_586.png" : laptop.ImageURL)"
+                                    alt="@laptop.Name" class="img-fluid"/>
+                                @if (laptop.Status != "Available")
+                                {
+                                    <div class="availability-badge unavailable">Rented</div>
+                                }
+                                else
+                                {
+                                    <div class="availability-badge available">Available</div>
+                                }
                             </div>
-                            <div class="laptop-pricing">
-                                <div>
-                                    <div class="price-daily">₫200,000</div>
-                                    <div class="price-label">per day</div>
-                                </div>
-                            </div>
-                            <div class="laptop-actions">
-                                <a href="/laptops/2" class="btn-rent">Rent Now</a>
-                                <button class="btn-wishlist" data-laptop-id="2">
-                                    <i class="far fa-heart"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- HP EliteBook -->
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="laptop-card" data-category="business" data-brand="hp" data-price="180000" data-available="true">
-                        <div class="laptop-image">
-                            <img src="https://images.unsplash.com/photo-1625842268584-8f3296236761?w=400&h=300&fit=crop" alt="HP EliteBook" class="img-fluid">
-                            <div class="availability-badge available">Available</div>
-                        </div>
-                        <div class="laptop-info">
-                            <div class="laptop-brand">HP</div>
-                            <h5 class="laptop-title">EliteBook 850 G9</h5>
-                            <div class="laptop-specs">
-                                <div class="spec-item">
-                                    <i class="fas fa-microchip"></i>
-                                    Intel Core i5
+                            <div class="laptop-info">
+                                <div class="laptop-brand">@laptop.Brand.Name</div>
+                                <h5 class="laptop-title">@laptop.Name</h5>
+                                <div class="laptop-specs">
+                                    <div class="spec-item"><i class="fas fa-microchip"></i> @laptop.Cpu</div>
+                                    <div class="spec-item"><i class="fas fa-memory"></i> @laptop.Ram GB RAM</div>
+                                    <div class="spec-item"><i class="fas fa-hdd"></i> @laptop.Storage GB SSD</div>
                                 </div>
-                                <div class="spec-item">
-                                    <i class="fas fa-memory"></i>
-                                    8GB RAM
+                                <div class="laptop-pricing">
+                                    <div>
+                                        <div class="price-daily">@($"{laptop.PricePerDay:N0}₫")</div>
+                                        <div class="price-label">per day</div>
+                                    </div>
                                 </div>
-                                <div class="spec-item">
-                                    <i class="fas fa-hdd"></i>
-                                    256GB SSD
+                                <div class="laptop-actions">
+                                    @if (laptop.Status == "Available")
+                                    {
+                                        <a href="/laptops/details/@laptop.LaptopId" class="btn-rent">Rent Now</a>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-secondary w-100 disabled opacity-50">Currently Rented</button>
+                                    }
+                                    <button class="btn-wishlist" data-laptop-id="@laptop.LaptopId">
+                                        <i class="far fa-heart"></i>
+                                    </button>
                                 </div>
-                            </div>
-                            <div class="laptop-pricing">
-                                <div>
-                                    <div class="price-daily">₫180,000</div>
-                                    <div class="price-label">per day</div>
-                                </div>
-                            </div>
-                            <div class="laptop-actions">
-                                <a href="/laptops/3" class="btn-rent">Rent Now</a>
-                                <button class="btn-wishlist" data-laptop-id="3">
-                                    <i class="far fa-heart"></i>
-                                </button>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- ASUS ROG Gaming -->
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="laptop-card" data-category="gaming" data-brand="asus" data-price="350000" data-available="false">
-                        <div class="laptop-image">
-                            <img src="https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=400&h=300&fit=crop" alt="ASUS ROG" class="img-fluid">
-                            <div class="availability-badge unavailable">Rented</div>
-                        </div>
-                        <div class="laptop-info">
-                            <div class="laptop-brand">ASUS</div>
-                            <h5 class="laptop-title">ROG Strix G15</h5>
-                            <div class="laptop-specs">
-                                <div class="spec-item">
-                                    <i class="fas fa-microchip"></i>
-                                    AMD Ryzen 7
-                                </div>
-                                <div class="spec-item">
-                                    <i class="fas fa-memory"></i>
-                                    32GB RAM
-                                </div>
-                                <div class="spec-item">
-                                    <i class="fas fa-hdd"></i>
-                                    1TB SSD
-                                </div>
-                            </div>
-                            <div class="laptop-pricing">
-                                <div>
-                                    <div class="price-daily">₫350,000</div>
-                                    <div class="price-label">per day</div>
-                                </div>
-                            </div>
-                            <div class="laptop-actions">
-                                <button class="btn-rent" disabled>Currently Rented</button>
-                                <button class="btn-wishlist" data-laptop-id="4">
-                                    <i class="far fa-heart"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Lenovo ThinkPad -->
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="laptop-card" data-category="business" data-brand="lenovo" data-price="220000" data-available="true">
-                        <div class="laptop-image">
-                            <img src="https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=400&h=300&fit=crop" alt="Lenovo ThinkPad" class="img-fluid">
-                            <div class="availability-badge available">Available</div>
-                        </div>
-                        <div class="laptop-info">
-                            <div class="laptop-brand">Lenovo</div>
-                            <h5 class="laptop-title">ThinkPad X1 Carbon</h5>
-                            <div class="laptop-specs">
-                                <div class="spec-item">
-                                    <i class="fas fa-microchip"></i>
-                                    Intel Core i7
-                                </div>
-                                <div class="spec-item">
-                                    <i class="fas fa-memory"></i>
-                                    16GB RAM
-                                </div>
-                                <div class="spec-item">
-                                    <i class="fas fa-hdd"></i>
-                                    512GB SSD
-                                </div>
-                            </div>
-                            <div class="laptop-pricing">
-                                <div>
-                                    <div class="price-daily">₫220,000</div>
-                                    <div class="price-label">per day</div>
-                                </div>
-                            </div>
-                            <div class="laptop-actions">
-                                <a href="/laptops/5" class="btn-rent">Rent Now</a>
-                                <button class="btn-wishlist" data-laptop-id="5">
-                                    <i class="far fa-heart"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- MacBook Air M2 -->
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="laptop-card" data-category="student" data-brand="apple" data-price="250000" data-available="true">
-                        <div class="laptop-image">
-                            <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=300&fit=crop" alt="MacBook Air M2" class="img-fluid">
-                            <div class="laptop-badge">New</div>
-                            <div class="availability-badge available">Available</div>
-                        </div>
-                        <div class="laptop-info">
-                            <div class="laptop-brand">Apple</div>
-                            <h5 class="laptop-title">MacBook Air M2 13"</h5>
-                            <div class="laptop-specs">
-                                <div class="spec-item">
-                                    <i class="fas fa-microchip"></i>
-                                    Apple M2
-                                </div>
-                                <div class="spec-item">
-                                    <i class="fas fa-memory"></i>
-                                    8GB RAM
-                                </div>
-                                <div class="spec-item">
-                                    <i class="fas fa-hdd"></i>
-                                    256GB SSD
-                                </div>
-                            </div>
-                            <div class="laptop-pricing">
-                                <div>
-                                    <div class="price-daily">₫250,000</div>
-                                    <div class="price-label">per day</div>
-                                </div>
-                            </div>
-                            <div class="laptop-actions">
-                                <a href="/laptops/6" class="btn-rent">Rent Now</a>
-                                <button class="btn-wishlist" data-laptop-id="6">
-                                    <i class="far fa-heart"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                }
             </div>
+
 
             <!-- Pagination -->
             <nav aria-label="Laptop pagination" class="mt-4">
@@ -417,95 +202,66 @@
 
 @section Scripts {
     <script>
-        // Initialize filters and sorting
-        document.addEventListener('DOMContentLoaded', function() {
-            // Update results count on page load
+        document.addEventListener('DOMContentLoaded', function () {
             updateResultsCount();
-            
-            // Clear filters button
-            document.getElementById('clearFilters').addEventListener('click', function() {
-                // Clear all checkboxes
-                document.querySelectorAll('.filter-input').forEach(input => {
-                    input.checked = false;
-                });
-                
-                // Clear price inputs
+            applyUrlFilters();
+
+            document.getElementById('clearFilters').addEventListener('click', function () {
+                document.querySelectorAll('.filter-input').forEach(input => input.checked = false);
                 document.getElementById('priceMin').value = '';
                 document.getElementById('priceMax').value = '';
-                
-                // Apply filters (will show all)
-                if (window.CustomerUI) {
-                    window.CustomerUI.applyFilters();
-                }
-                
-                updateResultsCount();
+                document.getElementById('availableOnly').checked = false;
+                applyFilters();
             });
-            
-            // Sort functionality
-            document.getElementById('sortSelect').addEventListener('change', function() {
-                sortLaptops(this.value);
-            });
-            
-            // Apply URL filters if any
-            applyUrlFilters();
+
+            document.querySelectorAll('.filter-input, #priceMin, #priceMax, #availableOnly')
+                .forEach(input => {
+                    input.addEventListener('change', applyFilters);
+                });
         });
-        
+
+        function applyFilters() {
+            const categoryIds = Array.from(document.querySelectorAll('input[name="categoryId"]:checked'))
+                .map(cb => cb.value);
+            const brandIds = Array.from(document.querySelectorAll('input[name="brandId"]:checked'))
+                .map(cb => cb.value);
+
+            const minPrice = document.getElementById('priceMin').value;
+            const maxPrice = document.getElementById('priceMax').value;
+            const availableOnly = document.getElementById('availableOnly').checked ? 'true' : '';
+
+            const params = new URLSearchParams();
+            categoryIds.forEach(id => params.append('categoryIds', id));
+            brandIds.forEach(id => params.append('brandIds', id));
+            if (minPrice) params.append('minPrice', minPrice);
+            if (maxPrice) params.append('maxPrice', maxPrice);
+            if (availableOnly) params.append('availableOnly', availableOnly);
+
+            window.location.href = `/laptops?${params.toString()}`;
+        }
+
+        function applyUrlFilters() {
+            const urlParams = new URLSearchParams(window.location.search);
+
+            urlParams.getAll('categoryIds').forEach(id => {
+                const checkbox = document.getElementById(`category_${id}`);
+                if (checkbox) checkbox.checked = true;
+            });
+
+            urlParams.getAll('brandIds').forEach(id => {
+                const checkbox = document.getElementById(`brand_${id}`);
+                if (checkbox) checkbox.checked = true;
+            });
+
+            document.getElementById('priceMin').value = urlParams.get('minPrice') || '';
+            document.getElementById('priceMax').value = urlParams.get('maxPrice') || '';
+            document.getElementById('availableOnly').checked = urlParams.get('availableOnly') === 'true';
+        }
+
         function updateResultsCount() {
             const visibleCards = document.querySelectorAll('.laptop-card:not([style*="display: none"])').length;
             document.querySelector('.results-count').textContent = `${visibleCards} laptops found`;
         }
-        
-        function sortLaptops(sortType) {
-            const grid = document.getElementById('laptopGrid');
-            const cards = Array.from(grid.children);
-            
-            cards.sort((a, b) => {
-                const cardA = a.querySelector('.laptop-card');
-                const cardB = b.querySelector('.laptop-card');
-                
-                switch(sortType) {
-                    case 'price-low':
-                        return parseFloat(cardA.dataset.price) - parseFloat(cardB.dataset.price);
-                    case 'price-high':
-                        return parseFloat(cardB.dataset.price) - parseFloat(cardA.dataset.price);
-                    case 'brand':
-                        return cardA.dataset.brand.localeCompare(cardB.dataset.brand);
-                    case 'newest':
-                        return Math.random() - 0.5; // Simulate random for demo
-                    default:
-                        return 0; // Keep original order for 'featured'
-                }
-            });
-            
-            // Reorder DOM elements
-            cards.forEach(card => grid.appendChild(card));
-        }
-        
-        function applyUrlFilters() {
-            const urlParams = new URLSearchParams(window.location.search);
-            
-            // Apply category filter from URL
-            const category = urlParams.get('category');
-            if (category) {
-                const checkbox = document.getElementById('category' + category.charAt(0).toUpperCase() + category.slice(1));
-                if (checkbox) {
-                    checkbox.checked = true;
-                }
-            }
-            
-            // Apply brand filter from URL
-            const brand = urlParams.get('brand');
-            if (brand) {
-                const checkbox = document.getElementById('brand' + brand.charAt(0).toUpperCase() + brand.slice(1));
-                if (checkbox) {
-                    checkbox.checked = true;
-                }
-            }
-            
-            // Apply filters
-            if (window.CustomerUI && (category || brand)) {
-                window.CustomerUI.applyFilters();
-            }
-        }
     </script>
-} 
+}
+

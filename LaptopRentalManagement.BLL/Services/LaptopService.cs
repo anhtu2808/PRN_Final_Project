@@ -33,6 +33,13 @@ public class LaptopService : ILaptopService
         return response;
     }
 
+    public async Task<IList<LaptopResponse>> GetTopRentedLaptopsAsync(int top = 3)
+    {
+        var laptops = await _laptopRepository.GetTopRentedLaptopsAsync(top);
+        var response = _mapper.Map<IList<LaptopResponse>>(laptops);
+        return response;
+    }
+
     public Task<LaptopResponse> CreateAsync(CreateLaptopRequest request)
     {
         throw new NotImplementedException();
