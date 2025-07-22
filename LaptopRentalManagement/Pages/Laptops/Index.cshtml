@@ -159,11 +159,11 @@
                                 <div class="laptop-actions">
                                     @if (laptop.Status == "Available")
                                     {
-                                        <a href="/laptops/@laptop.LaptopId" class="btn-rent">Rent Now</a>
+                                        <a href="/laptops/details/@laptop.LaptopId" class="btn-rent">Rent Now</a>
                                     }
                                     else
                                     {
-                                        <button class="btn-rent" disabled>Currently Rented</button>
+                                        <button class="btn btn-secondary w-100 disabled opacity-50">Currently Rented</button>
                                     }
                                     <button class="btn-wishlist" data-laptop-id="@laptop.LaptopId">
                                         <i class="far fa-heart"></i>

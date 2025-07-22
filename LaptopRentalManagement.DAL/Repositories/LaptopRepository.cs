@@ -66,7 +66,9 @@ public class LaptopRepository : ILaptopRepository
         if (filter.CreatedTo.HasValue)
             query = query.Where(l => l.CreatedAt <= filter.CreatedTo.Value);
 
-        return await query.ToListAsync();
+        return await query
+            .OrderByDescending(l => l.Status == "Available")
+            .ToListAsync();
     }
 
 
