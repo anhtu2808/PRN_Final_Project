@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LaptopRentalManagement.DAL.Migrations
 {
     [DbContext(typeof(LaptopRentalDbContext))]
-    [Migration("20250722041420_AddIconClassToCategory")]
-    partial class AddIconClassToCategory
+    [Migration("20250722043300_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
