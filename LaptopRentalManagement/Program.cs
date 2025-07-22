@@ -20,10 +20,22 @@ builder.Services.AddDbContext<LaptopRentalDbContext>(options =>
 
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile), typeof(AutoMapperProfile));
-        
+
 
 // Add SignalR
 builder.Services.AddSignalR();
+
+
+// Register Repositories
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ILaptopRepository, LaptopRepository>();
+builder.Services.AddScoped<IBrandRepository, BrandRepository>();
+
+// Register Business Services
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ILaptopService, LaptopService>();
+builder.Services.AddScoped<IBrandService, BrandService>();
+
 
 // Register repositories
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();

@@ -4,6 +4,8 @@ using LaptopRentalManagement.BLL.DTOs.Response;
 using LaptopRentalManagement.BLL.DTOs.Request;
 using LaptopRentalManagement.BLL.DTOs.Response;
 using LaptopRentalManagement.DAL.Entities;
+using LaptopRentalManagement.Model.DTOs.Request;
+using LaptopRentalManagement.Model.DTOs.Response.Brand;
 
 namespace LaptopRentalManagement.BLL.Mappings
 {
@@ -22,8 +24,24 @@ namespace LaptopRentalManagement.BLL.Mappings
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
 
             // Brand mappings
+            CreateMap<Brand, BrandResponseDTO>()
+                .ForMember(dest => dest.LaptopCount, opt => opt.Ignore());
             CreateMap<Brand, BrandResponse>()
-                .ForMember(dest => dest.BrandId, opt => opt.Ignore());
+                 .ForMember(dest => dest.BrandId, opt => opt.Ignore());
+
+            CreateMap<CreateBrandRequest, Brand>()
+                .ForMember(dest => dest.BrandId, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.Laptops, opt => opt.Ignore());
+
+            CreateMap<UpdateBrandRequest, Brand>()
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.Laptops, opt => opt.Ignore());
+
+            CreateMap<Brand, BrandSelectDto>();
+
 
             // Category mappings
             CreateMap<Category, CategoryResponse>();

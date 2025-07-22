@@ -1,4 +1,4 @@
-﻿namespace LaptopRentalManagement.Models.Dashboard
+﻿namespace LaptopRentalManagement.Model.DTOs.Response.Dashboard
 {
     public class RecentOrder
     {
