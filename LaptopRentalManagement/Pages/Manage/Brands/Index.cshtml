@@ -1,8 +1,8 @@
 ﻿@page
 @model LaptopRentalManagement.Pages.Manage.Brands.IndexModel
 @{
-    ViewData["Title"] = "Brand Management";
-    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+ViewData["Title"] = "Brand Management";
+Layout = "~/Pages/Shared/_AdminLayout.cshtml";
 }
 
 <div class="container-fluid py-4">
@@ -96,97 +96,97 @@
                 <div class="card-body">
                     @if (Model.Brands.Any())
                     {
-                        <div class="table-responsive">
-                            <table class="table table-striped align-middle">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Logo</th>
-                                        <th>Name</th>
-                                        <th>Description</th>
-                                        <th>Laptops</th>
-                                        <th>Created Date</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var brand in Model.Brands)
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Logo</th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Laptops</th>
+                                <th>Created Date</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var brand in Model.Brands)
+                            {
+                            <tr>
+                                <td>@brand.BrandId</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(brand.LogoUrl))
                                     {
-                                        <tr>
-                                            <td>@brand.BrandId</td>
-                                            <td>
-                                                @if (!string.IsNullOrEmpty(brand.LogoUrl))
-                                                {
-                                                    <img src="@brand.LogoUrl" alt="@brand.Name Logo" class="img-thumbnail" style="width: 40px; height: 40px; object-fit: contain;" />
-                                                }
-                                                else
-                                                {
-                                                    <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                                        <i class="fas fa-image text-muted"></i>
-                                                    </div>
-                                                }
-                                            </td>
-                                            <td>
-                                                <strong>@brand.Name</strong>
-                                            </td>
-                                            <td>
-                                                @if (!string.IsNullOrEmpty(brand.Description))
-                                                {
-                                                    @(brand.Description.Length > 50 ? brand.Description.Substring(0, 50) + "..." : brand.Description)
-                                                }
-                                                else
-                                                {
-                                                    <span class="text-muted">No description</span>
-                                                }
-                                            </td>
-                                            <td>
+                                    <img src="@brand.LogoUrl" alt="@brand.Name Logo" class="img-thumbnail" style="width: 40px; height: 40px; object-fit: contain;" />
+                                    }
+                                    else
+                                    {
+                                    <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                        <i class="fas fa-image text-muted"></i>
+                                    </div>
+                                    }
+                                </td>
+                                <td>
+                                    <strong>@brand.Name</strong>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(brand.Description))
+                                    {
+                                    @(brand.Description.Length > 50 ? brand.Description.Substring(0, 50) + "..." : brand.Description)
+                                    }
+                                    else
+                                    {
+                                    <span class="text-muted">No description</span>
+                                    }
+                                </td>
+                                <td>
                                                 <span class="badge @(brand.LaptopCount > 0 ? "bg-success" : "bg-secondary")">
                                                     @brand.LaptopCount laptops
                                                 </span>
-                                            </td>
-                                            <td>@brand.CreatedAt.ToString("MM/dd/yyyy HH:mm")</td>
-                                            <td>
-                                                <div class="btn-group" role="group">
-                                                    <button type="button" class="btn btn-sm btn-outline-info"
-                                                            title="View details"
-                                                            onclick="viewBrand(@brand.BrandId)">
-                                                        <i class="fas fa-eye"></i>
-                                                    </button>
-                                                    <button type="button" class="btn btn-sm btn-outline-warning"
-                                                            title="Edit"
-                                                            onclick="editBrand(@brand.BrandId, '@brand.Name', '@brand.LogoUrl', '@brand.Description')">
-                                                        <i class="fas fa-edit"></i>
-                                                    </button>
-                                                    @if (brand.LaptopCount == 0)
-                                                    {
-                                                        <button type="button" class="btn btn-sm btn-outline-danger"
-                                                                title="Delete"
-                                                                onclick="confirmDelete(@brand.BrandId, '@brand.Name')">
-                                                            <i class="fas fa-trash"></i>
-                                                        </button>
-                                                    }
-                                                    else
-                                                    {
-                                                        <button type="button" class="btn btn-sm btn-outline-secondary"
-                                                                title="Cannot delete (has laptops)" disabled>
-                                                            <i class="fas fa-trash"></i>
-                                                        </button>
-                                                    }
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
+                                </td>
+                                <td>@brand.CreatedAt.ToString("MM/dd/yyyy HH:mm")</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-sm btn-outline-info"
+                                                title="View details"
+                                                onclick="viewBrand(@brand.BrandId)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-warning"
+                                                title="Edit"
+                                                onclick="editBrand(@brand.BrandId, '@brand.Name', '@brand.LogoUrl', '@brand.Description')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        @if (brand.LaptopCount == 0)
+                                        {
+                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                                title="Delete"
+                                                onclick="confirmDelete(@brand.BrandId, '@brand.Name')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        }
+                                        else
+                                        {
+                                        <button type="button" class="btn btn-sm btn-outline-secondary"
+                                                title="Cannot delete (has laptops)" disabled>
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
                     }
                     else
                     {
-                        <div class="text-center py-5">
-                            <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">No brands found</h5>
-                            <p class="text-muted">Click "Add Brand" button to create your first brand.</p>
-                        </div>
+                    <div class="text-center py-5">
+                        <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No brands found</h5>
+                        <p class="text-muted">Click "Add Brand" button to create your first brand.</p>
+                    </div>
                     }
                 </div>
             </div>
@@ -325,161 +325,161 @@
 </div>
 
 @section Scripts {
-    <script>
-        // View Brand Function
-        async function viewBrand(brandId) {
-            try {
-                const response = await fetch(`/Manage/Brands?handler=GetBrand&id=${brandId}`);
-                if (!response.ok) throw new Error('Network response was not ok');
+<script>
+    // View Brand Function
+    async function viewBrand(brandId) {
+        try {
+            const response = await fetch(`/Manage/Brands?handler=GetBrand&id=${brandId}`);
+            if (!response.ok) throw new Error('Network response was not ok');
 
-                const brand = await response.json();
+            const brand = await response.json();
 
-                document.getElementById('viewBrandId').textContent = brand.brandId;
-                document.getElementById('viewBrandName').textContent = brand.name;
+            document.getElementById('viewBrandId').textContent = brand.brandId;
+            document.getElementById('viewBrandName').textContent = brand.name;
 
-                const logoContainer = document.getElementById('viewBrandLogoContainer');
-                if (brand.logoUrl) {
-                    logoContainer.innerHTML = `<img src="${brand.logoUrl}" alt="${brand.name} Logo" class="img-fluid rounded" style="max-height: 80px;">`;
-                } else {
-                    logoContainer.innerHTML = `<span class="text-muted">No logo provided</span>`;
-                }
+            const logoContainer = document.getElementById('viewBrandLogoContainer');
+            if (brand.logoUrl) {
+                logoContainer.innerHTML = `<img src="${brand.logoUrl}" alt="${brand.name} Logo" class="img-fluid rounded" style="max-height: 80px;">`;
+            } else {
+                logoContainer.innerHTML = `<span class="text-muted">No logo provided</span>`;
+            }
 
-                document.getElementById('viewBrandDescription').textContent = brand.description || 'No description';
-                document.getElementById('viewBrandLaptopCount').innerHTML =
-                    `<span class="badge ${brand.laptopCount > 0 ? 'bg-success' : 'bg-secondary'}">${brand.laptopCount} laptops</span>`;
-                document.getElementById('viewBrandCreatedAt').textContent = new Date(brand.createdAt).toLocaleString('en-US');
+            document.getElementById('viewBrandDescription').textContent = brand.description || 'No description';
+            document.getElementById('viewBrandLaptopCount').innerHTML =
+                `<span class="badge ${brand.laptopCount > 0 ? 'bg-success' : 'bg-secondary'}">${brand.laptopCount} laptops</span>`;
+            document.getElementById('viewBrandCreatedAt').textContent = new Date(brand.createdAt).toLocaleString('en-US');
 
-                new bootstrap.Modal(document.getElementById('viewBrandModal')).show();
-            } catch (error) {
-                console.error('Error fetching brand details:', error);
-                showToast('Error loading brand information.', 'error');
+            new bootstrap.Modal(document.getElementById('viewBrandModal')).show();
+        } catch (error) {
+            console.error('Error fetching brand details:', error);
+            showToast('Error loading brand information.', 'error');
+        }
+    }
+
+    // Edit Brand Function
+    function editBrand(id, name, logoUrl, description) {
+        document.getElementById('editBrandId').value = id;
+        document.getElementById('editName').value = name;
+        document.getElementById('editLogoUrl').value = logoUrl || '';
+        document.getElementById('editDescription').value = description || '';
+        clearValidationErrors('edit');
+        new bootstrap.Modal(document.getElementById('editBrandModal')).show();
+    }
+
+    // Delete Brand Function
+    function confirmDelete(brandId, brandName) {
+        document.getElementById('deleteBrandId').value = brandId;
+        document.getElementById('deleteBrandName').textContent = brandName;
+        new bootstrap.Modal(document.getElementById('deleteModal')).show();
+    }
+
+    // Clear Validation Errors
+    function clearValidationErrors(prefix) {
+        ['Name', 'LogoUrl', 'Description'].forEach(f => {
+            const inp = document.getElementById(prefix + f);
+            const err = document.getElementById(prefix + f + 'Error');
+            if (inp) inp.classList.remove('is-invalid');
+            if (err) err.textContent = '';
+        });
+    }
+
+    // Show Validation Errors
+    function showValidationErrors(prefix, errors) {
+        clearValidationErrors(prefix);
+        for (const [field, messages] of Object.entries(errors)) {
+            // Capitalize first letter for ID matching
+            const capitalizedField = field.charAt(0).toUpperCase() + field.slice(1);
+            const inputEl = document.getElementById(prefix + capitalizedField);
+            const errorEl = document.getElementById(prefix + capitalizedField + 'Error');
+            if (inputEl && errorEl) {
+                inputEl.classList.add('is-invalid');
+                errorEl.textContent = messages.join(' ');
             }
         }
+    }
 
-        // Edit Brand Function
-        function editBrand(id, name, logoUrl, description) {
-            document.getElementById('editBrandId').value = id;
-            document.getElementById('editName').value = name;
-            document.getElementById('editLogoUrl').value = logoUrl || '';
-            document.getElementById('editDescription').value = description || '';
-            clearValidationErrors('edit');
-            new bootstrap.Modal(document.getElementById('editBrandModal')).show();
-        }
-
-        // Delete Brand Function
-        function confirmDelete(brandId, brandName) {
-            document.getElementById('deleteBrandId').value = brandId;
-            document.getElementById('deleteBrandName').textContent = brandName;
-            new bootstrap.Modal(document.getElementById('deleteModal')).show();
-        }
-
-        // Clear Validation Errors
-        function clearValidationErrors(prefix) {
-            ['Name', 'LogoUrl', 'Description'].forEach(f => {
-                const inp = document.getElementById(prefix + f);
-                const err = document.getElementById(prefix + f + 'Error');
-                if (inp) inp.classList.remove('is-invalid');
-                if (err) err.textContent = '';
+    // Handle Form Submission with Fetch API
+    async function handleFormSubmit(form, url) {
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'RequestVerificationToken': form.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: new FormData(form)
             });
-        }
 
-        // Show Validation Errors
-        function showValidationErrors(prefix, errors) {
-            clearValidationErrors(prefix);
-            for (const [field, messages] of Object.entries(errors)) {
-                // Capitalize first letter for ID matching
-                const capitalizedField = field.charAt(0).toUpperCase() + field.slice(1);
-                const inputEl = document.getElementById(prefix + capitalizedField);
-                const errorEl = document.getElementById(prefix + capitalizedField + 'Error');
-                if (inputEl && errorEl) {
-                    inputEl.classList.add('is-invalid');
-                    errorEl.textContent = messages.join(' ');
-                }
+            const result = await response.json();
+
+            if (result.success) {
+                const modalId = form.closest('.modal').id;
+                bootstrap.Modal.getInstance(document.getElementById(modalId)).hide();
+                location.reload(); // Easiest way to show updated data
+            } else {
+                const prefix = form.id.includes('create') ? 'create' : 'edit';
+                // result.errors dictionary keys are often camelCase from JSON serialization
+                showValidationErrors(prefix, result.errors);
             }
+        } catch (error) {
+            console.error('Form submission error:', error);
+            showToast('An unexpected error occurred.', 'error');
         }
+    }
 
-        // Handle Form Submission with Fetch API
-        async function handleFormSubmit(form, url) {
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'RequestVerificationToken': form.querySelector('input[name="__RequestVerificationToken"]').value
-                    },
-                    body: new FormData(form)
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    const modalId = form.closest('.modal').id;
-                    bootstrap.Modal.getInstance(document.getElementById(modalId)).hide();
-                    location.reload(); // Easiest way to show updated data
-                } else {
-                    const prefix = form.id.includes('create') ? 'create' : 'edit';
-                    // result.errors dictionary keys are often camelCase from JSON serialization
-                    showValidationErrors(prefix, result.errors);
-                }
-            } catch (error) {
-                console.error('Form submission error:', error);
-                showToast('An unexpected error occurred.', 'error');
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            // Handle Create Form Reset
-            document.getElementById('createBrandModal').addEventListener('hidden.bs.modal', () => {
-                document.getElementById('createBrandForm').reset();
-                clearValidationErrors('create');
-            });
-
-            // Handle Edit Form Reset
-            document.getElementById('editBrandModal').addEventListener('hidden.bs.modal', () => {
-                clearValidationErrors('edit');
-            });
-
-            // Handle Create Form Submission
-            document.getElementById('createBrandForm').addEventListener('submit', function (e) {
-                e.preventDefault();
-                handleFormSubmit(this, '/Manage/Brands?handler=Create');
-            });
-
-            // Handle Edit Form Submission
-            document.getElementById('editBrandForm').addEventListener('submit', function (e) {
-                e.preventDefault();
-                handleFormSubmit(this, '/Manage/Brands?handler=Update');
-            });
-
-            // Display TempData messages as toasts
-            const successMessage = '@(TempData["Success"] as string)';
-            const errorMessage = '@(TempData["Error"] as string)';
-
-            if (successMessage) {
-                showToast(successMessage, 'success');
-            }
-            if (errorMessage) {
-                showToast(errorMessage, 'error');
-            }
+    document.addEventListener('DOMContentLoaded', function () {
+        // Handle Create Form Reset
+        document.getElementById('createBrandModal').addEventListener('hidden.bs.modal', () => {
+            document.getElementById('createBrandForm').reset();
+            clearValidationErrors('create');
         });
 
-        // Simple Toast Notification Function
-        function showToast(message, type = 'success') {
-            const toastContainer = document.createElement('div');
-            toastContainer.style.position = 'fixed';
-            toastContainer.style.top = '20px';
-            toastContainer.style.right = '20px';
-            toastContainer.style.zIndex = '1055';
-            document.body.appendChild(toastContainer);
+        // Handle Edit Form Reset
+        document.getElementById('editBrandModal').addEventListener('hidden.bs.modal', () => {
+            clearValidationErrors('edit');
+        });
 
-            const toast = document.createElement('div');
-            toast.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
-            toast.role = 'alert';
-            toast.innerHTML = `${message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
+        // Handle Create Form Submission
+        document.getElementById('createBrandForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            handleFormSubmit(this, '/Manage/Brands?handler=Create');
+        });
 
-            toastContainer.appendChild(toast);
+        // Handle Edit Form Submission
+        document.getElementById('editBrandForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            handleFormSubmit(this, '/Manage/Brands?handler=Update');
+        });
 
-            const bsToast = new bootstrap.Toast(toast, { delay: 5000 });
-            bsToast.show();
+        // Display TempData messages as toasts
+        const successMessage = '@(TempData["Success"] as string)';
+        const errorMessage = '@(TempData["Error"] as string)';
+
+        if (successMessage) {
+            showToast(successMessage, 'success');
         }
-    </script>
+        if (errorMessage) {
+            showToast(errorMessage, 'error');
+        }
+    });
+
+    // Simple Toast Notification Function
+    function showToast(message, type = 'success') {
+        const toastContainer = document.createElement('div');
+        toastContainer.style.position = 'fixed';
+        toastContainer.style.top = '20px';
+        toastContainer.style.right = '20px';
+        toastContainer.style.zIndex = '1055';
+        document.body.appendChild(toastContainer);
+
+        const toast = document.createElement('div');
+        toast.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
+        toast.role = 'alert';
+        toast.innerHTML = `${message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
+
+        toastContainer.appendChild(toast);
+
+        const bsToast = new bootstrap.Toast(toast, { delay: 5000 });
+        bsToast.show();
+    }
+</script>
 }

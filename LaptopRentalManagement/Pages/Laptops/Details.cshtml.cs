@@ -25,9 +25,9 @@ namespace LaptopRentalManagement.Pages.Laptops
             _orderService = orderService;
             _feedbackService = feedbackService;
         }
-        private readonly IFeedbackService _feedbackService;
+       
 
-        public LaptopResponse? Laptop { get; set; }
+    
         public LaptopReviewSummaryResponse? ReviewSummary { get; set; }
         public int? EligibleOrderId { get; set; }
 
