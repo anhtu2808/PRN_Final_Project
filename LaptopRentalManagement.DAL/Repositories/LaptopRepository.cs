@@ -22,14 +22,12 @@ public class LaptopRepository : ILaptopRepository
             .Include(l => l.Categories)
             .Include(l => l.Account)
             .AsQueryable();
+		if (filter.CategoryId.HasValue)
+			query = query.Where(l => l.Categories.Any(c => c.CategoryId == filter.CategoryId));
 
-        if (filter.CategoryId.HasValue)
-            query = query.Where(l => l.Categories.Any(c => c.CategoryId == filter.CategoryId.Value));
-
-        if (filter.CategoryIds != null && filter.CategoryIds.Any())
-            query = query.Where(l => l.Categories.Any(c => filter.CategoryIds.Contains(c.CategoryId)));
-
-        if (filter.BrandId.HasValue)
+		//if (filter.CategoryIds?.Count > 0)
+		//	query = query.Where(l => l.Categories.Any(c => filter.CategoryIds.Contains(c.CategoryId)));
+		if (filter.BrandId.HasValue)
             query = query.Where(l => l.BrandId == filter.BrandId.Value);
 
         if (filter.BrandIds != null && filter.BrandIds.Any())

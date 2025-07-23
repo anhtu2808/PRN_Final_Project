@@ -16,13 +16,13 @@ public class LaptopService : ILaptopService
     private readonly IMapper _mapper;
     private readonly IAccountRepository _accountRepository;
     private readonly ISlotRespository _slotRespository;
-    public LaptopService(ILaptopRepository laptopRepository, IMapper mapper, IAccountRepository accountRepository, ISlotRespository slotRespository)
+    public LaptopService(ILaptopRepository laptopRepository, IMapper mapper, IAccountRepository accountRepository, ISlotRespository slotRespository, ICategoryRepository categoryRepository)
     {
         _mapper = mapper;
         _laptopRepository = laptopRepository;
         _accountRepository = accountRepository;
         _slotRespository = slotRespository;
-        _categoryRepository = categoryRepo;
+        _categoryRepository = categoryRepository;
     }
 
     public async Task<IList<LaptopResponse>> GetAllAsync(LaptopFilter filter)

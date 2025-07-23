@@ -106,7 +106,7 @@ namespace LaptopRentalManagement.BLL.Mappings
                  .ForMember(dest => dest.Order, opt => opt.Ignore())
                  .ForMember(dest => dest.Laptop, opt => opt.Ignore());
 
-            CreateMap<CreateSlotRequest, Slot>();
+            CreateMap<CreateSlotRequest, Slot>()
                 .ForMember(dest => dest.Order, opt => opt.Ignore())
                 .ForMember(dest => dest.Laptop, opt => opt.Ignore());
         }
