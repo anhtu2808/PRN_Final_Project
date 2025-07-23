@@ -9,33 +9,7 @@
     <div class="row">
         <!-- Sidebar -->
         <div class="col-md-3 mb-4">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <div class="text-center mb-3">
-                        <i class="fas fa-user-circle fa-3x text-primary"></i>
-                        <h5 class="mt-2">@User.Identity?.Name</h5>
-                        <a href="/account" class="btn btn-sm btn-outline-secondary mt-2">Sửa hồ sơ</a>
-                    </div>
-                    <hr />
-                    <ul class="nav flex-column">
-                        <li class="nav-item mb-2">
-                            <a class="nav-link text-dark" href="/account">
-                                <i class="fas fa-user me-2"></i>Tài khoản của tôi
-                            </a>
-                        </li>
-                        <li class="nav-item mb-2">
-                            <a class="nav-link text-primary fw-bold" href="/orders">
-                                <i class="fas fa-clipboard-list me-2"></i>Quản lý đơn hàng
-                            </a>
-                        </li>
-                        <li class="nav-item mb-2">
-                            <a class="nav-link text-dark" href="/vouchers">
-                                <i class="fas fa-ticket-alt me-2"></i>Kho Voucher
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+            @await Html.PartialAsync("_AccountSidebar", "User")
         </div>
 
         <!-- Main Content -->

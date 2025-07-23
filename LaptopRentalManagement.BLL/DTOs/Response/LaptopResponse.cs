@@ -4,6 +4,8 @@ public class LaptopResponse
 {
     public int LaptopId { get; set; }
     public string Name { get; set; } = null!;
+
+    public string Description { get; set; } = null!;
     public BrandResponse Brand { get; set; } = null!;
     public List<CategoryResponse> Categories { get; set; } = new();
     public AccountResponse Owner { get; set; } = null!;

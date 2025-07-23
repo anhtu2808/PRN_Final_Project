@@ -12,6 +12,7 @@ namespace LaptopRentalManagement.BLL.Services;
 public class LaptopService : ILaptopService
 {
     private readonly ILaptopRepository _laptopRepository;
+    private readonly ICategoryRepository _categoryRepository;
     private readonly IMapper _mapper;
     private readonly IAccountRepository _accountRepository;
     private readonly ISlotRespository _slotRespository;
@@ -21,6 +22,7 @@ public class LaptopService : ILaptopService
         _laptopRepository = laptopRepository;
         _accountRepository = accountRepository;
         _slotRespository = slotRespository;
+        _categoryRepository = categoryRepo;
     }
 
     public async Task<IList<LaptopResponse>> GetAllAsync(LaptopFilter filter)
@@ -50,18 +52,55 @@ public class LaptopService : ILaptopService
         return response;
     }
 
-    public Task<LaptopResponse> CreateAsync(CreateLaptopRequest request)
+    public async Task<LaptopResponse> CreateAsync(CreateLaptopRequest request)
     {
-        throw new NotImplementedException();
+        // map phần cơ bản
+        var laptop = _mapper.Map<Laptop>(request);
+        laptop.BrandId = request.BrandId;
+        laptop.AccountId = request.AccountId;
+
+        // nếu có categoryIds, load từng cái qua repo (EF sẽ tracking tự động)
+        if (request.CategoryIds?.Any() == true)
+        {
+            var cats = new List<Category>();
+            foreach (var id in request.CategoryIds)
+            {
+                var c = await _categoryRepository.GetByIdAsync(id);
+                if (c != null) cats.Add(c);
+            }
+
+            laptop.Categories = cats;
+        }
+
+        // lưu laptop (repo phải Add + SaveChangesAsync)
+        var created = await _laptopRepository.CreateAsync(laptop);
+        return _mapper.Map<LaptopResponse>(created);
     }
 
-    public Task<LaptopResponse> UpdateAsync(EditLaptopRequest request)
+
+    public async Task<LaptopResponse> UpdateAsync(EditLaptopRequest request)
     {
-        throw new NotImplementedException();
+        var laptop = await _laptopRepository.GetByIdAsync(request.LaptopId);
+        if (laptop == null)
+        {
+            throw new KeyNotFoundException($"Laptop with ID {request.LaptopId} not found.");
+        }
+
+        _mapper.Map(request, laptop);
+        if (request.CategoryIds != null)
+        {
+            var categories = await _categoryRepository.GetAllAsync();
+            var selectedCategories = categories.Where(c => request.CategoryIds.Contains(c.CategoryId)).ToList();
+            laptop.Categories = selectedCategories;
+        }
+
+        var updatedLaptop = await _laptopRepository.UpdateAsync(laptop);
+        var response = _mapper.Map<LaptopResponse>(updatedLaptop);
+        return response;
     }
 
-    public Task DeleteAsync(int id)
+    public async Task DeleteAsync(int id)
     {
-        throw new NotImplementedException();
+        await _laptopRepository.DeleteAsync(id);
     }
 }

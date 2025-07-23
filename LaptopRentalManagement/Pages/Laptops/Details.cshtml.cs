@@ -3,6 +3,7 @@ using LaptopRentalManagement.BLL.DTOs.Response;
 using LaptopRentalManagement.BLL.Interfaces;
 using LaptopRentalManagement.BLL.Services;
 using LaptopRentalManagement.DAL.Entities;
+using LaptopRentalManagement.Model.DTOs.Request;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -10,7 +11,6 @@ namespace LaptopRentalManagement.Pages.Laptops
 {
     public class DetailsModel : PageModel
     {
-      
         private readonly ILaptopService _laptopService;
         private readonly IOrderService _orderService;
 
@@ -25,6 +25,7 @@ namespace LaptopRentalManagement.Pages.Laptops
         [BindProperty]
         public List<int> SelectedSlots { get; set; }
         public LaptopResponse? Laptop { get; set; } = new LaptopResponse();
+        public IList<LaptopResponse> SimilarLaptops { get; set; } = new List<LaptopResponse>();
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
@@ -34,6 +35,17 @@ namespace LaptopRentalManagement.Pages.Laptops
             {
                 return NotFound();
             }
+
+            // Load similar laptops based on the same category
+            var filter = new LaptopFilter()
+            {
+                CategoryIds = new List<int> { Laptop.Categories.FirstOrDefault()?.CategoryId ?? 0 },
+            };
+            SimilarLaptops = await _laptopService.GetAllAsync(filter);
+            SimilarLaptops = SimilarLaptops
+                .Where(x => x.LaptopId != Laptop.LaptopId) // Exclude the current laptop
+                .Take(4) // Limit to 4 similar laptops
+                .ToList();
 
             return Page();
         }

@@ -398,68 +398,30 @@
         <div class="col-12">
             <h3 class="mb-4">You Might Also Like</h3>
             <div class="row">
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="laptop-card">
-                        <div class="laptop-image">
-                            <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=300&fit=crop"
-                                 alt="MacBook Air M2" class="img-fluid">
-                        </div>
-                        <div class="laptop-info">
-                            <div class="laptop-brand">Apple</div>
-                            <h6 class="laptop-title">MacBook Air M2 13"</h6>
-                            <div class="price-daily">₫250,000 <span class="price-label">per day</span></div>
-                            <a href="/laptops/2" class="btn btn-outline-primary btn-sm mt-2">View Details</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="laptop-card">
-                        <div class="laptop-image">
-                            <img src="https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=400&h=300&fit=crop"
-                                 alt="Dell XPS 13" class="img-fluid">
-                        </div>
-                        <div class="laptop-info">
-                            <div class="laptop-brand">Dell</div>
-                            <h6 class="laptop-title">XPS 13 Plus</h6>
-                            <div class="price-daily">₫200,000 <span class="price-label">per day</span></div>
-                            <a href="/laptops/3" class="btn btn-outline-primary btn-sm mt-2">View Details</a>
+                @foreach (var laptop in Model.SimilarLaptops)
+                {
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="laptop-card">
+                            <div class="laptop-image">
+                                <img
+                                    src="@(string.IsNullOrEmpty(laptop.ImageURL) ? "https://techterms.com/img/xl/laptop_586.png" : laptop.ImageURL)"
+                                    alt="@laptop.Name" class="img-fluid">
+                            </div>
+                            <div class="laptop-info">
+                                <div class="laptop-brand">@laptop.Brand.Name</div>
+                                <h6 class="laptop-title">@laptop.Name</h6>
+                                <div class="price-daily">@($"{laptop.PricePerDay:N0}₫") <span class="price-label">per day</span>
+                                </div>
+                                <a href="/laptops/details/@laptop.LaptopId" class="btn btn-outline-primary btn-sm mt-2">View
+                                    Details</a>
+                            </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="laptop-card">
-                        <div class="laptop-image">
-                            <img src="https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=400&h=300&fit=crop"
-                                 alt="Lenovo ThinkPad" class="img-fluid">
-                        </div>
-                        <div class="laptop-info">
-                            <div class="laptop-brand">Lenovo</div>
-                            <h6 class="laptop-title">ThinkPad X1 Carbon</h6>
-                            <div class="price-daily">₫220,000 <span class="price-label">per day</span></div>
-                            <a href="/laptops/4" class="btn btn-outline-primary btn-sm mt-2">View Details</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="laptop-card">
-                        <div class="laptop-image">
-                            <img src="https://images.unsplash.com/photo-1625842268584-8f3296236761?w=400&h=300&fit=crop"
-                                 alt="HP EliteBook" class="img-fluid">
-                        </div>
-                        <div class="laptop-info">
-                            <div class="laptop-brand">HP</div>
-                            <h6 class="laptop-title">EliteBook 850 G9</h6>
-                            <div class="price-daily">₫180,000 <span class="price-label">per day</span></div>
-                            <a href="/laptops/5" class="btn btn-outline-primary btn-sm mt-2">View Details</a>
-                        </div>
-                    </div>
-                </div>
+                }
             </div>
         </div>
     </div>
+
 </div>
 
 @section Scripts {
