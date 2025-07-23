@@ -1,0 +1,49 @@
+@page
+@model Index
+
+@{
+    ViewData["Title"] = "Manage Your Laptops";
+    Layout = "~/Pages/Shared/_CustomerLayout.cshtml";
+}
+
+<div class="container py-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 mb-4">
+            @await Html.PartialAsync("_AccountSidebar", User.Identity?.Name)
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <h3 class="mb-4">Your Listed Laptops</h3>
+
+            @if (!Model.Laptops.Any())
+            {
+                <div class="alert alert-info">You haven't listed any laptops yet.</div>
+            }
+            else
+            {
+                <div class="row">
+                    @foreach (var laptop in Model.Laptops)
+                    {
+                        var imageUrl = string.IsNullOrWhiteSpace(laptop.ImageURL)
+                            ? "https://techterms.com/img/xl/laptop_586.png"
+                            : laptop.ImageURL;
+
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100">
+                                <img class="card-img-top" src="@imageUrl" alt="@laptop.Name">
+                                <div class="card-body">
+                                    <h5 class="card-title">@laptop.Name</h5>
+                                    <p class="card-text text-muted">@laptop.Brand?.Name</p>
+                                    <p class="text-success fw-bold">@($"{laptop.PricePerDay:N0}₫ / day")</p>
+                                    <a class="btn btn-sm btn-outline-primary" href="/user/laptops/details/@laptop.LaptopId">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>

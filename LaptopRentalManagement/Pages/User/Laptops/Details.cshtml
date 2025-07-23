@@ -1,0 +1,107 @@
+@page "{id:int}"
+@model DetailsModel
+@{
+    ViewData["Title"] = "Laptop Details";
+    Layout = "~/Pages/Shared/_CustomerLayout.cshtml";
+}
+
+<div class="container py-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 mb-4">
+            @await Html.PartialAsync("_AccountSidebar", User.Identity?.Name)
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+            @if (Model.Laptop == null)
+            {
+                <div class="alert alert-danger">Laptop not found.</div>
+            }
+            else
+            {
+                var laptop = Model.Laptop;
+                var imageUrl = string.IsNullOrWhiteSpace(laptop.ImageURL)
+                    ? "https://techterms.com/img/xl/laptop_586.png"
+                    : laptop.ImageURL;
+
+                <div class="card shadow-sm">
+                    <div class="row g-0">
+                        <div class="col-md-5">
+                            <img src="@imageUrl" class="img-fluid rounded-start w-100 h-100 object-fit-cover"
+                                 alt="@laptop?.Name">
+                        </div>
+                        <div class="col-md-7">
+                            <div class="card-body">
+                                <h3 class="card-title">@laptop?.Name</h3>
+                                <p class="card-text text-muted">@laptop?.Brand?.Name</p>
+                                <p class="card-text">
+                                    <strong>Description:</strong> @laptop?.Description<br/>
+                                    <strong>CPU:</strong> @laptop?.Cpu <br/>
+                                    <strong>RAM:</strong> @laptop.Ram GB <br/>
+                                    <strong>Storage:</strong> @laptop.Storage GB <br/>
+                                    <strong>Category:</strong> @(laptop.Categories?.FirstOrDefault()?.Name ?? "No category")
+
+                                </p>
+                                <p class="text-success h5">@($"{laptop.PricePerDay:N0}₫ / day")</p>
+                                <p class="card-text"><strong>Status:</strong> <span
+                                                                                  class="text-primary">@laptop.Status</span></p>
+
+                                <div class="mt-4">
+                                    <a href="/user/laptops" class="btn btn-secondary me-2">Back to My Laptops</a>
+                                    <button class="btn btn-outline-primary" data-bs-toggle="modal"
+                                            data-bs-target="#editLaptopModal">
+                                        Edit Laptop
+                                    </button>
+                                    <a href="/laptops/details/@laptop.LaptopId" class="btn btn-outline-primary">Preview
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<!-- Modal for Editing Laptop -->
+<div class="modal fade" id="editLaptopModal" tabindex="-1" aria-labelledby="editLaptopModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="Edit">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editLaptopModalLabel">Edit Laptop</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="LaptopId" value="@Model.Laptop.LaptopId" />
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control" name="Name" value="@Model.Laptop.Name" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">CPU</label>
+                        <input type="text" class="form-control" name="Cpu" value="@Model.Laptop.Cpu" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">RAM (GB)</label>
+                        <input type="number" class="form-control" name="Ram" value="@Model.Laptop.Ram" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Storage (GB)</label>
+                        <input type="number" class="form-control" name="Storage" value="@Model.Laptop.Storage" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Price Per Day</label>
+                        <input type="number" class="form-control" name="PricePerDay" value="@Model.Laptop.PricePerDay" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
