@@ -65,10 +65,8 @@ namespace LaptopRentalManagement.Pages.Laptops
 
 			try
 			{
-                var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-                await _feedbackService.CreateReviewAsync(NewReview, userId);
-                NewReview.OrderId = 29; 
-
+                var userId = 2; 
+                NewReview.OrderId = 26; 
                 await _feedbackService.CreateReviewAsync(NewReview, userId);
                 TempData["Success"] = "Your review has been submitted successfully!";
             }
