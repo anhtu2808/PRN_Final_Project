@@ -24,9 +24,8 @@ namespace LaptopRentalManagement.BLL.Mappings
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
 
             // Brand mappings
-          
-            CreateMap<Brand, BrandResponse>()
-                 .ForMember(dest => dest.BrandId, opt => opt.Ignore());
+
+            CreateMap<Brand, BrandResponse>();
          
 
             CreateMap<CreateBrandRequest, Brand>()
