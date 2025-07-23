@@ -79,24 +79,25 @@ namespace LaptopRentalManagement.BLL.Mappings
             CreateMap<Notification, Notification>()
                 .ForMember(dest => dest.NotificationId, opt => opt.Ignore());
 
-            // Note: Removed invalid object mappings that were causing AutoMapper configuration errors
-            // These mappings to System.Object with ForMember string-based configuration are not supported
-            // If you need view models for API responses, create specific DTO classes instead
-
+            // Order mappings
             CreateMap<CreateOrderRequest, Order>()
                 .ForMember(dest => dest.StartDate, opt => opt.Ignore())
-				.ForMember(dest => dest.EndDate, opt => opt.Ignore());
-			CreateMap<Order, OrderResponse>()
-				 .ForMember(dest => dest.Owner, opt => opt.Ignore())
-				 .ForMember(dest => dest.Renter, opt => opt.Ignore())
-				 .ForMember(dest => dest.Laptop, opt => opt.Ignore());
-			CreateMap <CreateSlotRequest, Slot>();
+                .ForMember(dest => dest.EndDate, opt => opt.Ignore());
+            CreateMap<Order, OrderResponse>()
+                .ForMember(dest => dest.Owner, opt => opt.Ignore())
+                .ForMember(dest => dest.Renter, opt => opt.Ignore())
+                .ForMember(dest => dest.Laptop, opt => opt.Ignore());
+            CreateMap<CreateSlotRequest, Slot>();
 
+            //Laptop mappings
             CreateMap<Laptop, LaptopResponse>();
+            CreateMap<EditLaptopRequest, Laptop>()
+                .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+
             CreateMap<Account, AccountResponse>();
             CreateMap<Slot, SlotResponse>()
-                 .ForMember(dest => dest.Order, opt => opt.Ignore())
-                 .ForMember(dest => dest.Laptop, opt => opt.Ignore());
+                .ForMember(dest => dest.Order, opt => opt.Ignore())
+                .ForMember(dest => dest.Laptop, opt => opt.Ignore());
         }
     }
 }

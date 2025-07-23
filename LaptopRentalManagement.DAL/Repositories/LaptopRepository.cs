@@ -101,10 +101,35 @@ public class LaptopRepository : ILaptopRepository
 
     public async Task<Laptop> UpdateAsync(Laptop laptop)
     {
-        _context.Laptops.Update(laptop);
+        // Load entity đang được tracking từ DB
+        var existingLaptop = await _context.Laptops
+            .Include(l => l.Categories)
+            .FirstOrDefaultAsync(x => x.LaptopId == laptop.LaptopId);
+
+        if (existingLaptop == null)
+            throw new Exception("Laptop not found");
+
+        // Cập nhật các property
+        existingLaptop.Name = laptop.Name;
+        existingLaptop.Cpu = laptop.Cpu;
+        existingLaptop.Ram = laptop.Ram;
+        existingLaptop.Storage = laptop.Storage;
+        existingLaptop.Description = laptop.Description;
+        existingLaptop.PricePerDay = laptop.PricePerDay;
+
+        // Cập nhật categories (nếu có nhiều category)
+        existingLaptop.Categories.Clear();
+        foreach (var cat in laptop.Categories)
+        {
+            var trackedCat = await _context.Categories.FindAsync(cat.CategoryId);
+            if (trackedCat != null)
+                existingLaptop.Categories.Add(trackedCat);
+        }
+
         await _context.SaveChangesAsync();
-        return laptop;
+        return existingLaptop;
     }
+
 
     public async Task DeleteAsync(int id)
     {

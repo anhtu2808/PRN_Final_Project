@@ -6,19 +6,23 @@ public class EditLaptopRequest
 {
     [Required] public int LaptopId { get; set; }
 
-    [Required] public string Name { get; set; } = null!;
+    public string? Name { get; set; }
+    
+    public string? ImageURL { get; set; }
 
-    [Required] public int BrandId { get; set; }
+    public string? Description { get; set; }
 
-    [Required] public int AccountId { get; set; }
+    public int? BrandId { get; set; }
 
-    public List<int> CategoryIds { get; set; } = new();
+    public List<int>? CategoryIds { get; set; }
 
-    [Required] public decimal PricePerDay { get; set; }
+    public decimal? PricePerDay { get; set; }
 
-    [Required] public string Cpu { get; set; } = null!;
+    public string? Cpu { get; set; }
 
-    [Required] public int Ram { get; set; }
+    public int? Ram { get; set; }
 
-    [Required] public int Storage { get; set; }
+    public int? Storage { get; set; }
+
+    // Không update AccountId
 }

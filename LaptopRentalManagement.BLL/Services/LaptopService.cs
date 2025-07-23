@@ -11,12 +11,14 @@ namespace LaptopRentalManagement.BLL.Services;
 public class LaptopService : ILaptopService
 {
     private readonly ILaptopRepository _laptopRepository;
+    private readonly ICategoryRepository _categoryRepository;
     private readonly IMapper _mapper;
 
-    public LaptopService(ILaptopRepository laptopRepository, IMapper mapper)
+    public LaptopService(ILaptopRepository laptopRepository, ICategoryRepository categoryRepo, IMapper mapper)
     {
         _mapper = mapper;
         _laptopRepository = laptopRepository;
+        _categoryRepository = categoryRepo;
     }
 
     public async Task<IList<LaptopResponse>> GetAllAsync(LaptopFilter filter)
@@ -45,9 +47,25 @@ public class LaptopService : ILaptopService
         throw new NotImplementedException();
     }
 
-    public Task<LaptopResponse> UpdateAsync(EditLaptopRequest request)
+    public async Task<LaptopResponse> UpdateAsync(EditLaptopRequest request)
     {
-        throw new NotImplementedException();
+        var laptop = await _laptopRepository.GetByIdAsync(request.LaptopId);
+        if (laptop == null)
+        {
+            throw new KeyNotFoundException($"Laptop with ID {request.LaptopId} not found.");
+        }
+
+        _mapper.Map(request, laptop);
+        if (request.CategoryIds != null)
+        {
+            var categories = await _categoryRepository.GetAllAsync();
+            var selectedCategories = categories.Where(c => request.CategoryIds.Contains(c.CategoryId)).ToList();
+            laptop.Categories = selectedCategories;
+        }
+
+        var updatedLaptop = await _laptopRepository.UpdateAsync(laptop);
+        var response = _mapper.Map<LaptopResponse>(updatedLaptop);
+        return response;
     }
 
     public Task DeleteAsync(int id)
