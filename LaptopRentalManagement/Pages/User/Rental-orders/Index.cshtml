@@ -1,0 +1,100 @@
+﻿@page "{id:int}"
+@model LaptopRentalManagement.Pages.User.Rental_orders.IndexModel
+@{
+    ViewData["Title"] = "Chi tiết đơn thuê";
+    Layout = "~/Pages/Shared/_CustomerLayout.cshtml";
+}
+
+<div class="container py-4">
+    <h2 class="mb-4">Chi tiết đơn thuê #@Model.Order.OrderId</h2>
+
+    <div class="mb-4">
+        <label class="form-label">Tiến trình đơn thuê</label>
+        <div class="progress" style="height: 25px;">
+            @{
+                var status = Model.Order.Status;
+                var percent = status switch
+                {
+                    "PendingApproval" => 33,
+                    "Renting" => 66,
+                    "Complete" => 100,
+                    _ => 0
+                };
+                var progressText = status switch
+                {
+                    "PendingApproval" => "Chờ duyệt",
+                    "Renting" => "Đang thuê",
+                    "Complete" => "Hoàn thành",
+                    _ => status
+                };
+                var barClass = status switch
+                {
+                    "PendingApproval" => "bg-warning text-dark",
+                    "Renting" => "bg-info",
+                    "Complete" => "bg-success",
+                    _ => "bg-secondary"
+                };
+            }
+            <div class="progress-bar @barClass" style="width: @percent%" role="progressbar">
+                @progressText
+            </div>
+        </div>
+    </div>
+
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <h5>Laptop: @Model.Order.Laptop?.Name</h5>
+                    <p><strong>Thương hiệu:</strong> @Model.Order.Laptop.Brand?.Name</p>
+                    <p><strong>Giá/ngày:</strong> @Model.Order.Laptop.PricePerDay.ToString("N0") đ</p>
+                    <p><strong>Chủ sở hữu:</strong> @Model.Order.Owner?.Name</p>
+                    <p><strong>Người thuê:</strong> @(Model.Order.Renter?.Name ?? "Chưa có")</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>CPU:</strong> @Model.Order.Laptop.Cpu</p>
+                    <p><strong>RAM:</strong> @Model.Order.Laptop.Ram GB</p>
+                    <p><strong>Lưu trữ:</strong> @Model.Order.Laptop.Storage GB</p>
+                    <p><strong>Ngày thuê khả dụng:</strong> @Model.Order.StartDate.ToString("dd/MM/yyyy") -  @Model.Order.EndDate.ToString("dd/MM/yyyy")</p>
+                    <p><strong>Tổng phí:</strong> @Model.Order.TotalCharge.ToString("N0") đ</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Các ngày thuê -->
+    <div class="card-body">
+        @if (Model.Order.Slots != null && Model.Order.Slots.Any())
+        {
+            <div class="d-flex overflow-auto gap-4 py-3">
+                @foreach (var slot in Model.Order.Slots.OrderBy(s => s.SlotDate))
+                {
+                    var isAvailable = slot.Status == "Available";
+                    var cardClass = isAvailable
+                    ? "bg-light border border-secondary text-secondary"
+                    : "bg-success text-white border border-success";
+                    var icon = isAvailable
+                    ? "fas fa-times-circle me-1"
+                    : "fas fa-check-circle me-1";
+                    var dayOfWeek = slot.SlotDate.ToString("dddd", new System.Globalization.CultureInfo("vi-VN"));
+
+                    <div class="rounded p-4 text-center shadow-sm min-w-200px @cardClass">
+                        <div class="fs-6 fw-bold text-uppercase">@dayOfWeek</div>
+                        <div class="fs-5">@slot.SlotDate.ToString("dd/MM/yyyy")</div>
+                        <div class="mt-2 d-flex align-items-center justify-content-center">
+                            <i class="@icon fa-lg"></i>
+                            <span class="fw-semibold">
+                                @(isAvailable ? "Chưa được thuê" : "Đã có người thuê")
+                            </span>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="text-muted">Chưa có ngày thuê nào được ghi nhận.</p>
+        }
+    </div>
+</div>

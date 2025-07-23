@@ -1,0 +1,109 @@
+﻿@model List<LaptopRentalManagement.BLL.DTOs.Response.LaptopResponse>
+
+<!-- Modal: Đăng cho thuê -->
+<div class="modal fade" id="rentOutModal" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<form method="post" asp-page-handler="RentOut" id="rentOutForm">
+				@Html.AntiForgeryToken()
+				<div class="modal-header">
+					<h5 class="modal-title">Đăng laptop cho thuê</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					@if (!Model.Any())
+					{
+						<div class="text-danger">Bạn chưa có laptop nào để đăng cho thuê.</div>
+					}
+					else
+					{
+						<div class="mb-3">
+							<label class="form-label">Chọn laptop của bạn</label>
+							<select class="form-select" id="laptopSelect" name="NewOrder.LaptopId" required>
+								@foreach (var laptop in Model)
+								{
+									<option value="@laptop.LaptopId" data-price="@laptop.PricePerDay ?? 0">
+										@laptop.Name
+									</option>
+								}
+							</select>
+						</div>
+
+						<div class="mb-3">
+							<label class="form-label">Giá thuê theo ngày</label>
+							<div id="pricePerDayDisplay" class="form-control bg-light">Chưa chọn</div>
+						</div>
+
+						<div class="row">
+							<div class="col-md-6 mb-3">
+								<label class="form-label">Ngày bắt đầu</label>
+								<input type="date" class="form-control" id="startDate" name="NewOrder.StartDate" required />
+							</div>
+							<div class="col-md-6 mb-3">
+								<label class="form-label">Ngày kết thúc</label>
+								<input type="date" class="form-control" id="endDate" name="NewOrder.EndDate" required />
+							</div>
+						</div>
+
+						<div class="mb-3">
+							<label class="form-label">Số ngày cho thuê</label>
+							<input type="hidden" name="NewOrder.TotalDate" id="hiddenTotalDate" />
+							<input type="text" class="form-control" id="rentalDays" readonly />
+						</div>
+					}
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Huỷ</button>
+					<button type="submit" class="btn btn-primary" @(Model.Any() ? "" : "disabled")>
+						<i class="fas fa-upload me-2"></i>Đăng cho thuê
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<script>
+	function updatePricePerDay() {
+		const laptopSelect = document.getElementById("laptopSelect");
+		const selectedOption = laptopSelect.options[laptopSelect.selectedIndex];
+		const price = parseFloat(selectedOption?.getAttribute("data-price")) || 0;
+		document.getElementById("pricePerDayDisplay").textContent = price > 0
+			? price.toLocaleString("vi-VN") + " đ/ngày"
+			: "Không có thông tin giá";
+	}
+
+	function updateRentalDays() {
+		const start = new Date(document.getElementById("startDate").value);
+		const end = new Date(document.getElementById("endDate").value);
+		const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+
+		document.getElementById("rentalDays").value = (!isNaN(days) && days > 0) ? `${days} ngày` : "";
+		document.getElementById("hiddenTotalDate").value = (!isNaN(days) && days > 0) ? days : 0;
+	}
+
+
+
+	document.addEventListener("DOMContentLoaded", function () {
+		const modal = document.getElementById("rentOutModal");
+
+		modal.addEventListener("shown.bs.modal", () => {
+			document.getElementById("laptopSelect").addEventListener("change", updatePricePerDay);
+			document.getElementById("startDate").addEventListener("change", updateRentalDays);
+			document.getElementById("endDate").addEventListener("change", updateRentalDays);
+
+			// Khởi động
+			updatePricePerDay();
+			updateRentalDays();
+		});
+
+		modal.addEventListener("hidden.bs.modal", () => {
+			const form = modal.querySelector("form");
+			form.reset();
+
+			// Reset UI
+			document.getElementById("pricePerDayDisplay").textContent = "Chưa chọn";
+			document.getElementById("rentalDays").value = "";
+		});
+	});
+</script>

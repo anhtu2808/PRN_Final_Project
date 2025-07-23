@@ -82,6 +82,21 @@ namespace LaptopRentalManagement.BLL.Mappings
             // Note: Removed invalid object mappings that were causing AutoMapper configuration errors
             // These mappings to System.Object with ForMember string-based configuration are not supported
             // If you need view models for API responses, create specific DTO classes instead
+
+            CreateMap<CreateOrderRequest, Order>()
+                .ForMember(dest => dest.StartDate, opt => opt.Ignore())
+				.ForMember(dest => dest.EndDate, opt => opt.Ignore());
+			CreateMap<Order, OrderResponse>()
+				 .ForMember(dest => dest.Owner, opt => opt.Ignore())
+				 .ForMember(dest => dest.Renter, opt => opt.Ignore())
+				 .ForMember(dest => dest.Laptop, opt => opt.Ignore());
+			CreateMap <CreateSlotRequest, Slot>();
+
+            CreateMap<Laptop, LaptopResponse>();
+            CreateMap<Account, AccountResponse>();
+            CreateMap<Slot, SlotResponse>()
+                 .ForMember(dest => dest.Order, opt => opt.Ignore())
+                 .ForMember(dest => dest.Laptop, opt => opt.Ignore());
         }
     }
 }
