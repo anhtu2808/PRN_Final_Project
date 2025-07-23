@@ -21,35 +21,22 @@ namespace LaptopRentalManagement.Pages.User
 			_laptopService = laptopService;
 			_orderService = orderService;
 		}
-
-		public List<OrderDto> Orders { get; set; } = new();
-		public IList<OrderResponse> RentalOrder { get; set; } = new List<OrderResponse>();
 		public IList<LaptopResponse> MyLaptops { get; set; } = new List<LaptopResponse>();
+		public IList<OrderResponse> MyRentalOrder { get; set; } = new List<OrderResponse>();
 
 		public async Task OnGet()
 		{
-			// Mock đơn mua
-			Orders = new List<OrderDto>
-		{
-			new OrderDto { OrderId = 101, CreatedAt = DateTime.Now.AddDays(-3), Status = "Đang xử lý" },
-			new OrderDto { OrderId = 102, CreatedAt = DateTime.Now.AddDays(-1), Status = "Đã giao" }
-		};
-
-			OrderFilter orderFilter = new();
+			OrderFilter orderFilter = new()
+			{
+				RenterId = 2
+			};
 			LaptopFilter laptopFilter = new()
 			{
 				AccountId = 1 //Nhớ đổi lại
 			};
 
-			RentalOrder = await _orderService.GetAllAsync(orderFilter);
+            MyRentalOrder = await _orderService.GetAllAsync(orderFilter);
 			MyLaptops = await _laptopService.GetAllAsync(laptopFilter);
-		}
-
-		public class OrderDto
-		{
-			public int OrderId { get; set; }
-			public DateTime CreatedAt { get; set; }
-			public string Status { get; set; }
-		}
+        }
 	}
 }
