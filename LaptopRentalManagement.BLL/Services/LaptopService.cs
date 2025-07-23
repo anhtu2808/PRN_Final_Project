@@ -42,10 +42,31 @@ public class LaptopService : ILaptopService
         return response;
     }
 
-    public Task<LaptopResponse> CreateAsync(CreateLaptopRequest request)
+    public async Task<LaptopResponse> CreateAsync(CreateLaptopRequest request)
     {
-        throw new NotImplementedException();
+        // map phần cơ bản
+        var laptop = _mapper.Map<Laptop>(request);
+        laptop.BrandId = request.BrandId;
+        laptop.AccountId = request.AccountId;
+
+        // nếu có categoryIds, load từng cái qua repo (EF sẽ tracking tự động)
+        if (request.CategoryIds?.Any() == true)
+        {
+            var cats = new List<Category>();
+            foreach (var id in request.CategoryIds)
+            {
+                var c = await _categoryRepository.GetByIdAsync(id);
+                if (c != null) cats.Add(c);
+            }
+
+            laptop.Categories = cats;
+        }
+
+        // lưu laptop (repo phải Add + SaveChangesAsync)
+        var created = await _laptopRepository.CreateAsync(laptop);
+        return _mapper.Map<LaptopResponse>(created);
     }
+
 
     public async Task<LaptopResponse> UpdateAsync(EditLaptopRequest request)
     {
@@ -68,8 +89,8 @@ public class LaptopService : ILaptopService
         return response;
     }
 
-    public Task DeleteAsync(int id)
+    public async Task DeleteAsync(int id)
     {
-        throw new NotImplementedException();
+        await _laptopRepository.DeleteAsync(id);
     }
 }

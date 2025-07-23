@@ -1,6 +1,5 @@
 @page
-@model Index
-
+@model LaptopRentalManagement.Pages.User.Laptops.Index
 @{
     ViewData["Title"] = "Manage Your Laptops";
     Layout = "~/Pages/Shared/_CustomerLayout.cshtml";
@@ -17,6 +16,12 @@
         <div class="col-md-9">
             <h3 class="mb-4">Your Listed Laptops</h3>
 
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addLaptopModal">
+                Add New Laptop
+            </button>
+
+            <!-- Laptop List -->
             @if (!Model.Laptops.Any())
             {
                 <div class="alert alert-info">You haven't listed any laptops yet.</div>
@@ -35,15 +40,118 @@
                                 <img class="card-img-top" src="@imageUrl" alt="@laptop.Name">
                                 <div class="card-body">
                                     <h5 class="card-title">@laptop.Name</h5>
+                                    <p class="card-text">@laptop.Description</p>
                                     <p class="card-text text-muted">@laptop.Brand?.Name</p>
                                     <p class="text-success fw-bold">@($"{laptop.PricePerDay:N0}₫ / day")</p>
-                                    <a class="btn btn-sm btn-outline-primary" href="/user/laptops/details/@laptop.LaptopId">View Details</a>
+                                    <p class="small">
+                                        CPU: @laptop.Cpu<br/>
+                                        RAM: @laptop.Ram GB<br/>
+                                        Storage: @laptop.Storage GB
+                                    </p>
+                                    <a class="btn btn-sm btn-outline-primary"
+                                       href="/user/laptops/details/@laptop.LaptopId">View Details</a>
                                 </div>
                             </div>
                         </div>
                     }
                 </div>
             }
+        </div>
+    </div>
+</div>
+
+<!-- Create Laptop Modal -->
+<div class="modal fade" id="addLaptopModal" tabindex="-1" aria-labelledby="addLaptopModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <form method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addLaptopModalLabel">Add New Laptop</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row gx-3">
+                        <!-- Left column -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Laptop Name</label>
+                                <input type="text" class="form-control" name="Name" required/>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Description</label>
+                                <textarea class="form-control" name="Description" rows="3"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Brand</label>
+                                <select class="form-select" name="BrandId" required>
+                                    <option value="">-- Select Brand --</option>
+                                    @foreach (var brand in Model.Brands)
+                                    {
+                                        <option value="@brand.BrandId">@brand.Name</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Image URL</label>
+                                <input type="url" class="form-control" name="ImageURL"/>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Price Per Day</label>
+                                <input type="number" class="form-control" name="PricePerDay" required min="0"/>
+                            </div>
+                        </div>
+
+                        <!-- Right column -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">CPU</label>
+                                <input type="text" class="form-control" name="Cpu" required/>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <label class="form-label">RAM (GB)</label>
+                                    <input type="number" class="form-control" name="Ram" required min="1"/>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label class="form-label">Storage (GB)</label>
+                                    <input type="number" class="form-control" name="Storage" required min="1"/>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Categories</label>
+                                <div class="row">
+                                    @foreach (var category in Model.Categories)
+                                    {
+                                        <div class="col-6">
+                                            <div class="form-check">
+                                                <input
+                                                    class="form-check-input"
+                                                    type="checkbox"
+                                                    name="CategoryIds"
+                                                    value="@category.CategoryId"
+                                                    id="cat_@category.CategoryId"/>
+                                                <label
+                                                    class="form-check-label"
+                                                    for="cat_@category.CategoryId">
+                                                    @category.Name
+                                                </label>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="AccountId" value="1"/>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Save Laptop</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

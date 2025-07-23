@@ -93,6 +93,13 @@ namespace LaptopRentalManagement.BLL.Mappings
             CreateMap<Laptop, LaptopResponse>();
             CreateMap<EditLaptopRequest, Laptop>()
                 .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<CreateLaptopRequest, Laptop>()
+                .ForMember(dest => dest.LaptopId, opt => opt.Ignore()) // Khóa chính do DB sinh
+                .ForMember(dest => dest.Categories,
+                    opt => opt.Ignore()) // Danh sách categories sẽ gán thủ công trong service
+                .ForMember(dest => dest.Brand,
+                    opt => opt.Ignore()) // Nếu bạn gán Brand navigation, hoặc map BrandId tự động
+                .ForMember(dest => dest.Account, opt => opt.Ignore()); // Owner sẽ set qua AccountId
 
             CreateMap<Account, AccountResponse>();
             CreateMap<Slot, SlotResponse>()
