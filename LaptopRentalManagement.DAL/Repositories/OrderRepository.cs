@@ -29,12 +29,17 @@ namespace LaptopRentalManagement.DAL.Repositories
 			return order;
 		}
 
-		public Task DeleteAsync(int id)
-		{
-			throw new NotImplementedException();
-		}
+        public async Task DeleteAsync(int id)
+        {
+            var order = await _context.Orders.FindAsync(id);
+            if (order != null)
+            {
+                _context.Orders.Remove(order);
+                await _context.SaveChangesAsync();
+            }
+        }
 
-		public async Task<IList<Order>> GetAllAsync(OrderFilter orderFilter)
+        public async Task<IList<Order>> GetAllAsync(OrderFilter orderFilter)
 		{
 			var query = _context.Set<Order>().AsQueryable();
 
@@ -76,9 +81,11 @@ namespace LaptopRentalManagement.DAL.Repositories
 
         }
 
-		public Task<Order> UpdateAsync(Order order)
+		public async Task<Order> UpdateAsync(Order order)
 		{
-			throw new NotImplementedException();
-		}
+            _context.Orders.Update(order);
+            await _context.SaveChangesAsync();
+            return order;
+        }
 	}
 }

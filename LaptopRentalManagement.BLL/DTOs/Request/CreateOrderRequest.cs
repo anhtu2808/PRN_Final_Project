@@ -9,9 +9,8 @@ namespace LaptopRentalManagement.BLL.DTOs.Request
 	public class CreateOrderRequest
 	{
 		public int LaptopId { get; set; }
-		public DateTime StartDate { get; set; }
-		public DateTime EndDate { get; set; }
-		public int TotalDate {  get; set; }
-		public int OwnerId { get; set; }
+		public IList<int> SlotIds { get; set; }
+		public decimal TotalCharge {  get; set; }
+		public int RenterId { get; set; }
 	}
 }

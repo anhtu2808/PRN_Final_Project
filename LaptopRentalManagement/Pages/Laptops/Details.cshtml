@@ -80,46 +80,48 @@
                 </div>
 
                 <!-- Booking Form -->
-                <div class="booking-form bg-light p-4 rounded mb-4">
-                    <h5 class="mb-3">Book This Laptop</h5>
-                    <form>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="startDate" class="form-label">Start Date</label>
-                                <input type="date" class="form-control" id="startDate" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="endDate" class="form-label">End Date</label>
-                                <input type="date" class="form-control" id="endDate" required>
-                            </div>
-                        </div>
+                <form method="post" class="booking-form bg-light p-4 rounded mb-4">
+                    @Html.AntiForgeryToken()
+                    <h5 class="mb-3">Chọn ngày thuê</h5>
 
-                        <div class="rental-summary mb-3 p-3 bg-white rounded">
-                            <div class="d-flex justify-content-between">
-                                <span>Duration:</span>
-                                <span id="duration">Select dates</span>
-                            </div>
-                            <div class="d-flex justify-content-between">
-                                <span>Daily rate:</span>
-                                <span>@Model.Laptop?.PricePerDay.ToString("N0")₫</span>
-                            </div>
-                            <hr>
-                            <div class="d-flex justify-content-between fw-bold">
-                                <span>Total:</span>
-                                <span id="totalPrice">₫0</span>
-                            </div>
-                        </div>
+                    <div class="row g-2 mb-3">
+                        @foreach (var slot in Model.Slots.OrderBy(s => s.SlotDate))
+                        {
+                            var isAvailable = slot.Status == "Available";
+                            var dateLabel = slot.SlotDate.ToString("dd/MM/yyyy");
+                            var id = $"slot_{slot.SlotId}";
 
-                        <div class="booking-actions">
-                            <button type="submit" class="btn btn-primary btn-lg w-100 mb-2">
-                                <i class="fas fa-shopping-cart me-2"></i>Book Now
-                            </button>
-                            <button type="button" class="btn btn-outline-primary w-100">
-                                <i class="fas fa-heart me-2"></i>Add to Wishlist
-                            </button>
+                            <div class="col-6 col-md-4 col-lg-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="@id" name="SelectedSlots" value="@slot.SlotId" @(isAvailable ? "" : "disabled") />
+                                    <label class="form-check-label @(isAvailable ? "" : "text-muted")" for="@id">
+                                        @dateLabel
+                                    </label>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="rental-summary mb-3 p-3 bg-white rounded">
+                        <div class="d-flex justify-content-between">
+                            <span>Ngày đã chọn:</span>
+                            <span id="selectedCount">0 ngày</span>
                         </div>
-                    </form>
-                </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Giá mỗi ngày:</span>
+                            <span>@Model.Laptop?.PricePerDay.ToString("N0")₫</span>
+                        </div>
+                        <hr />
+                        <div class="d-flex justify-content-between fw-bold">
+                            <span>Tổng tiền:</span>
+                            <span id="totalPrice">₫0</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg w-100 mb-2">
+                        <i class="fas fa-shopping-cart me-2"></i>Đặt thuê
+                    </button>
+                </form>
 
                 <!-- Quick Info -->
                 <div class="quick-info">
@@ -463,59 +465,19 @@
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Thumbnail image switching
-            const thumbnails = document.querySelectorAll('.thumbnail');
-            const mainImage = document.querySelector('.main-image img');
-
-            thumbnails.forEach(thumb => {
-                thumb.addEventListener('click', function () {
-                    // Remove active class from all thumbnails
-                    thumbnails.forEach(t => t.classList.remove('active'));
-                    // Add active class to clicked thumbnail
-                    this.classList.add('active');
-                    // Update main image
-                    mainImage.src = this.src.replace('w=150&h=100', 'w=600&h=400');
-                });
-            });
-
-            // Date selection and price calculation
-            const startDate = document.getElementById('startDate');
-            const endDate = document.getElementById('endDate');
-            const duration = document.getElementById('duration');
+            const slotCheckboxes = document.querySelectorAll('input[name="SelectedSlots"]');
+            const selectedCount = document.getElementById('selectedCount');
             const totalPrice = document.getElementById('totalPrice');
-            const dailyRate = 300000;
+            const dailyRate = @Model.Laptop?.PricePerDay ?? 0;
 
-            function calculatePrice() {
-                if (startDate.value && endDate.value) {
-                    const start = new Date(startDate.value);
-                    const end = new Date(endDate.value);
-                    const diffTime = Math.abs(end - start);
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // Include start day
-
-                    if (diffDays > 0) {
-                        duration.textContent = `${diffDays} day${diffDays > 1 ? 's' : ''}`;
-                        const total = diffDays * dailyRate;
-                        totalPrice.textContent = `₫${total.toLocaleString()}`;
-                    }
-                }
+            function updateSummary() {
+                const selected = Array.from(slotCheckboxes).filter(cb => cb.checked).length;
+                const total = selected * dailyRate;
+                selectedCount.textContent = `${selected} ngày`;
+                totalPrice.textContent = `₫${total.toLocaleString()}`;
             }
 
-            startDate.addEventListener('change', calculatePrice);
-            endDate.addEventListener('change', calculatePrice);
-
-            // Set minimum date to today
-            const today = new Date().toISOString().split('T')[0];
-            startDate.min = today;
-            endDate.min = today;
-
-            // Update end date minimum when start date changes
-            startDate.addEventListener('change', function () {
-                endDate.min = this.value;
-                if (endDate.value && endDate.value < this.value) {
-                    endDate.value = this.value;
-                }
-                calculatePrice();
-            });
+            slotCheckboxes.forEach(cb => cb.addEventListener('change', updateSummary));
         });
     </script>
-} 
+}

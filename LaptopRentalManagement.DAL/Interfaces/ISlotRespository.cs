@@ -10,8 +10,11 @@ namespace LaptopRentalManagement.DAL.Interfaces
 	public interface ISlotRespository
 	{
 		Task<Slot> CreateAsync(Slot slot);
-
-		Task<IList<Slot>> GetByOrderId(int orderId);
+        Task<Slot> Update(Slot slot);
+        Task<Slot?> GetById(int id);
+        Task<IList<Slot>> GetByOrderId(int orderId);
         Task<IList<Slot>> GetByLaptopId(int laptopId);
-    }
+
+		Task DeleteAsync(int id);
+	}
 }

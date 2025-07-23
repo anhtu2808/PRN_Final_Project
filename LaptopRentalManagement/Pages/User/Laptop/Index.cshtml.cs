@@ -52,5 +52,26 @@ namespace LaptopRentalManagement.Pages.User.Rental_orders
             return RedirectToPage();
         }
 
-    }
+        public async Task<IActionResult> OnPostApproveAsync(int orderId, int id)
+        {
+            await _orderService.ApproveAsync(orderId);
+            TempData["Success"] = $"Đã duyệt đơn #{orderId}.";
+            return RedirectToPage("/User/Laptop/Index", new { id });
+        }
+
+        public async Task<IActionResult> OnPostRejectAsync(int orderId, int id)
+        {
+            await _orderService.RejectAsync(orderId);
+            TempData["Success"] = $"Đã từ chối đơn #{orderId}.";
+            return RedirectToPage("/User/Laptop/Index", new { id });
+        }
+
+		public async Task<IActionResult> OnPostConfirmReturnAsync(int orderId, int id)
+		{
+			await _orderService.ConfirmReturn(orderId);
+			TempData["Success"] = $"Đơn #{orderId} đã được xác nhận là đã trả.";
+			return RedirectToPage("/User/Laptop/Index", new { id });
+		}
+
+	}
 }

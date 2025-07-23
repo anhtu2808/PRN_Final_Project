@@ -14,5 +14,9 @@ namespace LaptopRentalManagement.BLL.Interfaces
 		Task<IList<OrderResponse>> GetAllAsync(OrderFilter orderFilter);
 		Task<OrderResponse> CreateAsync(CreateOrderRequest request);
         Task<OrderResponse?> GetByIdAsync(int orderId);
-    }
+        Task<OrderResponse?> RejectAsync(int orderId);
+        Task<OrderResponse?> ApproveAsync(int orderId);
+
+		Task<OrderResponse?> ConfirmReturn(int orderId);
+	}
 }

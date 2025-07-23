@@ -27,6 +27,19 @@ namespace LaptopRentalManagement.DAL.Repositories
 			return slot;
 		}
 
+        public async Task<Slot> Update(Slot slot)
+		{
+            _context.Slots.Update(slot);
+            await _context.SaveChangesAsync();
+            return slot;
+        }
+
+        public async Task<Slot?> GetById(int id)
+		{
+			return await _context.Slots
+				.FirstOrDefaultAsync(s => s.SlotId == id);
+        }
+
         public async Task<IList<Slot>> GetByLaptopId(int laptopId)
         {
             return await _context.Slots
@@ -40,5 +53,15 @@ namespace LaptopRentalManagement.DAL.Repositories
 				.Where(s => s.OrderId == orderId)
 				.ToListAsync();
         }
-    }
+
+		public async Task DeleteAsync(int id)
+		{
+			var slot = await _context.Slots.FindAsync(id);
+			if (slot != null)
+			{
+				_context.Slots.Remove(slot);
+				await _context.SaveChangesAsync();
+			}
+		}
+	}
 }

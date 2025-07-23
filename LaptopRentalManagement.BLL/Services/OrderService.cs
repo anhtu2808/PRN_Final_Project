@@ -31,12 +31,62 @@ namespace LaptopRentalManagement.BLL.Services
 			_mapper = mapper;
 		}
 
-		public async Task<OrderResponse> CreateAsync(CreateOrderRequest request)
+        public async Task<OrderResponse?> ApproveAsync(int orderId)
+        {
+			OrderResponse? response = null;
+			Order? order = await _orderRepository.GetByIdAsync(orderId);
+			if (order != null) 
+			{
+				order.Status = "Renting";
+				IList<Slot> slots = await _slotRepository.GetByOrderId(orderId);
+				foreach (Slot slot in slots)
+				{
+					slot.Status = "Booked";
+					await _slotRepository.Update(slot);
+				}
+				await _orderRepository.UpdateAsync(order);
+				response = _mapper.Map<OrderResponse>(order);
+			}
+			return response;
+        }
+
+        public async Task<OrderResponse?> RejectAsync(int orderId)
+        {
+            OrderResponse? response = null;
+            Order? order = await _orderRepository.GetByIdAsync(orderId);
+            if (order != null)
+            {
+				IList<Slot> slots = await _slotRepository.GetByOrderId(orderId);
+				foreach (Slot slot in slots) 
+				{
+					slot.Status = "Available";
+					await _slotRepository.Update(slot);
+				}
+                await _orderRepository.DeleteAsync(order.OrderId);
+                response = _mapper.Map<OrderResponse>(order);
+            }
+            return response;
+        }
+
+        public async Task<OrderResponse> CreateAsync(CreateOrderRequest request)
 		{
 			Order order = _mapper.Map<Order>(request);
-			order.StartDate = DateOnly.FromDateTime(request.StartDate);
-			order.EndDate = DateOnly.FromDateTime(request.EndDate);
+			var laptop = await _laptopRepository.GetByIdAsync(request.LaptopId);
+			var owner = await _accountRepository.GetByIdAsync(laptop.AccountId);
+			order.OwnerId = owner.AccountId;
 			order = await _orderRepository.CreateAsync(order);
+
+			foreach (int index in request.SlotIds)
+			{
+				Slot? slot = await _slotRepository.GetById(index);
+				if (slot != null)
+				{
+					slot.Status = "Unavailable";
+					slot.OrderId = order.OrderId;
+					await _slotRepository.Update(slot);
+                }
+			}
+
 			OrderResponse response = _mapper.Map<OrderResponse>(order);
 
 			return response;
@@ -64,8 +114,6 @@ namespace LaptopRentalManagement.BLL.Services
 			if (order != null)
 			{
 				response = await buildOrderResponse(order);
-                IList<SlotResponse> slotResponse = _mapper.Map<IList<SlotResponse>>(await _slotRepository.GetByOrderId(orderId));
-				response.Slots = slotResponse;
             }
 			return response;
         }
@@ -75,6 +123,7 @@ namespace LaptopRentalManagement.BLL.Services
             OrderResponse response = _mapper.Map<OrderResponse>(order);
             LaptopResponse laptopResponse = _mapper.Map<LaptopResponse>(await _laptopRepository.GetByIdAsync(order.LaptopId));
             AccountResponse ownerResponse = _mapper.Map<AccountResponse>(await _accountRepository.GetByIdAsync(order.OwnerId));
+            IList<SlotResponse> slotResponse = _mapper.Map<IList<SlotResponse>>(await _slotRepository.GetByOrderId(order.OrderId));
             if (order.RenterId.HasValue)
             {
                 AccountResponse? renterResponse = _mapper.Map<AccountResponse>(await _accountRepository.GetByIdAsync(order.RenterId.Value));
@@ -83,8 +132,27 @@ namespace LaptopRentalManagement.BLL.Services
 
             response.Owner = ownerResponse;
             response.Laptop = laptopResponse;
+            response.Slots = slotResponse;
 
-			return response;
+            return response;
         }
-    }
+
+		public async Task<OrderResponse?> ConfirmReturn(int orderId)
+		{
+			OrderResponse? response = null;
+			Order? order = await _orderRepository.GetByIdAsync(orderId);
+			if (order != null)
+			{
+				order.Status = "Completed";
+				IList<Slot> slots = await _slotRepository.GetByOrderId(orderId);
+				foreach (Slot slot in slots)
+				{
+					await _slotRepository.DeleteAsync(slot.SlotId);
+				}
+				await _orderRepository.UpdateAsync(order);
+				response = _mapper.Map<OrderResponse>(order);
+			}
+			return response;
+		}
+	}
 }

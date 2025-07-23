@@ -42,22 +42,22 @@
         <div class="col-md-9">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <!-- Tab: Mua / Bán -->
+                    <!-- Tab: Rent / Manage -->
                     <ul class="nav nav-pills mb-3" id="orderTypeTab" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="buy-tab" data-bs-toggle="pill" data-bs-target="#buy-tab-pane" type="button" role="tab">Đơn mua</button>
+                            <button class="nav-link active" id="buy-tab" data-bs-toggle="pill" data-bs-target="#buy-tab-pane" type="button" role="tab">My Rentals</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="sell-tab" data-bs-toggle="pill" data-bs-target="#sell-tab-pane" type="button" role="tab">Laptop của tôi</button>
+                            <button class="nav-link" id="sell-tab" data-bs-toggle="pill" data-bs-target="#sell-tab-pane" type="button" role="tab">Manage Laptops</button>
                         </li>
                     </ul>
 
                     <div class="tab-content" id="orderTypeTabContent">
-                        <!-- Đã Thuê -->
+                        <!-- My Rentals -->
                         <div class="tab-pane fade show active" id="buy-tab-pane" role="tabpanel">
                             <div class="d-flex justify-content-end mb-3">
                                 <a href="/laptops" class="btn btn-primary">
-                                    <i class="fas fa-laptop me-2"></i>Thuê Laptop Ngay
+                                    <i class="fas fa-laptop me-2"></i>Rent a Laptop Now
                                 </a>
                             </div>
 
@@ -65,8 +65,8 @@
                             {
                                 <div class="text-center py-5 text-muted">
                                     <i class="fas fa-box-open fa-3x mb-3"></i>
-                                    <h5>Chưa có đơn mua</h5>
-                                    <p>Bạn chưa thực hiện đơn hàng nào.</p>
+                                    <h5>No Orders Found</h5>
+                                    <p>You haven't placed any rental orders yet.</p>
                                 </div>
                             }
                             else
@@ -77,7 +77,7 @@
                                         <div class="list-group-item d-flex justify-content-between align-items-center">
                                             <div>
                                                 <h6 class="mb-1">Order #@order.OrderId</h6>
-                                                <small class="text-muted">Ngày đặt: @order.CreatedAt:dd/MM/yyyy</small>
+                                                <small class="text-muted">Placed on: @order.CreatedAt:dd/MM/yyyy</small>
                                             </div>
                                             <span class="badge bg-secondary">@order.Status</span>
                                         </div>
@@ -86,14 +86,14 @@
                             }
                         </div>
 
-                        <!-- Quản lí Laptop -->
+                        <!-- Manage Laptops -->
                         <div class="tab-pane fade" id="sell-tab-pane" role="tabpanel">
                             @if (!Model.MyLaptops.Any())
                             {
                                 <div class="text-center py-5 text-muted">
                                     <i class="fas fa-store fa-3x mb-3"></i>
-                                    <h5>Chưa có laptop nào</h5>
-                                    <p>Bạn chưa có laptop nào để cho thuê.</p>
+                                    <h5>No Laptops Found</h5>
+                                    <p>You don't have any laptops listed for rent.</p>
                                 </div>
                             }
                             else
@@ -112,14 +112,14 @@
                                                     }
                                                     else
                                                     {
-                                                        <h6 class="mb-1"><strong>Chưa xác minh</strong></h6>
+                                                        <h6 class="mb-1"><strong>Unverified</strong></h6>
                                                     }
                                                 </div>
                                             </div>
 
                                             <div class="d-flex align-items-center gap-2">
                                                 <span class="badge bg-success">@order.Status</span>
-                                                <a href="/user/laptop/@order.LaptopId" class="btn btn-sm btn-outline-primary">Chi tiết</a>
+                                                <a href="/user/laptop/@order.LaptopId" class="btn btn-sm btn-outline-primary">View Details</a>
                                             </div>
                                         </div>
                                     }
