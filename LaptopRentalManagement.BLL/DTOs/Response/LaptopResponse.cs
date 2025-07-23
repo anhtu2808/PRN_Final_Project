@@ -17,4 +17,6 @@ public class LaptopResponse
     public int Storage { get; set; }
     public string Status { get; set; } = null!;
     public DateTime CreatedAt { get; set; }
+
+    public IList<SlotResponse>? Slots { get; set; }
 }

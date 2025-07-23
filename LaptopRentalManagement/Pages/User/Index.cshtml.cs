@@ -11,22 +11,20 @@ namespace LaptopRentalManagement.Pages.User
 {
     public class IndexModel : PageModel
     {
+        private readonly ISlotService _slotService;
         private readonly IOrderService _orderService;
         private readonly ILaptopService _laptopService;
 
-        public IndexModel(IOrderService orderService, ILaptopService laptopService)
+        public IndexModel(ISlotService slotService, ILaptopService laptopService, IOrderService orderService)
         {
-			_orderService = orderService;
+            _slotService = slotService;
             _laptopService = laptopService;
-
+            _orderService = orderService;
 		}
 
 		public List<OrderDto> Orders { get; set; } = new();
 		public IList<OrderResponse> RentalOrder { get; set; } = new List<OrderResponse>();
 		public IList<LaptopResponse> MyLaptops { get; set; } = new List<LaptopResponse>();
-
-		[BindProperty]
-		public CreateOrderRequest NewOrder { get; set; }
 
 		public async Task OnGet()
         {
@@ -46,26 +44,6 @@ namespace LaptopRentalManagement.Pages.User
             RentalOrder = await _orderService.GetAllAsync(orderFilter);
             MyLaptops = await _laptopService.GetAllAsync(laptopFilter);
         }
-
-        public async Task<IActionResult> OnPostRentOutAsync()
-        {
-            // var currentUserId = int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId) ? userId : 0;
-            var currentUserId = 1;
-			NewOrder.OwnerId = currentUserId;
-			try
-			{
-				await _orderService.CreateAsync(NewOrder);
-				TempData["Success"] = "Đăng cho thuê thành công!";
-			}
-			catch (Exception ex)
-			{
-				// Log lỗi nếu cần
-				TempData["Error"] = "Có lỗi xảy ra khi tạo đơn hàng: " + ex.Message;
-			}
-
-			return RedirectToPage();
-		}
-
 
 		public class OrderDto
         {

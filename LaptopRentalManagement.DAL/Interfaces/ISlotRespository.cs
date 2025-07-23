@@ -12,5 +12,6 @@ namespace LaptopRentalManagement.DAL.Interfaces
 		Task<Slot> CreateAsync(Slot slot);
 
 		Task<IList<Slot>> GetByOrderId(int orderId);
-	}
+        Task<IList<Slot>> GetByLaptopId(int laptopId);
+    }
 }

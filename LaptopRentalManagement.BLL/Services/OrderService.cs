@@ -37,20 +37,6 @@ namespace LaptopRentalManagement.BLL.Services
 			order.StartDate = DateOnly.FromDateTime(request.StartDate);
 			order.EndDate = DateOnly.FromDateTime(request.EndDate);
 			order = await _orderRepository.CreateAsync(order);
-
-			for (var i = request.StartDate; i <= request.EndDate; i = i.AddDays(1))
-			{
-				CreateSlotRequest createSlotRequest = new()
-				{
-					LaptopId = request.LaptopId,
-					OrderId = order.OrderId,
-					SlotDate = DateOnly.FromDateTime(i),
-					Status = "Available"
-				};
-				Slot slot = _mapper.Map<Slot>(createSlotRequest);
-				await _slotRepository.CreateAsync(slot);
-			}
-
 			OrderResponse response = _mapper.Map<OrderResponse>(order);
 
 			return response;

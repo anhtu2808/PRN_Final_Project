@@ -22,8 +22,7 @@ namespace LaptopRentalManagement.BLL.DTOs.Response
 
 		public LaptopResponse Laptop { get; set; } = null!;
 
-		public IList<SlotResponse>? Slots { get; set; }
+        public IList<SlotResponse>? Slots { get; set; }
 
-
-	}
+    }
 }

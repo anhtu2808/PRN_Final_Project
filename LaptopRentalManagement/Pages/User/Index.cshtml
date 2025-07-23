@@ -48,7 +48,7 @@
                             <button class="nav-link active" id="buy-tab" data-bs-toggle="pill" data-bs-target="#buy-tab-pane" type="button" role="tab">Đơn mua</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="sell-tab" data-bs-toggle="pill" data-bs-target="#sell-tab-pane" type="button" role="tab">Đơn bán</button>
+                            <button class="nav-link" id="sell-tab" data-bs-toggle="pill" data-bs-target="#sell-tab-pane" type="button" role="tab">Laptop của tôi</button>
                         </li>
                     </ul>
 
@@ -86,42 +86,41 @@
                             }
                         </div>
 
-                        <!-- Đơn Thuê -->
+                        <!-- Quản lí Laptop -->
                         <div class="tab-pane fade" id="sell-tab-pane" role="tabpanel">
-                            <div class="d-flex justify-content-end mb-3">
-                                <a href="#" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#rentOutModal">
-                                    <i class="fas fa-laptop-house me-2"></i>Đăng cho thuê
-                                </a>
-                            </div>
-
-                            @if (!Model.RentalOrder.Any())
+                            @if (!Model.MyLaptops.Any())
                             {
                                 <div class="text-center py-5 text-muted">
                                     <i class="fas fa-store fa-3x mb-3"></i>
-                                    <h5>Chưa có đơn bán</h5>
-                                    <p>Chưa có khách hàng nào thuê laptop của bạn.</p>
+                                    <h5>Chưa có laptop nào</h5>
+                                    <p>Bạn chưa có laptop nào để cho thuê.</p>
                                 </div>
                             }
                             else
                             {
                                 <div class="list-group">
-                                    @foreach (var order in Model.RentalOrder)
+                                    @foreach (var order in Model.MyLaptops)
                                     {
-                                        <div class="list-group-item d-flex justify-content-between align-items-center">
-                                            <div>
-                                                @if (order.Renter?.Name != null)
-                                                {
-                                                    <h6 class="mb-1"><strong>Đơn thuê của @order.Renter.Name</strong></h6>
-                                                }
-                                                else
-                                                {
-                                                    <h6 class="mb-1"><strong>Chưa có người thuê</strong></h6>
-                                                }
-                                                <small>Laptop: @(order.Laptop?.Name ?? "Không rõ")</small><br />
-                                                <small class="text-muted">Ngày thuê khả dụng: @order.StartDate.ToString("dd/MM/yyyy") - @order.EndDate.ToString("dd/MM/yyyy")</small><br />
+                                        <div class="list-group-item d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                                            <div class="d-flex align-items-center gap-3">
+                                                <img src="@order.ImageURL" alt="@order.Name" class="rounded" style="width: 120px; height: 100px; object-fit: cover;" />
+
+                                                <div>
+                                                    @if (!string.IsNullOrEmpty(order.Name))
+                                                    {
+                                                        <h6 class="mb-1">Laptop: <strong>@order.Name</strong></h6>
+                                                    }
+                                                    else
+                                                    {
+                                                        <h6 class="mb-1"><strong>Chưa xác minh</strong></h6>
+                                                    }
+                                                </div>
                                             </div>
-                                            <span class="badge bg-success">@order.Status</span>
-                                            <a href="/user/rental-orders/@order.OrderId" class="btn btn-sm btn-link">Chi tiết</a>
+
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="badge bg-success">@order.Status</span>
+                                                <a href="/user/laptop/@order.LaptopId" class="btn btn-sm btn-outline-primary">Chi tiết</a>
+                                            </div>
                                         </div>
                                     }
                                 </div>
@@ -134,4 +133,3 @@
     </div>
 </div>
 
-@await Html.PartialAsync("_RentOutModal", Model.MyLaptops)
