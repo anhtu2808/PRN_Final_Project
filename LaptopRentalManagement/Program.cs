@@ -45,27 +45,30 @@ builder.Services.AddAutoMapper(typeof(AutoMapperProfile), typeof(AutoMapperProfi
 // Add SignalR
 builder.Services.AddSignalR();
 
-// Register Repositories
-builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-
-// Register Business Services
-builder.Services.AddScoped<ICategoryService, CategoryService>();
-
 // Register repositories
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ILaptopRepository, LaptopRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<ISlotRespository, SlotRepository>();
 
 // Register services
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ILaptopService, LaptopService>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
-
 
 // Register Hub Service
 builder.Services.AddScoped<IHubService, HubService>();
 
 // Register other services using SignalR
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IHubService, HubService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<ISlotService, SlotService>();
 
 var app = builder.Build();
 

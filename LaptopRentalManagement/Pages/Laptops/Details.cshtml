@@ -1,4 +1,5 @@
 @page "{id:int}"
+@using LaptopRentalManagement.BLL.DTOs.Response
 @model LaptopRentalManagement.Pages.Laptops.DetailsModel
 @{
     ViewData["Title"] = "Laptop Details";
@@ -11,7 +12,7 @@
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/">Home</a></li>
             <li class="breadcrumb-item"><a href="/laptops">Laptops</a></li>
-            <li class="breadcrumb-item active" aria-current="page">MacBook Pro M2 14"</li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Laptop?.Name</li>
         </ol>
     </nav>
 
@@ -21,35 +22,21 @@
             <div class="laptop-detail-images">
                 <!-- Main Image -->
                 <div class="main-image mb-3">
-                    <img src="https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=600&h=400&fit=crop" 
-                         alt="MacBook Pro M2" class="img-fluid rounded shadow">
+                    <img
+                        src="https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=600&h=400&fit=crop"
+                        alt="@Model.Laptop?.Name" class="img-fluid rounded shadow">
                     <div class="image-badges">
-                        <span class="badge bg-primary">Featured</span>
-                        <span class="badge bg-success">Available</span>
+                        @if (Model.Laptop?.Status == "Available")
+                        {
+                            <span class="badge bg-success">Available</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Rented</span>
+                        }
                     </div>
                 </div>
 
-                <!-- Thumbnail Images -->
-                <div class="thumbnail-images">
-                    <div class="row">
-                        <div class="col-3">
-                            <img src="https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=150&h=100&fit=crop" 
-                                 alt="MacBook Pro Front" class="img-fluid rounded thumbnail active">
-                        </div>
-                        <div class="col-3">
-                            <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=150&h=100&fit=crop" 
-                                 alt="MacBook Pro Side" class="img-fluid rounded thumbnail">
-                        </div>
-                        <div class="col-3">
-                            <img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=150&h=100&fit=crop" 
-                                 alt="MacBook Pro Back" class="img-fluid rounded thumbnail">
-                        </div>
-                        <div class="col-3">
-                            <img src="https://images.unsplash.com/photo-1563191161-60d3069e64ac?w=150&h=100&fit=crop" 
-                                 alt="MacBook Pro Open" class="img-fluid rounded thumbnail">
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -58,9 +45,21 @@
             <div class="laptop-detail-info">
                 <!-- Brand & Title -->
                 <div class="laptop-header mb-3">
-                    <div class="laptop-brand h6 text-primary">Apple</div>
-                    <h1 class="laptop-title h2 mb-2">MacBook Pro M2 14"</h1>
-                    <div class="laptop-subtitle text-muted">Professional laptop for creative work and development</div>
+                    <div class="laptop-brand h6 text-primary">@Model.Laptop?.Brand?.Name</div>
+                    <h1 class="laptop-title h2 mb-2">@Model.Laptop?.Name</h1>
+                    <div class="laptop-subtitle text-muted">High-performance laptop suitable for work, study, and
+                        entertainment.
+                    </div>
+                </div>
+                <!--User Profile -->
+                <div class="laptop-owner mb-3">
+                    <div class="fw-bold">Rented by:</div>
+                    <div class="d-flex align-items-center mt-1">
+                        <div>
+                            <div>@Model.Laptop?.Owner.Name</div>
+                            <small class="text-muted">@Model.Laptop?.Owner?.Email</small>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Rating & Reviews -->
@@ -76,55 +75,53 @@
                 </div>
 
                 <!-- Pricing -->
-                <div class="laptop-pricing mb-4">
-                    <div class="price-daily h3 text-primary mb-2">₫300,000 <span class="price-label h6 text-muted">per day</span></div>
-                    <div class="price-breakdown text-muted">
-                        <div>Weekly: ₫1,800,000 (save 15%)</div>
-                        <div>Monthly: ₫6,900,000 (save 23%)</div>
-                    </div>
+                <div class="price-daily h3 text-primary mb-2">
+                    @Model.Laptop?.PricePerDay.ToString("N0") ₫ <span class="price-label h6 text-muted">per day</span>
                 </div>
 
                 <!-- Booking Form -->
-                <div class="booking-form bg-light p-4 rounded mb-4">
-                    <h5 class="mb-3">Book This Laptop</h5>
-                    <form>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="startDate" class="form-label">Start Date</label>
-                                <input type="date" class="form-control" id="startDate" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="endDate" class="form-label">End Date</label>
-                                <input type="date" class="form-control" id="endDate" required>
-                            </div>
-                        </div>
+                <form method="post" class="booking-form bg-light p-4 rounded mb-4">
+                    @Html.AntiForgeryToken()
+                    <h5 class="mb-3">Chọn ngày thuê</h5>
 
-                        <div class="rental-summary mb-3 p-3 bg-white rounded">
-                            <div class="d-flex justify-content-between">
-                                <span>Duration:</span>
-                                <span id="duration">Select dates</span>
-                            </div>
-                            <div class="d-flex justify-content-between">
-                                <span>Daily rate:</span>
-                                <span>₫300,000</span>
-                            </div>
-                            <hr>
-                            <div class="d-flex justify-content-between fw-bold">
-                                <span>Total:</span>
-                                <span id="totalPrice">₫0</span>
-                            </div>
-                        </div>
+                    <div class="row g-2 mb-3">
+                        @foreach (var slot in Model.Slots.OrderBy(s => s.SlotDate))
+                        {
+                            var isAvailable = slot.Status == "Available";
+                            var dateLabel = slot.SlotDate.ToString("dd/MM/yyyy");
+                            var id = $"slot_{slot.SlotId}";
 
-                        <div class="booking-actions">
-                            <button type="submit" class="btn btn-primary btn-lg w-100 mb-2">
-                                <i class="fas fa-shopping-cart me-2"></i>Book Now
-                            </button>
-                            <button type="button" class="btn btn-outline-primary w-100">
-                                <i class="fas fa-heart me-2"></i>Add to Wishlist
-                            </button>
+                            <div class="col-6 col-md-4 col-lg-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="@id" name="SelectedSlots" value="@slot.SlotId" @(isAvailable ? "" : "disabled") />
+                                    <label class="form-check-label @(isAvailable ? "" : "text-muted")" for="@id">
+                                        @dateLabel
+                                    </label>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="rental-summary mb-3 p-3 bg-white rounded">
+                        <div class="d-flex justify-content-between">
+                            <span>Ngày đã chọn:</span>
+                            <span id="selectedCount">0 ngày</span>
                         </div>
-                    </form>
-                </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Giá mỗi ngày:</span>
+                            <span>@Model.Laptop?.PricePerDay.ToString("N0")₫</span>
+                        </div>
+                        <hr />
+                        <div class="d-flex justify-content-between fw-bold">
+                            <span>Tổng tiền:</span>
+                            <span id="totalPrice">₫0</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg w-100 mb-2">
+                        <i class="fas fa-shopping-cart me-2"></i>Đặt thuê
+                    </button>
+                </form>
 
                 <!-- Quick Info -->
                 <div class="quick-info">
@@ -158,22 +155,26 @@
         <div class="col-12">
             <ul class="nav nav-tabs" id="laptopDetailTabs" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="specs-tab" data-bs-toggle="tab" data-bs-target="#specs" type="button">
+                    <button class="nav-link active" id="specs-tab" data-bs-toggle="tab" data-bs-target="#specs"
+                            type="button">
                         <i class="fas fa-microchip me-2"></i>Specifications
                     </button>
                 </li>
+                @* <li class="nav-item" role="presentation"> *@
+                @*     <button class="nav-link" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" *@
+                @*             type="button"> *@
+                @*         <i class="fas fa-info-circle me-2"></i>Description *@
+                @*     </button> *@
+                @* </li> *@
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button">
-                        <i class="fas fa-info-circle me-2"></i>Description
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button">
+                    <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews"
+                            type="button">
                         <i class="fas fa-star me-2"></i>Reviews (127)
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="policies-tab" data-bs-toggle="tab" data-bs-target="#policies" type="button">
+                    <button class="nav-link" id="policies-tab" data-bs-toggle="tab" data-bs-target="#policies"
+                            type="button">
                         <i class="fas fa-file-contract me-2"></i>Rental Policies
                     </button>
                 </li>
@@ -186,47 +187,44 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <h6 class="fw-bold">Processor</h6>
-                                <p>Apple M2 Pro chip with 12-core CPU and 19-core GPU</p>
+                                <p>@Model.Laptop?.Cpu</p>
 
                                 <h6 class="fw-bold">Memory</h6>
-                                <p>16GB unified memory</p>
+                                <p>@Model.Laptop?.Ram GB RAM</p>
 
                                 <h6 class="fw-bold">Storage</h6>
-                                <p>512GB SSD storage</p>
-
-                                <h6 class="fw-bold">Display</h6>
-                                <p>14.2-inch Liquid Retina XDR display<br>
-                                3024×1964 resolution at 254 pixels per inch</p>
+                                <p>@Model.Laptop?.Storage GB SSD</p>
                             </div>
                             <div class="col-md-6">
-                                <h6 class="fw-bold">Graphics</h6>
-                                <p>19-core GPU<br>
-                                16-core Neural Engine</p>
+                                <h6 class="fw-bold">Status</h6>
+                                <p>@Model.Laptop?.Status</p>
 
-                                <h6 class="fw-bold">Connectivity</h6>
-                                <p>Three Thunderbolt 4 ports<br>
-                                HDMI port, SDXC card slot<br>
-                                MagSafe 3 port</p>
+                                <h6 class="fw-bold">Brand</h6>
+                                <p>@Model.Laptop?.Brand?.Name</p>
 
-                                <h6 class="fw-bold">Battery</h6>
-                                <p>Up to 18 hours battery life<br>
-                                70-watt-hour lithium-polymer battery</p>
+                                <h6 class="fw-bold">Categories</h6>
+                                <p>
+                                    @foreach (var category in Model.Laptop?.Categories ?? new List<CategoryResponse>())
+                                    {
+                                        @category.Name<br/>
+                                    }
+                                </p>
 
-                                <h6 class="fw-bold">Dimensions</h6>
-                                <p>Height: 1.55 cm<br>
-                                Width: 31.26 cm<br>
-                                Depth: 22.12 cm<br>
-                                Weight: 1.6 kg</p>
+                                <h6 class="fw-bold">Listed On</h6>
+                                <p>@Model.Laptop?.CreatedAt.ToString("dd/MM/yyyy")</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
+
                 <!-- Description -->
                 <div class="tab-pane fade" id="description" role="tabpanel">
                     <div class="description-content p-4">
                         <h5>About This Laptop</h5>
-                        <p>The MacBook Pro M2 14" is designed for professionals who demand the ultimate in performance and portability. With the revolutionary M2 Pro chip, this laptop delivers incredible speed and efficiency for demanding workflows.</p>
+                        <p>The MacBook Pro M2 14" is designed for professionals who demand the ultimate in performance
+                            and portability. With the revolutionary M2 Pro chip, this laptop delivers incredible speed
+                            and efficiency for demanding workflows.</p>
 
                         <h6>Perfect For:</h6>
                         <ul>
@@ -324,7 +322,7 @@
                                     <div class="review-date text-muted">2 days ago</div>
                                 </div>
                                 <div class="review-text">
-                                    Perfect for my video editing work. The M2 chip handles 4K footage without any lag. 
+                                    Perfect for my video editing work. The M2 chip handles 4K footage without any lag.
                                     Great battery life and the display is stunning. Highly recommended!
                                 </div>
                             </div>
@@ -344,7 +342,8 @@
                                     <div class="review-date text-muted">1 week ago</div>
                                 </div>
                                 <div class="review-text">
-                                    Excellent laptop for development work. Very fast compilation times and smooth multitasking. 
+                                    Excellent laptop for development work. Very fast compilation times and smooth
+                                    multitasking.
                                     The rental process was smooth and delivery was on time.
                                 </div>
                             </div>
@@ -358,7 +357,7 @@
                 <div class="tab-pane fade" id="policies" role="tabpanel">
                     <div class="policies-content p-4">
                         <h5>Rental Terms & Conditions</h5>
-                        
+
                         <h6>Rental Period</h6>
                         <ul>
                             <li>Minimum rental period: 1 day</li>
@@ -399,122 +398,48 @@
         <div class="col-12">
             <h3 class="mb-4">You Might Also Like</h3>
             <div class="row">
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="laptop-card">
-                        <div class="laptop-image">
-                            <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=300&fit=crop" alt="MacBook Air M2" class="img-fluid">
-                        </div>
-                        <div class="laptop-info">
-                            <div class="laptop-brand">Apple</div>
-                            <h6 class="laptop-title">MacBook Air M2 13"</h6>
-                            <div class="price-daily">₫250,000 <span class="price-label">per day</span></div>
-                            <a href="/laptops/2" class="btn btn-outline-primary btn-sm mt-2">View Details</a>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="laptop-card">
-                        <div class="laptop-image">
-                            <img src="https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=400&h=300&fit=crop" alt="Dell XPS 13" class="img-fluid">
-                        </div>
-                        <div class="laptop-info">
-                            <div class="laptop-brand">Dell</div>
-                            <h6 class="laptop-title">XPS 13 Plus</h6>
-                            <div class="price-daily">₫200,000 <span class="price-label">per day</span></div>
-                            <a href="/laptops/3" class="btn btn-outline-primary btn-sm mt-2">View Details</a>
+                @foreach (var laptop in Model.SimilarLaptops)
+                {
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="laptop-card">
+                            <div class="laptop-image">
+                                <img
+                                    src="@(string.IsNullOrEmpty(laptop.ImageURL) ? "https://techterms.com/img/xl/laptop_586.png" : laptop.ImageURL)"
+                                    alt="@laptop.Name" class="img-fluid">
+                            </div>
+                            <div class="laptop-info">
+                                <div class="laptop-brand">@laptop.Brand.Name</div>
+                                <h6 class="laptop-title">@laptop.Name</h6>
+                                <div class="price-daily">@($"{laptop.PricePerDay:N0}₫") <span class="price-label">per day</span>
+                                </div>
+                                <a href="/laptops/details/@laptop.LaptopId" class="btn btn-outline-primary btn-sm mt-2">View
+                                    Details</a>
+                            </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="laptop-card">
-                        <div class="laptop-image">
-                            <img src="https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=400&h=300&fit=crop" alt="Lenovo ThinkPad" class="img-fluid">
-                        </div>
-                        <div class="laptop-info">
-                            <div class="laptop-brand">Lenovo</div>
-                            <h6 class="laptop-title">ThinkPad X1 Carbon</h6>
-                            <div class="price-daily">₫220,000 <span class="price-label">per day</span></div>
-                            <a href="/laptops/4" class="btn btn-outline-primary btn-sm mt-2">View Details</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="laptop-card">
-                        <div class="laptop-image">
-                            <img src="https://images.unsplash.com/photo-1625842268584-8f3296236761?w=400&h=300&fit=crop" alt="HP EliteBook" class="img-fluid">
-                        </div>
-                        <div class="laptop-info">
-                            <div class="laptop-brand">HP</div>
-                            <h6 class="laptop-title">EliteBook 850 G9</h6>
-                            <div class="price-daily">₫180,000 <span class="price-label">per day</span></div>
-                            <a href="/laptops/5" class="btn btn-outline-primary btn-sm mt-2">View Details</a>
-                        </div>
-                    </div>
-                </div>
+                }
             </div>
         </div>
     </div>
+
 </div>
 
 @section Scripts {
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Thumbnail image switching
-            const thumbnails = document.querySelectorAll('.thumbnail');
-            const mainImage = document.querySelector('.main-image img');
-            
-            thumbnails.forEach(thumb => {
-                thumb.addEventListener('click', function() {
-                    // Remove active class from all thumbnails
-                    thumbnails.forEach(t => t.classList.remove('active'));
-                    // Add active class to clicked thumbnail
-                    this.classList.add('active');
-                    // Update main image
-                    mainImage.src = this.src.replace('w=150&h=100', 'w=600&h=400');
-                });
-            });
-
-            // Date selection and price calculation
-            const startDate = document.getElementById('startDate');
-            const endDate = document.getElementById('endDate');
-            const duration = document.getElementById('duration');
+        document.addEventListener('DOMContentLoaded', function () {
+            const slotCheckboxes = document.querySelectorAll('input[name="SelectedSlots"]');
+            const selectedCount = document.getElementById('selectedCount');
             const totalPrice = document.getElementById('totalPrice');
-            const dailyRate = 300000;
+            const dailyRate = @Model.Laptop?.PricePerDay ?? 0;
 
-            function calculatePrice() {
-                if (startDate.value && endDate.value) {
-                    const start = new Date(startDate.value);
-                    const end = new Date(endDate.value);
-                    const diffTime = Math.abs(end - start);
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // Include start day
-                    
-                    if (diffDays > 0) {
-                        duration.textContent = `${diffDays} day${diffDays > 1 ? 's' : ''}`;
-                        const total = diffDays * dailyRate;
-                        totalPrice.textContent = `₫${total.toLocaleString()}`;
-                    }
-                }
+            function updateSummary() {
+                const selected = Array.from(slotCheckboxes).filter(cb => cb.checked).length;
+                const total = selected * dailyRate;
+                selectedCount.textContent = `${selected} ngày`;
+                totalPrice.textContent = `₫${total.toLocaleString()}`;
             }
 
-            startDate.addEventListener('change', calculatePrice);
-            endDate.addEventListener('change', calculatePrice);
-
-            // Set minimum date to today
-            const today = new Date().toISOString().split('T')[0];
-            startDate.min = today;
-            endDate.min = today;
-
-            // Update end date minimum when start date changes
-            startDate.addEventListener('change', function() {
-                endDate.min = this.value;
-                if (endDate.value && endDate.value < this.value) {
-                    endDate.value = this.value;
-                }
-                calculatePrice();
-            });
+            slotCheckboxes.forEach(cb => cb.addEventListener('change', updateSummary));
         });
     </script>
-} 
+}

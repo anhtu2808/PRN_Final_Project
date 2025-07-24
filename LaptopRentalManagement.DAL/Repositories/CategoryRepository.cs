@@ -1,8 +1,9 @@
 using LaptopRentalManagement.DAL.Context;
 using LaptopRentalManagement.DAL.Entities;
+using LaptopRentalManagement.DAL.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace LaptopRentalManagement.DAL.Interfaces;
+namespace LaptopRentalManagement.DAL.Repositories;
 
 public class CategoryRepository : ICategoryRepository
 {

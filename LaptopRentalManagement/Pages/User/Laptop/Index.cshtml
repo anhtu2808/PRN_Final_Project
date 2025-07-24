@@ -1,0 +1,157 @@
+﻿@page "{id:int}"
+@model LaptopRentalManagement.Pages.User.Rental_orders.IndexModel
+@{
+	ViewData["Title"] = "Laptop Rental Details";
+	Layout = "~/Pages/Shared/_CustomerLayout.cshtml";
+}
+
+<div class="container py-4">
+    <div class="text-end mb-3">
+        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#rentOutModal">
+            <i class="fas fa-laptop-house me-2"></i>Click for Rent
+        </button>
+    </div>
+    <h2 class="mb-4">Laptop Details: @(Model.Laptop?.Name ?? "Unknown")</h2>
+
+    <div class="row">
+        <div class="col-md-6">
+            <img src="@Model.Laptop.ImageURL" class="img-fluid rounded shadow-sm" alt="Laptop image" />
+        </div>
+        <div class="col-md-6">
+            <h4>@Model.Laptop.Name</h4>
+            <p><strong>Brand:</strong> @Model.Laptop.Brand.Name</p>
+            <p><strong>Price per day:</strong> @Model.Laptop.PricePerDay.ToString("N0") đ</p>
+            <p><strong>CPU:</strong> @Model.Laptop.Cpu</p>
+            <p><strong>RAM:</strong> @Model.Laptop.Ram GB</p>
+            <p><strong>Storage:</strong> @Model.Laptop.Storage GB</p>
+            <p><strong>Owner:</strong> @Model.Laptop.Owner.Name</p>
+        </div>
+    </div>
+
+    <hr class="my-4" />
+
+    <h4 class="mb-3">Rental History</h4>
+    @if (Model.Orders != null && Model.Orders.Any())
+    {
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Renter</th>
+                    <th>Rental Dates</th>
+                    <th>Total Days</th>
+                    <th>Status</th>
+                    <th>Total Charge</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model.Orders.OrderByDescending(o => o.OrderId))
+                {
+                    <tr>
+                        <td>@order.OrderId</td>
+                        <td>@(order.Renter?.Name ?? "Not assigned")</td>
+                        <td>@string.Join(", ", order.Slots.Select(s => s.SlotDate.ToString("dd/MM/yyyy")))</td>
+                        <td>@order.Slots.Count</td>
+                        <td>@order.Status</td>
+                        <td>@order.TotalCharge.ToString("N0") đ</td>
+                        <td class="text-nowrap">
+                            @if (order.Status == "Renting")
+                            {
+                                <form method="post" asp-page-handler="ConfirmReturn" asp-route-orderId="@order.OrderId" asp-route-id="@Model.Laptop.LaptopId" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-success">
+                                        <i class="fas fa-check me-1"></i><strong>Confirm Return</strong>
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <form method="post" asp-page-handler="Approve" asp-route-orderId="@order.OrderId" asp-route-id="@Model.Laptop.LaptopId" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-success">
+                                        <i class="fas fa-check me-1"></i>Approve
+                                    </button>
+                                </form>
+
+                                <form method="post" asp-page-handler="Reject" asp-route-orderId="@order.OrderId" asp-route-id="@Model.Laptop.LaptopId" class="d-inline ms-1">
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-times me-1"></i>Reject
+                                    </button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p class="text-muted">No rental orders found for this laptop.</p>
+    }
+
+    <hr class="my-4" />
+
+    <h4 class="mb-3">Rental Slots</h4>
+    <div class="card-body">
+        @if (Model.Laptop.Slots.Any())
+        {
+            <div class="d-flex overflow-auto gap-3 py-2">
+                @foreach (var slot in Model.Laptop.Slots.OrderBy(s => s.SlotDate))
+                {
+                    string cardClass;
+                    string icon;
+                    string statusText;
+                    string textColor;
+
+                    switch (slot.Status)
+                    {
+                        case "Available":
+                            cardClass = "bg-light border border-secondary";
+                            icon = "fas fa-circle-notch me-1 text-secondary";
+                            statusText = "Available";
+                            textColor = "text-secondary";
+                            break;
+
+                        case "Unavailable":
+                            cardClass = "bg-warning-subtle border border-warning";
+                            icon = "fas fa-hourglass-half me-1 text-warning";
+                            statusText = "Pending Approval";
+                            textColor = "text-warning";
+                            break;
+
+                        case "Booked":
+                            cardClass = "bg-success text-white border border-success";
+                            icon = "fas fa-check-circle me-1";
+                            statusText = "Booked";
+                            textColor = "text-white";
+                            break;
+
+                        default:
+                            cardClass = "bg-light border";
+                            icon = "fas fa-question-circle me-1 text-muted";
+                            statusText = "Unknown";
+                            textColor = "text-muted";
+                            break;
+                    }
+
+                    var dayOfWeek = slot.SlotDate.ToString("dddd", new System.Globalization.CultureInfo("en-US"));
+
+                    <div class="rounded p-4 text-center shadow-sm min-w-200px @cardClass">
+                        <div class="fs-6 fw-bold text-uppercase">@dayOfWeek</div>
+                        <div class="fs-5">@slot.SlotDate.ToString("dd/MM/yyyy")</div>
+                        <div class="mt-2 d-flex align-items-center justify-content-center">
+                            <i class="@icon fa-lg"></i>
+                            <span class="fw-semibold @textColor">@statusText</span>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="text-muted">No rental slots recorded.</p>
+        }
+    </div>
+</div>
+
+@await Html.PartialAsync("_RentOutModal", Model.Laptop)

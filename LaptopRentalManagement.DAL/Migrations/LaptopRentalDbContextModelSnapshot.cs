@@ -166,6 +166,9 @@ namespace LaptopRentalManagement.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LaptopId"));
 
+                    b.Property<int>("AccountId")
+                        .HasColumnType("int");
+
                     b.Property<int>("BrandId")
                         .HasColumnType("int");
 
@@ -217,6 +220,8 @@ namespace LaptopRentalManagement.DAL.Migrations
 
                     b.HasKey("LaptopId")
                         .HasName("PK__Laptop__19F02684D2D04B06");
+
+                    b.HasIndex(new[] { "AccountId" }, "ix_Laptop_AccountId");
 
                     b.HasIndex(new[] { "BrandId" }, "ix_Laptop_BrandId");
 
@@ -281,7 +286,7 @@ namespace LaptopRentalManagement.DAL.Migrations
                     b.Property<int>("OwnerId")
                         .HasColumnType("int");
 
-                    b.Property<int>("RenterId")
+                    b.Property<int?>("RenterId")
                         .HasColumnType("int");
 
                     b.Property<DateOnly>("StartDate")
@@ -418,11 +423,19 @@ namespace LaptopRentalManagement.DAL.Migrations
 
             modelBuilder.Entity("LaptopRentalManagement.DAL.Entities.Laptop", b =>
                 {
+                    b.HasOne("LaptopRentalManagement.DAL.Entities.Account", "Account")
+                        .WithMany("Laptops")
+                        .HasForeignKey("AccountId")
+                        .IsRequired()
+                        .HasConstraintName("fk_Laptop_Account");
+
                     b.HasOne("LaptopRentalManagement.DAL.Entities.Brand", "Brand")
                         .WithMany("Laptops")
                         .HasForeignKey("BrandId")
                         .IsRequired()
                         .HasConstraintName("fk_Laptop_Brand");
+
+                    b.Navigation("Account");
 
                     b.Navigation("Brand");
                 });
@@ -456,7 +469,6 @@ namespace LaptopRentalManagement.DAL.Migrations
                     b.HasOne("LaptopRentalManagement.DAL.Entities.Account", "Renter")
                         .WithMany("OrderRenters")
                         .HasForeignKey("RenterId")
-                        .IsRequired()
                         .HasConstraintName("fk_Order_Renter");
 
                     b.Navigation("Laptop");
@@ -507,6 +519,8 @@ namespace LaptopRentalManagement.DAL.Migrations
 
             modelBuilder.Entity("LaptopRentalManagement.DAL.Entities.Account", b =>
                 {
+                    b.Navigation("Laptops");
+
                     b.Navigation("Notifications");
 
                     b.Navigation("OrderOwners");

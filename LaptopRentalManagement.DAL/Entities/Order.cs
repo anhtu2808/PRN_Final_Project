@@ -14,7 +14,7 @@ public partial class Order
 
     public int OwnerId { get; set; }
 
-    public int RenterId { get; set; }
+    public int? RenterId { get; set; }
 
     public int LaptopId { get; set; }
 
@@ -26,7 +26,7 @@ public partial class Order
 
     public virtual Account Owner { get; set; } = null!;
 
-    public virtual Account Renter { get; set; } = null!;
+    public virtual Account? Renter { get; set; }
 
     public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
 

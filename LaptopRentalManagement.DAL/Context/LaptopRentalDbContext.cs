@@ -30,7 +30,6 @@ public partial class LaptopRentalDbContext : DbContext
 
     public virtual DbSet<Slot> Slots { get; set; }
 
-    
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -41,7 +40,11 @@ public partial class LaptopRentalDbContext : DbContext
             entity.ToTable("Account");
 
             entity.HasIndex(e => e.Email, "UQ__Account__A9D10534465320BF").IsUnique();
-
+            entity.HasMany(a => a.Laptops)
+                .WithOne(l => l.Account)
+                .HasForeignKey(l => l.AccountId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_Laptop_Account");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.Email).HasMaxLength(255);
             entity.Property(e => e.Name).HasMaxLength(200);
@@ -85,7 +88,7 @@ public partial class LaptopRentalDbContext : DbContext
             entity.ToTable("Laptop");
 
             entity.HasIndex(e => e.BrandId, "ix_Laptop_BrandId");
-
+            entity.HasIndex(e => e.AccountId, "ix_Laptop_AccountId");
             entity.Property(e => e.Cpu)
                 .HasMaxLength(100)
                 .HasColumnName("CPU");
@@ -104,6 +107,11 @@ public partial class LaptopRentalDbContext : DbContext
                 .HasForeignKey(d => d.BrandId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_Laptop_Brand");
+            entity.HasOne(d => d.Account)
+                .WithMany(a => a.Laptops)
+                .HasForeignKey(d => d.AccountId)
+                .OnDelete(DeleteBehavior.ClientSetNull) // hoặc Cascade tuỳ ý
+                .HasConstraintName("fk_Laptop_Account");
 
             entity.HasMany(d => d.Categories).WithMany(p => p.Laptops)
                 .UsingEntity<Dictionary<string, object>>(

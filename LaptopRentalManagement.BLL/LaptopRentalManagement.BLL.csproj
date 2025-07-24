@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LaptopRentalManagement.DAL\LaptopRentalManagement.DAL.csproj" />
+    <ProjectReference Include="..\LaptopRentalManagement.Model\LaptopRentalManagement.Model.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

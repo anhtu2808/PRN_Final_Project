@@ -6,236 +6,62 @@
 }
 
 <div class="container py-4">
-    <!-- Page Header -->
     <div class="text-center mb-5">
         <h1 class="display-4 fw-bold text-gradient">Browse by Category</h1>
-        <p class="lead text-muted">Find the perfect laptop for your specific needs and use case</p>
+        <p class="lead text-muted">Find the perfect laptop tailored to your needs</p>
     </div>
 
-    <!-- Main Categories Grid -->
     <div class="row">
-        @if (Model.Categories.Any())
+        @foreach (var category in Model.Categories)
         {
-            @foreach (var category in Model.Categories)
+            var lowerName = category.Name.ToLower();
+            string categoryImage = "";
+            string categoryIcon = "fas fa-laptop";
+
+            if (lowerName.Contains("gaming"))
             {
-                <div class="col-lg-6 col-md-6 mb-4">
-                    <a href="/laptops?category=@category.CategoryId" class="category-card-large">
-                        <div class="category-image-large">
-                            @{
-                                string categoryImage = "";
-                                string categoryIcon = "fas fa-laptop";
-                                
-                                // Dynamic images and icons based on category name
-                                var lowerName = category.Name.ToLower();
-                                if (lowerName.Contains("gaming"))
-                                {
-                                    categoryImage = "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=600&h=400&fit=crop";
-                                    categoryIcon = "fas fa-gamepad";
-                                }
-                                else if (lowerName.Contains("business") || lowerName.Contains("office"))
-                                {
-                                    categoryImage = "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=600&h=400&fit=crop";
-                                    categoryIcon = "fas fa-briefcase";
-                                }
-                                else if (lowerName.Contains("student") || lowerName.Contains("học"))
-                                {
-                                    categoryImage = "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=600&h=400&fit=crop";
-                                    categoryIcon = "fas fa-graduation-cap";
-                                }
-                                else if (lowerName.Contains("ultrabook") || lowerName.Contains("thin"))
-                                {
-                                    categoryImage = "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&h=400&fit=crop";
-                                    categoryIcon = "fas fa-laptop";
-                                }
-                                else if (lowerName.Contains("workstation"))
-                                {
-                                    categoryImage = "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&h=400&fit=crop";
-                                    categoryIcon = "fas fa-desktop";
-                                }
-                                else
-                                {
-                                    categoryImage = "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=600&h=400&fit=crop";
-                                    categoryIcon = "fas fa-laptop";
-                                }
-                            }
-                            
-                            <img src="@categoryImage" alt="@category.Name" class="img-fluid">
-                            <div class="category-overlay">
-                                <div class="category-icon">
-                                    <i class="@categoryIcon"></i>
-                                </div>
-                                <div class="category-content">
-                                    <h3 class="category-title">@category.Name</h3>
-                                    <p class="category-description">
-                                        @if (!string.IsNullOrEmpty(category.Description))
-                                        {
-                                            @(category.Description.Length > 80 ? category.Description.Substring(0, 80) + "..." : category.Description)
-                                        }
-                                        else
-                                        {
-                                            <text>Khám phá các laptop chất lượng trong danh mục @category.Name</text>
-                                        }
-                                    </p>
-                                    <div class="category-stats">
-                                        <span class="laptop-count">@category.LaptopCount laptop@(category.LaptopCount > 1 ? "s" : "")</span>
-                                        @if (category.LaptopCount > 0)
-                                        {
-                                            <span class="price-range">Xem chi tiết giá</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="price-range">Sắp có laptop</span>
-                                        }
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
+                categoryImage = "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=600&h=400&fit=crop";
+                categoryIcon = "fas fa-gamepad";
             }
+            else if (lowerName.Contains("business") || lowerName.Contains("office"))
+            {
+                categoryImage = "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=600&h=400&fit=crop";
+                categoryIcon = "fas fa-briefcase";
+            }
+            else if (lowerName.Contains("student"))
+            {
+                categoryImage = "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=600&h=400&fit=crop";
+                categoryIcon = "fas fa-graduation-cap";
+            }
+            else if (lowerName.Contains("ultrabook") || lowerName.Contains("thin"))
+            {
+                categoryImage = "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&h=400&fit=crop";
+                categoryIcon = "fas fa-laptop";
+            }
+            else if (lowerName.Contains("workstation"))
+            {
+                categoryImage = "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&h=400&fit=crop";
+                categoryIcon = "fas fa-desktop";
+            }
+            else
+            {
+                categoryImage = "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=600&h=400&fit=crop";
+            }
+        <div class="col-lg-4 col-md-6 mb-4">
+            <a href="/laptops?categoryIds=@category.CategoryId" class="category-card-large">
+                <div class="category-image-large">
+                    <img src="@categoryImage" alt="@category.Name" class="img-fluid rounded">
+                    <div class="category-overlay">
+                        <div class="category-icon"><i class="@categoryIcon"></i></div>
+                        <div class="category-content">
+                            <h4>@category.Name</h4>
+                            <p>@(category.Description ?? $"Explore top laptops in the {category.Name} category")</p>
+                            <p><strong>@category.LaptopCount</strong> laptop(s)</p>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
         }
-        else
-        {
-            <div class="col-12">
-                <div class="text-center py-5">
-                    <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
-                    <h4 class="text-muted">Chưa có danh mục nào</h4>
-                    <p class="text-muted">Các danh mục laptop sẽ được cập nhật sớm.</p>
-                </div>
-            </div>
-        }
     </div>
-
-    <!-- Popular Brands Section -->
-    <div class="row mt-5">
-        <div class="col-12">
-            <h2 class="text-center mb-4">Shop by Brand</h2>
-            <div class="brands-grid">
-                <a href="/laptops?brand=apple" class="brand-card">
-                    <div class="brand-logo">
-                        <i class="fab fa-apple"></i>
-                    </div>
-                    <div class="brand-info">
-                        <h5 class="brand-name">Apple</h5>
-                        <p class="brand-count">23 laptops</p>
-                    </div>
-                </a>
-
-                <a href="/laptops?brand=dell" class="brand-card">
-                    <div class="brand-logo">
-                        <i class="fas fa-laptop"></i>
-                    </div>
-                    <div class="brand-info">
-                        <h5 class="brand-name">Dell</h5>
-                        <p class="brand-count">45 laptops</p>
-                    </div>
-                </a>
-
-                <a href="/laptops?brand=hp" class="brand-card">
-                    <div class="brand-logo">
-                        <i class="fas fa-laptop"></i>
-                    </div>
-                    <div class="brand-info">
-                        <h5 class="brand-name">HP</h5>
-                        <p class="brand-count">38 laptops</p>
-                    </div>
-                </a>
-
-                <a href="/laptops?brand=lenovo" class="brand-card">
-                    <div class="brand-logo">
-                        <i class="fas fa-laptop"></i>
-                    </div>
-                    <div class="brand-info">
-                        <h5 class="brand-name">Lenovo</h5>
-                        <p class="brand-count">52 laptops</p>
-                    </div>
-                </a>
-
-                <a href="/laptops?brand=asus" class="brand-card">
-                    <div class="brand-logo">
-                        <i class="fas fa-laptop"></i>
-                    </div>
-                    <div class="brand-info">
-                        <h5 class="brand-name">ASUS</h5>
-                        <p class="brand-count">31 laptops</p>
-                    </div>
-                </a>
-
-                <a href="/laptops?brand=msi" class="brand-card">
-                    <div class="brand-logo">
-                        <i class="fas fa-laptop"></i>
-                    </div>
-                    <div class="brand-info">
-                        <h5 class="brand-name">MSI</h5>
-                        <p class="brand-count">19 laptops</p>
-                    </div>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Features Section -->
-    <div class="row mt-5">
-        <div class="col-12">
-            <div class="features-section bg-light p-5 rounded">
-                <h2 class="text-center mb-4">Why Choose Category-Specific Rentals?</h2>
-                <div class="row">
-                    <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="feature-item text-center">
-                            <div class="feature-icon mb-3">
-                                <i class="fas fa-cog fa-2x text-primary"></i>
-                            </div>
-                            <h5>Optimized Performance</h5>
-                            <p class="text-muted">Each laptop is configured for specific use cases and requirements</p>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="feature-item text-center">
-                            <div class="feature-icon mb-3">
-                                <i class="fas fa-download fa-2x text-primary"></i>
-                            </div>
-                            <h5>Pre-installed Software</h5>
-                            <p class="text-muted">Comes with essential software for your specific needs</p>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="feature-item text-center">
-                            <div class="feature-icon mb-3">
-                                <i class="fas fa-user-graduate fa-2x text-primary"></i>
-                            </div>
-                            <h5>Expert Support</h5>
-                            <p class="text-muted">Category-specific technical support and guidance</p>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="feature-item text-center">
-                            <div class="feature-icon mb-3">
-                                <i class="fas fa-dollar-sign fa-2x text-primary"></i>
-                            </div>
-                            <h5>Best Value</h5>
-                            <p class="text-muted">Competitive pricing tailored to each category</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- CTA Section -->
-    <div class="row mt-5">
-        <div class="col-12 text-center">
-            <div class="cta-section bg-primary text-white p-5 rounded">
-                <h3>Can't Find What You're Looking For?</h3>
-                <p class="lead mb-4">Contact our experts for personalized laptop recommendations</p>
-                <div class="cta-buttons">
-                    <a href="/contact" class="btn btn-light btn-lg me-3">
-                        <i class="fas fa-phone me-2"></i>Contact Expert
-                    </a>
-                    <a href="/laptops" class="btn btn-outline-light btn-lg">
-                        <i class="fas fa-search me-2"></i>Browse All Laptops
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div> 
+</div>

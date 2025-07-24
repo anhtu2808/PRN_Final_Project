@@ -95,8 +95,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function applyFilters() {
         const filters = {
-            category: getSelectedValues('category'),
-            brand: getSelectedValues('brand'),
+            category: getSelectedValues('categoryId'),
+            brand: getSelectedValues('brandId'),
             priceMin: document.querySelector('#priceMin')?.value || '',
             priceMax: document.querySelector('#priceMax')?.value || '',
             available: document.querySelector('#availableOnly')?.checked || false
