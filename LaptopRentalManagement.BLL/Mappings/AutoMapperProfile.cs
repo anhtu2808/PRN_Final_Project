@@ -140,6 +140,7 @@ namespace LaptopRentalManagement.BLL.Mappings
                     opt => opt.MapFrom(src => src.Categories));
             CreateMap<EditLaptopRequest, Laptop>()
                 .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<CreateLaptopRequest, Laptop>();
             CreateMap<Slot, SlotResponse>()
                 .ForMember(dest => dest.Order, opt => opt.Ignore())
                 .ForMember(dest => dest.Laptop, opt => opt.Ignore());
