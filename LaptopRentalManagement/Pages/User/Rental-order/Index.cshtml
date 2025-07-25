@@ -1,5 +1,158 @@
-﻿@page "{OrderId:int}"
+﻿@page "{orderId:int}"
 @model LaptopRentalManagement.Pages.User.Rental_order.IndexModel
 @{
+    ViewData["Title"] = "Rental Order Details";
+    Layout = "~/Pages/Shared/_CustomerLayout.cshtml";
+
+    var status = Model.Order?.Status ?? "Unknown";
+
+    var slotDates = Model.Order.Slots.Select(s => s.SlotDate).OrderBy(d => d).ToList();
+    var start = slotDates.FirstOrDefault();
+    var end = slotDates.LastOrDefault();
+    var totalDays = slotDates.Count;
+
+    var currentStep = status switch
+    {
+        "Pending" => 1,
+        "Approved" => 2,
+        "Delivering" => 3,
+        "Renting" => 4,
+        "Complete" => 5,
+        _ => 0
+    };
 }
-<h1>hello</h1>
+
+
+
+<div class="container py-5">
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/user">My Orders</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Order #@Model.Order?.OrderId</li>
+        </ol>
+    </nav>
+
+    @if (Model.Order == null)
+    {
+        <div class="alert alert-danger text-center">Order not found.</div>
+    }
+    else
+    {
+        <!-- Order Status -->
+        <div class="mb-5">
+            <h5 class="fw-bold mb-4">Order Progress</h5>
+            <div class="stepper">
+                <!-- Step 1: Pending -->
+                <div class="step @(currentStep > 1 ? "complete" : currentStep == 1 ? "active" : "upcoming")">
+                    <div class="circle">1</div>
+                    <div class="step-label">Pending</div>
+                </div>
+
+                <!-- Step 2: Approved -->
+                <div class="step @(currentStep > 2 ? "complete" : currentStep == 2 ? "active" : "upcoming")">
+                    <div class="circle">2</div>
+                    <div class="step-label">Approved</div>
+                </div>
+
+                <!-- Step 3: Delivering -->
+                <div class="step @(currentStep > 3 ? "complete" : currentStep == 3 ? "active" : "upcoming")">
+                    <div class="circle">3</div>
+                    <div class="step-label">Delivering</div>
+                </div>
+
+                <!-- Step 4: Renting -->
+                <div class="step @(currentStep > 4 ? "complete" : currentStep == 4 ? "active" : "upcoming")">
+                    <div class="circle">4</div>
+                    <div class="step-label">Renting</div>
+                </div>
+
+                <!-- Step 5: Complete -->
+                <div class="step @(currentStep == 5 ? "active" : "upcoming")">
+                    <div class="circle">5</div>
+                    <div class="step-label">Complete</div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <!-- LEFT: Thông tin laptop + Slots -->
+            <div class="col-lg-8">
+                <!-- Card: Thông tin cơ bản của laptop -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">@Model.Order.Laptop.Name</h5>
+                        <p class="text-muted">Brand: @Model.Order.Laptop.Brand.Name</p>
+                        <p><strong>Price/day:</strong> @Model.Order.Laptop.PricePerDay.ToString("N0")₫</p>
+                        <p><strong>Total:</strong> <span class="text-primary fw-bold">@Model.Order.TotalCharge.ToString("N0")₫</span></p>
+                        <p>
+                            <strong>Owner:</strong><br />
+                            @Model.Order.Owner.Name<br />
+                            <small class="text-muted">@Model.Order.Owner.Email</small>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Card: Hiển thị Slots -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">Rental Schedule</h5>
+                        <div class="d-flex overflow-auto gap-3">
+                            @foreach (var slot in Model.Order.Slots.OrderBy(s => s.SlotDate))
+                            {
+                                var isAvailable = slot.Status == "Available";
+                                var cardClass = isAvailable
+                                ? "bg-secondary-subtle border border-secondary text-secondary"
+                                : "bg-success text-white border border-success";
+                                var icon = isAvailable ? "fas fa-times-circle" : "fas fa-check-circle";
+                                var dayOfWeek = slot.SlotDate.ToString("dddd", new System.Globalization.CultureInfo("vi-VN"));
+
+                                <div class="rounded p-3 text-center shadow-sm min-w-200px @cardClass">
+                                    <div class="fw-bold text-uppercase">@dayOfWeek</div>
+                                    <div>@slot.SlotDate.ToString("dd/MM/yyyy")</div>
+                                    <div class="mt-1">
+                                        <i class="@icon me-1"></i>@slot.Status
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Order Logs -->
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">Order Logs</h5>
+                        <ul class="list-group list-group-flush">
+                            <!-- Hardcode ví dụ, sau này bind từ Model.Order.Logs -->
+                            <li class="list-group-item">
+                                <small class="text-muted">2025-07-20 09:15</small><br />
+                                User created the order.
+                            </li>
+                            <li class="list-group-item">
+                                <small class="text-muted">2025-07-21 14:30</small><br />
+                                Admin approved the order.
+                            </li>
+                            <li class="list-group-item">
+                                <small class="text-muted">2025-07-22 08:05</small><br />
+                                Laptop picked up from warehouse.
+                            </li>
+                            <li class="list-group-item">
+                                <small class="text-muted">2025-07-24 11:45</small><br />
+                                Delivery successful.
+                            </li>
+                            <!-- … -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/order-progress.css" />
+}
