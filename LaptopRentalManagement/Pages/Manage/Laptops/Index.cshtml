@@ -1,12 +1,11 @@
 @page
 @model LaptopRentalManagement.Pages.Manage.Laptops.IndexModel
 @{
-    ViewData["Title"] = "Laptop Management";
-    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+ViewData["Title"] = "Laptop Management";
+Layout = "~/Pages/Shared/_AdminLayout.cshtml";
 }
 
 <div class="container-fluid py-4">
-    <!-- Page Header -->
     <div class="row">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
@@ -14,113 +13,12 @@
                     <h1 class="h3 mb-0">Laptop Management</h1>
                     <p class="text-muted mb-0">Manage laptops in the system</p>
                 </div>
-                <a asp-page="./Create" class="btn btn-primary">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createLaptopModal">
                     <i class="fas fa-plus"></i> Add Laptop
-                </a>
+                </button>
             </div>
         </div>
     </div>
-
-    <!-- Stats Cards -->
-    <div class="row mb-4">
-        <div class="col-xl-3 col-md-6">
-            <div class="card bg-primary text-white mb-4">
-                <div class="card-body d-flex justify-content-between">
-                    <div>
-                        <div class="small text-white-50">Total Laptops</div>
-                        <div class="h4 mb-0">@Model.Laptops.Count()</div>
-                    </div>
-                    <i class="fas fa-laptop fa-2x"></i>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="card bg-success text-white mb-4">
-                <div class="card-body d-flex justify-content-between">
-                    <div>
-                        <div class="small text-white-50">Available</div>
-                        <div class="h4 mb-0">
-                            @Model.Laptops.Count(l => l.Status == "Available")
-                        </div>
-                    </div>
-                    <i class="fas fa-check fa-2x"></i>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="card bg-warning text-white mb-4">
-                <div class="card-body d-flex justify-content-between">
-                    <div>
-                        <div class="small text-white-50">Pending Approval</div>
-                        <div class="h4 mb-0">
-                            @Model.Laptops.Count(l => l.Status == "PendingApproval")
-                        </div>
-                    </div>
-                    <i class="fas fa-clock fa-2x"></i>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="card bg-danger text-white mb-4">
-                <div class="card-body d-flex justify-content-between">
-                    <div>
-                        <div class="small text-white-50">Rented</div>
-                        <div class="h4 mb-0">
-                            @Model.Laptops.Count(l => l.Status == "Rented")
-                        </div>
-                    </div>
-                    <i class="fas fa-shopping-cart fa-2x"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Filters -->
-    <form method="get" class="row g-2 mb-4">
-        <div class="col-md-3">
-            <select asp-for="Filter.CategoryId" asp-items="Model.CategorySelect" class="form-select">
-                <option value="">All Categories</option>
-            </select>
-        </div>
-        <div class="col-md-3">
-            <select asp-for="Filter.BrandId" asp-items="Model.BrandSelect" class="form-select">
-                <option value="">All Brands</option>
-            </select>
-        </div>
-        <div class="col-md-3">
-            <select asp-for="Filter.AccountId" asp-items="Model.AccountSelect" class="form-select">
-                <option value="">All Owners</option>
-            </select>
-        </div>
-        <div class="col-md-3">
-            <input asp-for="Filter.Name" class="form-control" placeholder="Name contains..."/>
-        </div>
-        <div class="col-md-3">
-            <input asp-for="Filter.Cpu" class="form-control" placeholder="CPU contains..."/>
-        </div>
-        <div class="col-md-3">
-            <input asp-for="Filter.Ram" type="number" class="form-control" placeholder="RAM (GB)"/>
-        </div>
-        <div class="col-md-3">
-            <input asp-for="Filter.Storage" type="number" class="form-control" placeholder="Storage (GB)"/>
-        </div>
-        <div class="col-md-3">
-            <input asp-for="Filter.MinPrice" type="number" step="0.01" class="form-control" placeholder="Min Price"/>
-        </div>
-        <div class="col-md-3">
-            <input asp-for="Filter.MaxPrice" type="number" step="0.01" class="form-control" placeholder="Max Price"/>
-        </div>
-        <div class="col-md-3">
-            <select asp-for="Filter.Status" asp-items="Model.StatusSelect" class="form-select">
-                <option value="">All Statuses</option>
-            </select>
-        </div>
-        <div class="col-md-3 d-grid">
-            <button type="submit" class="btn btn-primary">Search</button>
-        </div>
-    </form>
-
-    <!-- Laptops Table -->
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -128,81 +26,49 @@
                     <h5 class="card-title mb-0">Laptops List</h5>
                 </div>
                 <div class="card-body">
-                    @if (Model.Laptops.Any())
+                    @if (Model.Laptops != null && Model.Laptops.Any())
                     {
-                        <div class="table-responsive">
-                            <table class="table table-striped align-middle">
-                                <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Name</th>
-                                    <th>Brand</th>
-                                    <th>Categories</th>
-                                    <th>Owner</th>
-                                    <th>Price/Day</th>
-                                    <th>CPU</th>
-                                    <th>RAM</th>
-                                    <th>Storage</th>
-                                    <th>Status</th>
-                                    <th>Created</th>
-                                    <th>Actions</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                @foreach (var l in Model.Laptops)
-                                {
-                                    <tr>
-                                        <td>@l.LaptopId</td>
-                                        <td>@l.Name</td>
-                                        <td>@l.Brand.Name</td>
-                                        <td>
-                                            @string.Join(", ", l.Categories.Select(c => c.Name))
-                                        </td>
-                                        <td>@l.Owner.Name</td>
-                                        <td>@l.PricePerDay.ToString("N2")</td>
-                                        <td>@l.Cpu</td>
-                                        <td>@l.Ram</td>
-                                        <td>@l.Storage</td>
-                                        <td>@l.Status</td>
-                                        <td>@l.CreatedAt.ToString("MM/dd/yyyy HH:mm")</td>
-                                        <td>
-                                            <div class="btn-group" role="group">
-                                                <button
-                                                    class="btn btn-sm btn-outline-info"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#viewLaptopModal"
-                                                    data-id="@l.LaptopId"
-                                                    title="View">
-                                                    <i class="fas fa-eye"></i>
-                                                </button>
-                                                <button
-                                                    class="btn btn-sm btn-outline-warning"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#editLaptopModal"
-                                                    data-id="@l.LaptopId"
-                                                    title="Edit">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-danger"
-                                                        onclick="confirmDelete(@l.LaptopId, '@l.Name')">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-
-                                    </tr>
-                                }
-                                </tbody>
-                            </table>
-                        </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Brand</th>
+                                <th>Owner</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var l in Model.Laptops)
+                            {
+                            <tr>
+                                <td>@l.LaptopId</td>
+                                <td>@l.Name</td>
+                                <td>@l.Brand?.Name</td>
+                                <td>@l.Owner?.Name</td>
+                                <td><span class="badge bg-secondary">@l.Status</span></td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-sm btn-outline-warning"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#editLaptopModal"
+                                                data-id="@l.LaptopId"
+                                                title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
                     }
                     else
                     {
-                        <div class="text-center py-5">
-                            <i class="fas fa-laptop fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">No laptops found</h5>
-                            <p class="text-muted">Adjust your filters or add new laptops.</p>
-                        </div>
+                    <p class="text-center">No laptops found.</p>
                     }
                 </div>
             </div>
@@ -210,140 +76,139 @@
     </div>
 </div>
 
-
-<!-- Create Laptop Modal -->
 <div class="modal fade" id="createLaptopModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <form id="createLaptopForm" method="post" asp-page-handler="Create">
                 @Html.AntiForgeryToken()
+
                 <div class="modal-header">
                     <h5 class="modal-title">Add New Laptop</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
+
                 <div class="modal-body">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label">Name</label>
-                            <input name="Name" class="form-control" required/>
+                            <label asp-for="CreateForm.Name" class="form-label"></label>
+                            <input asp-for="CreateForm.Name" class="form-control" required/>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Brand</label>
-                            <select name="BrandId" class="form-select" required>
-                                @foreach (var b in Model.BrandSelect)
-                                {
-                                    <option value="@b.Value">@b.Text</option>
-                                }
+                            <label asp-for="CreateForm.PricePerDay" class="form-label"></label>
+                            <input type="number" step="0.01" asp-for="CreateForm.PricePerDay" class="form-control" required/>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="CreateForm.BrandId" class="form-label">Brand</label>
+                            <select asp-for="CreateForm.BrandId" class="form-select" asp-items="Model.BrandSelect" required>
+                                <option value="">-- Select Brand --</option>
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Owner</label>
-                            <select name="AccountId" class="form-select" required>
-                                @foreach (var u in Model.AccountSelect)
-                                {
-                                    <option value="@u.Value">@u.Text</option>
-                                }
+                            <label asp-for="CreateForm.AccountId" class="form-label">Owner</label>
+                            <select asp-for="CreateForm.AccountId" class="form-select" asp-items="Model.AccountSelect" required>
+                                <option value="">-- Select Owner --</option>
                             </select>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-12">
                             <label class="form-label">Categories</label>
-                            <select name="CategoryIds" class="form-select" multiple>
-                                @foreach (var c in Model.CategorySelect)
+                            <div class="row ps-2">
+                                @foreach (var category in Model.CategorySelect)
                                 {
-                                    <option value="@c.Value">@c.Text</option>
+                                <div class="col-md-4 col-sm-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="CreateForm.CategoryIds" value="@category.Value" id="create_cat_@category.Value">
+                                        <label class="form-check-label" for="create_cat_@category.Value">@category.Text</label>
+                                    </div>
+                                </div>
                                 }
-                            </select>
-                            <div class="form-text">Ctrl+click to select multiple</div>
+                            </div>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Price/Day</label>
-                            <input type="number" step="0.01" name="PricePerDay" class="form-control" required/>
+                            <label asp-for="CreateForm.Cpu" class="form-label"></label>
+                            <input asp-for="CreateForm.Cpu" class="form-control" required/>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">CPU</label>
-                            <input name="Cpu" class="form-control" required/>
+                            <label asp-for="CreateForm.Ram" class="form-label">RAM (GB)</label>
+                            <input type="number" asp-for="CreateForm.Ram" class="form-control" required/>
                         </div>
-                        <div class="col-md-2">
-                            <label class="form-label">RAM (GB)</label>
-                            <input type="number" name="Ram" class="form-control" required/>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Storage (GB)</label>
-                            <input type="number" name="Storage" class="form-control" required/>
+                        <div class="col-md-4">
+                            <label asp-for="CreateForm.Storage" class="form-label">Storage (GB)</label>
+                            <input type="number" asp-for="CreateForm.Storage" class="form-control" required/>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Create</button>
+                    <button type="submit" class="btn btn-primary">Add Laptop</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<!-- Edit Laptop Modal -->
+
 <div class="modal fade" id="editLaptopModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <form id="editLaptopForm" method="post" asp-page-handler="Edit">
                 @Html.AntiForgeryToken()
-                <input type="hidden" name="LaptopId" id="editLaptopId"/>
+                <input type="hidden" asp-for="EditForm.LaptopId" id="editLaptopId"/>
+
                 <div class="modal-header">
                     <h5 class="modal-title">Edit Laptop</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
+
                 <div class="modal-body">
-                    <div class="row g-3">
-                        <!-- các field giống Create, nhưng có id để JS fill giá trị -->
+                    <div id="editModalSpinner" class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+
+                    <div class="row g-3" id="editModalFormContent" style="display: none;">
                         <div class="col-md-6">
-                            <label class="form-label">Name</label>
-                            <input name="Name" id="editName" class="form-control" required/>
+                            <label asp-for="EditForm.Name" class="form-label"></label>
+                            <input asp-for="EditForm.Name" id="editName" class="form-control" required/>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Brand</label>
-                            <select name="BrandId" id="editBrandId" class="form-select" required>
-                                @foreach (var b in Model.BrandSelect)
-                                {
-                                    <option value="@b.Value">@b.Text</option>
-                                }
-                            </select>
+                            <label asp-for="EditForm.PricePerDay" class="form-label"></label>
+                            <input type="number" step="0.01" asp-for="EditForm.PricePerDay" id="editPrice" class="form-control" required/>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Owner</label>
-                            <select name="AccountId" id="editAccountId" class="form-select" required>
-                                @foreach (var u in Model.AccountSelect)
-                                {
-                                    <option value="@u.Value">@u.Text</option>
-                                }
-                            </select>
+                            <label asp-for="EditForm.BrandId" class="form-label">Brand</label>
+                            <select asp-for="EditForm.BrandId" id="editBrandId" class="form-select" asp-items="Model.BrandSelect" required></select>
                         </div>
                         <div class="col-md-6">
+                            <label asp-for="EditForm.AccountId" class="form-label">Owner</label>
+                            <select asp-for="EditForm.AccountId" id="editAccountId" class="form-select" asp-items="Model.AccountSelect" required></select>
+                        </div>
+
+                        <div class="col-12">
                             <label class="form-label">Categories</label>
-                            <select name="CategoryIds" id="editCategoryIds" class="form-select" multiple>
-                                @foreach (var c in Model.CategorySelect)
+                            <div class="row ps-2">
+                                @foreach (var category in Model.CategorySelect)
                                 {
-                                    <option value="@c.Value">@c.Text</option>
+                                <div class="col-md-4 col-sm-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="EditForm.CategoryIds" value="@category.Value" id="edit_cat_@category.Value">
+                                        <label class="form-check-label" for="edit_cat_@category.Value">@category.Text</label>
+                                    </div>
+                                </div>
                                 }
-                            </select>
-                            <div class="form-text">Ctrl+click to select multiple</div>
+                            </div>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Price/Day</label>
-                            <input type="number" step="0.01" name="PricePerDay" id="editPrice" class="form-control"
-                                   required/>
+                            <label asp-for="EditForm.Cpu" class="form-label"></label>
+                            <input asp-for="EditForm.Cpu" id="editCpu" class="form-control" required/>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">CPU</label>
-                            <input name="Cpu" id="editCpu" class="form-control" required/>
+                            <label asp-for="EditForm.Ram" class="form-label">RAM (GB)</label>
+                            <input type="number" asp-for="EditForm.Ram" id="editRam" class="form-control" required/>
                         </div>
-                        <div class="col-md-2">
-                            <label class="form-label">RAM (GB)</label>
-                            <input type="number" name="Ram" id="editRam" class="form-control" required/>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Storage (GB)</label>
-                            <input type="number" name="Storage" id="editStorage" class="form-control" required/>
+                        <div class="col-md-4">
+                            <label asp-for="EditForm.Storage" class="form-label">Storage (GB)</label>
+                            <input type="number" asp-for="EditForm.Storage" id="editStorage" class="form-control" required/>
                         </div>
                     </div>
                 </div>
@@ -356,97 +221,71 @@
     </div>
 </div>
 
-<!-- View Laptop Modal -->
-<div class="modal fade" id="viewLaptopModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Laptop Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <dl class="row">
-                    <dt class="col-sm-3">Name</dt>
-                    <dd class="col-sm-9" id="viewName"></dd>
-                    <dt class="col-sm-3">Brand</dt>
-                    <dd class="col-sm-9" id="viewBrand"></dd>
-                    <dt class="col-sm-3">Owner</dt>
-                    <dd class="col-sm-9" id="viewOwner"></dd>
-                    <dt class="col-sm-3">Categories</dt>
-                    <dd class="col-sm-9" id="viewCategories"></dd>
-                    <dt class="col-sm-3">Price/Day</dt>
-                    <dd class="col-sm-9" id="viewPrice"></dd>
-                    <dt class="col-sm-3">CPU</dt>
-                    <dd class="col-sm-9" id="viewCpu"></dd>
-                    <dt class="col-sm-3">RAM</dt>
-                    <dd class="col-sm-9" id="viewRam"></dd>
-                    <dt class="col-sm-3">Storage</dt>
-                    <dd class="col-sm-9" id="viewStorage"></dd>
-                    <dt class="col-sm-3">Status</dt>
-                    <dd class="col-sm-9" id="viewStatus"></dd>
-                </dl>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
 @section Scripts {
-    <script>
-        const pagePath = window.location.pathname;
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Code cho Edit Modal
+        const editModalEl = document.getElementById('editLaptopModal');
+        if (editModalEl) {
+            const spinner = document.getElementById('editModalSpinner');
+            const formContent = document.getElementById('editModalFormContent');
 
-        // Khi #editLaptopModal sắp show, bootstrap trigger "show.bs.modal"
-        var editModalEl = document.getElementById('editLaptopModal');
-        editModalEl.addEventListener('show.bs.modal', async function (event) {
-            // nút nào trigger
-            const btn = event.relatedTarget;
-            const id = btn.getAttribute('data-id');
+            editModalEl.addEventListener('show.bs.modal', async function (event) {
+                spinner.style.display = 'block';
+                formContent.style.display = 'none';
 
-            // fetch dữ liệu
-            const resp = await fetch(`?handler=GetLaptop&id=${id}`, {
-                headers: {'Accept': 'application/json'}
+                const button = event.relatedTarget;
+                const laptopId = button.getAttribute('data-id');
+
+                try {
+                    const response = await fetch(`?handler=GetLaptop&id=${laptopId}`);
+                    if (!response.ok) {
+                        spinner.innerHTML = `<p class="text-danger">Error loading data.</p>`;
+                        return;
+                    }
+
+                    const data = await response.json();
+
+                    document.getElementById('editLaptopId').value = data.laptopId;
+                    document.getElementById('editName').value = data.name;
+                    document.getElementById('editBrandId').value = data.brandId;
+                    document.getElementById('editAccountId').value = data.accountId;
+                    document.getElementById('editPrice').value = data.pricePerDay;
+                    document.getElementById('editCpu').value = data.cpu;
+                    document.getElementById('editRam').value = data.ram;
+                    document.getElementById('editStorage').value = data.storage;
+
+                    const categoryCheckboxes = document.querySelectorAll('input[name="EditForm.CategoryIds"]');
+                    categoryCheckboxes.forEach(cb => cb.checked = false);
+                    if (data.categoryIds && data.categoryIds.length > 0) {
+                        data.categoryIds.forEach(catId => {
+                            const checkbox = document.querySelector(`input[name="EditForm.CategoryIds"][value="${catId}"]`);
+                            if (checkbox) {
+                                checkbox.checked = true;
+                            }
+                        });
+                    }
+
+                    spinner.style.display = 'none';
+                    formContent.style.display = 'flex';
+                } catch (error) {
+                    spinner.innerHTML = '<p class="text-danger">An unexpected error occurred.</p>';
+                }
             });
-            if (!resp.ok) return alert('Cannot load details');
-            const l = await resp.json();
 
-            // fill giá trị vào form
-            document.getElementById('editLaptopId').value = l.laptopId;
-            document.getElementById('editName').value = l.name;
-            document.getElementById('editBrandId').value = l.brandId;
-            document.getElementById('editAccountId').value = l.accountId;
-            // categories
-            document.querySelectorAll('#editCategoryIds option')
-                .forEach(o => o.selected = l.categoryIds.includes(+o.value));
-            document.getElementById('editPrice').value = l.pricePerDay;
-            document.getElementById('editCpu').value = l.cpu;
-            document.getElementById('editRam').value = l.ram;
-            document.getElementById('editStorage').value = l.storage;
-        });
+            editModalEl.addEventListener('hidden.bs.modal', function() {
+                spinner.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>';
+            });
+        }
 
-        // Tương tự cho viewLaptopModal
-        var viewModalEl = document.getElementById('viewLaptopModal');
-        viewModalEl.addEventListener('show.bs.modal', async function (event) {
-            const btn = event.relatedTarget;
-            const id = btn.getAttribute('data-id');
-
-            const resp = await fetch(`${pagePath}?handler=GetLaptop&id=${id}`);
-            if (!resp.ok) return;
-            const l = await resp.json();
-
-            document.getElementById('viewName').textContent = l.name;
-            document.getElementById('viewBrand').textContent = l.brandName;
-            document.getElementById('viewOwner').textContent = l.ownerName;
-            document.getElementById('viewCategories').textContent = l.categories.join(', ');
-            document.getElementById('viewPrice').textContent = l.pricePerDay;
-            document.getElementById('viewCpu').textContent = l.cpu;
-            document.getElementById('viewRam').textContent = l.ram;
-            document.getElementById('viewStorage').textContent = l.storage;
-            document.getElementById('viewStatus').textContent = l.status;
-        });
-    </script>
+        // --- THÊM CODE MỚI CHO CREATE MODAL ---
+        const createModalEl = document.getElementById('createLaptopModal');
+        if (createModalEl) {
+            createModalEl.addEventListener('hidden.bs.modal', function() {
+                // Tìm form và reset nó về trạng thái ban đầu khi đóng modal
+                document.getElementById('createLaptopForm').reset();
+            });
+        }
+    });
+</script>
 }
-
-
