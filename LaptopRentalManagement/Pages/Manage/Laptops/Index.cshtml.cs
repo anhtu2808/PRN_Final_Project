@@ -1,25 +1,57 @@
 using LaptopRentalManagement.BLL.DTOs.Request;
 using LaptopRentalManagement.BLL.DTOs.Response;
-using LaptopRentalManagement.DAL.Context;
-using LaptopRentalManagement.DAL.Entities;
 using LaptopRentalManagement.BLL.Interfaces;
 using LaptopRentalManagement.Model.DTOs.Request;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 
 namespace LaptopRentalManagement.Pages.Manage.Laptops
 {
+    // Class để nhận dữ liệu từ Form Edit một cách tự động
+    public class EditLaptopInput
+    {
+        public int LaptopId { get; set; }
+        public string Name { get; set; }
+        public int BrandId { get; set; }
+        public int AccountId { get; set; }
+        public decimal PricePerDay { get; set; }
+        public string Cpu { get; set; }
+        public int Ram { get; set; }
+        public int Storage { get; set; }
+        public List<int> CategoryIds { get; set; } = new List<int>();
+    }
+
+    // --- THÊM CLASS NÀY VÀO ---
+    // Class để nhận dữ liệu từ Form Create một cách tự động
+    public class CreateLaptopInput
+    {
+        public string Name { get; set; }
+        public int BrandId { get; set; }
+        public int AccountId { get; set; }
+        public decimal PricePerDay { get; set; }
+        public string Cpu { get; set; }
+        public int Ram { get; set; }
+        public int Storage { get; set; }
+        public List<int> CategoryIds { get; set; } = new List<int>();
+    }
+
+
     public class IndexModel : PageModel
     {
         private readonly ILaptopService _laptopService;
+        private readonly IBrandService _brandService;
         private readonly ICategoryService _categoryService;
-        private readonly LaptopRentalDbContext _db; // inject DbContext
+        private readonly IAccountService _accountService;
 
         public IList<LaptopResponse> Laptops { get; set; } = new List<LaptopResponse>();
 
         [BindProperty(SupportsGet = true)] public LaptopFilter Filter { get; set; } = new();
+
+        [BindProperty] public EditLaptopInput EditForm { get; set; }
+
+        // --- THÊM THUỘC TÍNH NÀY VÀO ---
+        [BindProperty] public CreateLaptopInput CreateForm { get; set; }
 
         public SelectList CategorySelect { get; set; }
         public SelectList BrandSelect { get; set; }
@@ -29,36 +61,32 @@ namespace LaptopRentalManagement.Pages.Manage.Laptops
         public IndexModel(
             ILaptopService laptopService,
             ICategoryService categoryService,
-            LaptopRentalDbContext db // thêm DbContext
+            IBrandService brandService,
+            IAccountService accountService
         )
         {
             _laptopService = laptopService;
             _categoryService = categoryService;
-            _db = db;
+            _brandService = brandService;
+            _accountService = accountService;
         }
 
         public async Task OnGetAsync()
         {
-            // 1. Load categories via CategoryService
             var cats = await _categoryService.GetAllCategoriesAsync();
+            var brands = await _brandService.GetAllBrandsAsync();
+            var users = await _accountService.GetAll();
 
-            // 2. Load brands + accounts trực tiếp từ DbContext
-            var brands = await _db.Brands.OrderBy(b => b.Name).ToListAsync();
-            var users = await _db.Accounts.OrderBy(u => u.Name).ToListAsync();
-
-            // 3. Build các SelectList
-            CategorySelect = new SelectList(cats, "CategoryId", "Name", Filter.CategoryId);
-            BrandSelect = new SelectList(brands, "BrandId", "Name", Filter.BrandId);
-            AccountSelect = new SelectList(users, "AccountId", "Name", Filter.AccountId);
+            CategorySelect = new SelectList(cats, "CategoryId", "Name");
+            BrandSelect = new SelectList(brands, "BrandId", "Name");
+            AccountSelect = new SelectList(users, "AccountId", "Name");
             StatusSelect = new SelectList(new[]
             {
-                new { Value = "", Text = "All" },
                 new { Value = "Available", Text = "Available" },
                 new { Value = "PendingApproval", Text = "Pending Approval" },
                 new { Value = "Rented", Text = "Rented" }
-            }, "Value", "Text", Filter.Status);
+            }, "Value", "Text");
 
-            // 4. Lấy danh sách laptop đã filter
             Laptops = await _laptopService.GetAllAsync(Filter);
         }
 
@@ -66,7 +94,9 @@ namespace LaptopRentalManagement.Pages.Manage.Laptops
         {
             var laptop = await _laptopService.GetByIdAsync(id);
             if (laptop == null)
+            {
                 return new JsonResult(null) { StatusCode = 404 };
+            }
 
             return new JsonResult(new
             {
@@ -78,31 +108,59 @@ namespace LaptopRentalManagement.Pages.Manage.Laptops
                 pricePerDay = laptop.PricePerDay,
                 cpu = laptop.Cpu,
                 ram = laptop.Ram,
-                storage = laptop.Storage,
-                status = laptop.Status,
-                brandName = laptop.Brand.Name,
-                ownerName = laptop.Owner.Name,
-                categories = laptop.Categories.Select(c => c.Name).ToList()
+                storage = laptop.Storage
             });
         }
 
-        public async Task<IActionResult> OnPostCreateAsync(CreateLaptopRequest req)
+        public async Task<IActionResult> OnPostEditAsync()
         {
-            if (!ModelState.IsValid) return Page();
-            await _laptopService.CreateAsync(req);
+            // if (!ModelState.IsValid)
+            // {
+            //     await OnGetAsync();
+            //     return Page();
+            // }
+
+            var request = new EditLaptopRequest
+            {
+                LaptopId = EditForm.LaptopId,
+                Name = EditForm.Name,
+                BrandId = EditForm.BrandId,
+                // AccountId = EditForm.AccountId,
+                PricePerDay = EditForm.PricePerDay,
+                Cpu = EditForm.Cpu,
+                Ram = EditForm.Ram,
+                Storage = EditForm.Storage,
+                CategoryIds = EditForm.CategoryIds
+            };
+
+            await _laptopService.UpdateAsync(request);
+
             return RedirectToPage();
         }
 
-        public async Task<IActionResult> OnPostEditAsync(EditLaptopRequest req)
+        // --- THÊM HANDLER NÀY VÀO ---
+        public async Task<IActionResult> OnPostCreateAsync()
         {
-            if (!ModelState.IsValid) return Page();
-            await _laptopService.UpdateAsync(req);
-            return RedirectToPage();
-        }
+            // if (!ModelState.IsValid)
+            // {
+            //     await OnGetAsync(); // Tải lại các SelectList nếu có lỗi
+            //     return Page();
+            // }
 
-        public async Task<IActionResult> OnGetDeleteAsync(int id)
-        {
-            await _laptopService.DeleteAsync(id);
+            var request = new CreateLaptopRequest
+            {
+                Name = CreateForm.Name,
+                BrandId = CreateForm.BrandId,
+                AccountId = CreateForm.AccountId,
+                PricePerDay = CreateForm.PricePerDay,
+                Cpu = CreateForm.Cpu,
+                Ram = CreateForm.Ram,
+                Storage = CreateForm.Storage,
+                CategoryIds = CreateForm.CategoryIds,
+            };
+
+            await _laptopService.CreateAsync(request);
+
             return RedirectToPage();
         }
     }
