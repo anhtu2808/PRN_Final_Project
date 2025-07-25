@@ -12,9 +12,9 @@ namespace LaptopRentalManagement.DAL.Entities
 
         public string Content { get; set; } = null!;
 
-        public string OldStatus { get; set; }
+        public string OldStatus { get; set; } = null!;
 
-        public string NewStatus { get; set; }
+        public string NewStatus { get; set; } = null!;
 
         public DateTime CreatedAt { get; set; }
 
