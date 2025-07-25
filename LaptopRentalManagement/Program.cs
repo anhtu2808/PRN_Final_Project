@@ -7,16 +7,36 @@ using LaptopRentalManagement.DAL.Interfaces;
 using LaptopRentalManagement.DAL.Repositories;
 using LaptopRentalManagement.Hubs;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 
+// Add Authentication
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.LogoutPath = "/Account/Logout";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+        options.ExpireTimeSpan = TimeSpan.FromHours(1);
+        options.SlidingExpiration = true;
+    });
+
+// Add Authorization with role-based policies
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("StaffOrAdmin", policy => policy.RequireRole("Admin", "Staff"));
+    options.AddPolicy("CustomerOnly", policy => policy.RequireRole("Customer"));
+    options.AddPolicy("AuthenticatedUser", policy => policy.RequireAuthenticatedUser());
+});
+
 // Add DbContext
 builder.Services.AddDbContext<LaptopRentalDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile), typeof(AutoMapperProfile));
@@ -39,6 +59,7 @@ builder.Services.AddScoped<IBrandService, BrandService>();
 
 // Register repositories
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ILaptopRepository, LaptopRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
@@ -50,6 +71,12 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ILaptopService, LaptopService>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+
+// Register Hub Service
+builder.Services.AddScoped<IHubService, HubService>();
+
+// Register other services using SignalR
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IHubService, HubService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
@@ -70,6 +97,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+// Add Authentication and Authorization middleware
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();

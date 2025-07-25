@@ -14,6 +14,35 @@ namespace LaptopRentalManagement.BLL.Mappings
         public AutoMapperProfile()
         {
             // Account mappings
+            CreateMap<Account, Account>()
+                .ForMember(dest => dest.AccountId, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore());
+
+            // Account DTO mappings
+            CreateMap<Account, AccountDetailResponse>()
+                .ForMember(dest => dest.PasswordHash, opt => opt.Ignore()); // Don't expose password hash
+
+            CreateMap<AccountRegisterRequest, Account>()
+                .ForMember(dest => dest.AccountId, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.Notifications, opt => opt.Ignore())
+                .ForMember(dest => dest.OrderOwners, opt => opt.Ignore())
+                .ForMember(dest => dest.OrderRenters, opt => opt.Ignore())
+                .ForMember(dest => dest.Reviews, opt => opt.Ignore());
+
+            CreateMap<AccountUpdateRequest, Account>()
+                .ForMember(dest => dest.AccountId, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.Notifications, opt => opt.Ignore())
+                .ForMember(dest => dest.OrderOwners, opt => opt.Ignore())
+                .ForMember(dest => dest.OrderRenters, opt => opt.Ignore())
+                .ForMember(dest => dest.Reviews, opt => opt.Ignore());
+
+            // Laptop mappings  
+            CreateMap<Laptop, Laptop>()
+                .ForMember(dest => dest.LaptopId, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
             // Account → AccountResponse
             CreateMap<Account, AccountResponse>();
 
