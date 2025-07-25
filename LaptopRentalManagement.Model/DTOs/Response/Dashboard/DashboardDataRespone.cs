@@ -1,6 +1,6 @@
-﻿namespace LaptopRentalManagement.Models.Dashboard
+﻿namespace LaptopRentalManagement.Model.DTOs.Response.Dashboard
 {
-    public class DashboardViewModel
+    public class DashboardDataRespone
     {
         public DashboardStats Stats { get; set; } = new();
         public List<RecentOrder> RecentOrders { get; set; } = new();

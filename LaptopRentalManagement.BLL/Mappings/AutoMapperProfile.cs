@@ -4,6 +4,8 @@ using LaptopRentalManagement.BLL.DTOs.Response;
 using LaptopRentalManagement.BLL.DTOs.Request;
 using LaptopRentalManagement.BLL.DTOs.Response;
 using LaptopRentalManagement.DAL.Entities;
+using LaptopRentalManagement.Model.DTOs.Request;
+using LaptopRentalManagement.Model.DTOs.Response.Brand;
 
 namespace LaptopRentalManagement.BLL.Mappings
 {
@@ -12,6 +14,35 @@ namespace LaptopRentalManagement.BLL.Mappings
         public AutoMapperProfile()
         {
             // Account mappings
+            CreateMap<Account, Account>()
+                .ForMember(dest => dest.AccountId, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore());
+
+            // Account DTO mappings
+            CreateMap<Account, AccountDetailResponse>()
+                .ForMember(dest => dest.PasswordHash, opt => opt.Ignore()); // Don't expose password hash
+
+            CreateMap<AccountRegisterRequest, Account>()
+                .ForMember(dest => dest.AccountId, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.Notifications, opt => opt.Ignore())
+                .ForMember(dest => dest.OrderOwners, opt => opt.Ignore())
+                .ForMember(dest => dest.OrderRenters, opt => opt.Ignore())
+                .ForMember(dest => dest.Reviews, opt => opt.Ignore());
+
+            CreateMap<AccountUpdateRequest, Account>()
+                .ForMember(dest => dest.AccountId, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.Notifications, opt => opt.Ignore())
+                .ForMember(dest => dest.OrderOwners, opt => opt.Ignore())
+                .ForMember(dest => dest.OrderRenters, opt => opt.Ignore())
+                .ForMember(dest => dest.Reviews, opt => opt.Ignore());
+
+            // Laptop mappings  
+            CreateMap<Laptop, Laptop>()
+                .ForMember(dest => dest.LaptopId, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
             // Account → AccountResponse
             CreateMap<Account, AccountResponse>();
 
@@ -22,8 +53,23 @@ namespace LaptopRentalManagement.BLL.Mappings
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
 
             // Brand mappings
-            CreateMap<Brand, BrandResponse>()
-                .ForMember(dest => dest.BrandId, opt => opt.Ignore());
+
+            CreateMap<Brand, BrandResponse>();
+         
+
+            CreateMap<CreateBrandRequest, Brand>()
+                .ForMember(dest => dest.BrandId, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.Laptops, opt => opt.Ignore());
+
+            CreateMap<UpdateBrandRequest, Brand>()
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.Laptops, opt => opt.Ignore());
+
+            CreateMap<Brand, BrandSelectDto>();
+
 
             // Category mappings
             CreateMap<Category, CategoryResponse>();
@@ -54,6 +100,8 @@ namespace LaptopRentalManagement.BLL.Mappings
                 .ForMember(dest => dest.LaptopName, opt => opt.MapFrom(src => src.Order.Laptop.Name))
                 .ForMember(dest => dest.LaptopImageUrl, opt => opt.MapFrom(src => src.Order.Laptop.ImageUrl))
                 .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => (int)src.Rating));
+            CreateMap<CreateReviewRequest, Review>();
+            CreateMap<UpdateReviewRequest, Review>();
 
             // CreateReviewRequest -> Review Entity
             CreateMap<CreateReviewRequest, Review>()

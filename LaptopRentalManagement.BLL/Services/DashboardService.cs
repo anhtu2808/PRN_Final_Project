@@ -1,6 +1,6 @@
 ﻿using LaptopRentalManagement.BLL.Interfaces;
 using LaptopRentalManagement.DAL;
-using LaptopRentalManagement.Models.Dashboard;
+using LaptopRentalManagement.Model.DTOs.Response.Dashboard;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -21,7 +21,7 @@ namespace LaptopRentalManagement.BLL.Services
         }
 
         // Phương thức chính để tổng hợp dữ liệu
-        public async Task<DashboardViewModel> GetDashboardDataAsync()
+        public async Task<DashboardDataRespone> GetDashboardDataAsync()
         {
             // Thay vì dùng Task.WhenAll, chúng ta sẽ await từng cái một
             var stats = await GetStatsAsync();
@@ -30,7 +30,7 @@ namespace LaptopRentalManagement.BLL.Services
             var monthlyRevenue = await GetMonthlyRevenueAsync();
             var orderStatus = await GetOrderStatusChartAsync();
 
-            return new DashboardViewModel
+            return new DashboardDataRespone
             {
                 Stats = stats,
                 RecentOrders = recentOrders,
