@@ -186,10 +186,12 @@ public partial class LaptopRentalDbContext : DbContext
         modelBuilder.Entity<OrderLog>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK_OrderLog");
-
             entity.Property(e => e.Content)
                 .HasMaxLength(1000);
-
+            entity.Property(e => e.OldStatus)
+                .HasMaxLength(50);
+            entity.Property(e => e.NewStatus)
+                .HasMaxLength(50);
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(sysutcdatetime())");
 

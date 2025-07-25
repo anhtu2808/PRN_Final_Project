@@ -1,9 +1,5 @@
 using LaptopRentalManagement.DAL.Entities;
-using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LaptopRentalManagement.DAL.Entities;
+
 
 namespace LaptopRentalManagement.DAL.Interfaces
 {

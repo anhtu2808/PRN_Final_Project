@@ -12,6 +12,10 @@ namespace LaptopRentalManagement.DAL.Entities
 
         public string Content { get; set; } = null!;
 
+        public string OldStatus { get; set; }
+
+        public string NewStatus { get; set; }
+
         public DateTime CreatedAt { get; set; }
 
         public int OrderId { get; set; }
