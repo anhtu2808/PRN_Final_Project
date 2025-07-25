@@ -14,8 +14,9 @@ namespace LaptopRentalManagement.Pages.Manage.Laptops
     public class IndexModel : PageModel
     {
         private readonly ILaptopService _laptopService;
+        private readonly IBrandService _brandService;
         private readonly ICategoryService _categoryService;
-        private readonly LaptopRentalDbContext _db; // inject DbContext
+        private readonly IAccountService _accountService;
 
         public IList<LaptopResponse> Laptops { get; set; } = new List<LaptopResponse>();
 
@@ -29,12 +30,14 @@ namespace LaptopRentalManagement.Pages.Manage.Laptops
         public IndexModel(
             ILaptopService laptopService,
             ICategoryService categoryService,
-            LaptopRentalDbContext db // thêm DbContext
+            IBrandService brandService,
+            IAccountService accountService
         )
         {
             _laptopService = laptopService;
             _categoryService = categoryService;
-            _db = db;
+            _brandService = brandService;
+            _accountService = accountService;
         }
 
         public async Task OnGetAsync()
@@ -43,8 +46,8 @@ namespace LaptopRentalManagement.Pages.Manage.Laptops
             var cats = await _categoryService.GetAllCategoriesAsync();
 
             // 2. Load brands + accounts trực tiếp từ DbContext
-            var brands = await _db.Brands.OrderBy(b => b.Name).ToListAsync();
-            var users = await _db.Accounts.OrderBy(u => u.Name).ToListAsync();
+            var brands = await _brandService.GetAllBrandsAsync();
+            var users = await _accountService.GetAll();
 
             // 3. Build các SelectList
             CategorySelect = new SelectList(cats, "CategoryId", "Name", Filter.CategoryId);
@@ -60,6 +63,7 @@ namespace LaptopRentalManagement.Pages.Manage.Laptops
 
             // 4. Lấy danh sách laptop đã filter
             Laptops = await _laptopService.GetAllAsync(Filter);
+            // Console.WriteLine($"Laptops owner: {Laptops[0].Owner.Name}");
         }
 
         public async Task<JsonResult> OnGetGetLaptopAsync(int id)

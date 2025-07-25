@@ -102,7 +102,7 @@ namespace LaptopRentalManagement.BLL.Services
                 .Select(o => new RecentOrder
                 {
                     Id = o.OrderId,
-                    CustomerName = o.Renter.Name, // Lấy tên từ Account renter
+                    // CustomerName = o.Renter.Name, // Lấy tên từ Account renter
                     LaptopModel = o.Laptop.Name,  // Lấy tên từ Laptop
                     OrderDate = o.CreatedAt,
                     Status = o.Status,
