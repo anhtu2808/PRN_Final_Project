@@ -1,52 +1,39 @@
 ﻿@page
 @model LaptopRentalManagement.Pages.Account.EditModel
-
 @{
     ViewData["Title"] = "Edit Account";
 }
 
 <style>
-    body, html {
-        width: 100vw;
-        min-height: 100vh;
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    .edit-account-bg {
+    .account-edit-bg {
         background: linear-gradient(135deg, #e3f0ff 0%, #f8f9fa 100%);
         min-height: 100vh;
-        width: 100vw;
-        padding: 0;
-        margin: 0;
     }
 
-    .edit-account-card {
-        max-width: 440px;
-        margin: 50px auto;
-        border-radius: 18px;
-        box-shadow: 0 6px 24px rgba(0,0,0,0.08), 0 1.5px 3px rgba(0,0,0,0.06);
-        background: #fff;
+    .account-card {
+        max-width: 500px;
+        margin: 0 auto;
+        border-radius: 18px !important;
         overflow: hidden;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.08), 0 1.5px 3px rgba(0,0,0,0.06);
+        background: #fff;
     }
 
-    .edit-account-header {
+    .account-card-header {
         background: linear-gradient(90deg, #1565c0 0%, #42a5f5 100%);
         color: #fff;
         border-bottom: none;
-        padding: 2rem 1rem 1.5rem 1rem;
         text-align: center;
-        border-radius: 18px 18px 0 0;
+        padding: 2rem 1rem 1.5rem 1rem;
     }
 
-        .edit-account-header h2 {
+        .account-card-header h3 {
             font-weight: 700;
             letter-spacing: 1px;
             margin-bottom: 0;
         }
 
-    .form-label, .control-label {
+    .form-label {
         font-weight: 500;
         color: #2d3748;
     }
@@ -56,7 +43,6 @@
         border: 1px solid #b3c2db;
         box-shadow: none;
         transition: border-color 0.2s;
-        margin-bottom: 8px;
     }
 
         .form-control:focus, .form-select:focus {
@@ -66,15 +52,14 @@
 
     .btn-primary {
         border-radius: 12px;
-        font-size: 1.1rem;
+        font-size: 1.15rem;
         font-weight: 600;
-        padding: 0.7rem 0;
+        padding: 0.75rem 0;
         letter-spacing: 1px;
         background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
         border: none;
         box-shadow: 0 4px 16px rgba(67,233,123,0.10);
-        width: 100%;
-        margin-top: 10px;
+        color: #fff;
     }
 
         .btn-primary:hover {
@@ -83,69 +68,78 @@
             color: #fff;
         }
 
-    .text-danger {
-        font-size: 0.96rem;
-        margin-top: 2px;
-        display: block;
+    .alert-danger {
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
     }
 
-    .edit-account-actions {
-        text-align: center;
-        padding-bottom: 1.5rem;
+    .btn-link {
+        color: #1565c0;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: color 0.18s;
     }
 
-        .edit-account-actions a {
-            font-weight: 600;
-            color: #1565c0;
-            font-size: 1rem;
-            text-decoration: none;
-            transition: color 0.18s;
-            border-radius: 8px;
-            padding: 0.5rem 1.25rem;
+        .btn-link:hover {
+            color: #42a5f5;
+            text-decoration: underline;
         }
-
-            .edit-account-actions a:hover {
-                color: #42a5f5;
-                text-decoration: underline;
-                background: #e3f0ff;
-            }
 </style>
 
-<div class="edit-account-bg">
-    <div class="edit-account-card shadow">
-        <div class="edit-account-header">
-            <h2><i class="bi bi-pencil-square"></i> Edit Account</h2>
+<div class="account-edit-bg py-5">
+    <div class="account-card shadow">
+        <div class="account-card-header">
+            <h3><i class="bi bi-pencil-square"></i> Edit Account</h3>
         </div>
         <div class="card-body p-4">
             <form method="post" novalidate>
-                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
                 <input type="hidden" asp-for="Account.AccountId" />
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
                 <div class="mb-4">
-                    <label asp-for="Account.Email" class="form-label">Email <span class="text-danger">*</span></label>
-                    <input asp-for="Account.Email" class="form-control" placeholder="Enter email" />
+                    <label asp-for="Account.Email" class="form-label">
+                        Email <span class="text-danger">*</span>
+                    </label>
+                    <input asp-for="Account.Email" class="form-control" placeholder="e.g. user@example.com" />
                     <span asp-validation-for="Account.Email" class="text-danger"></span>
                 </div>
+
                 <div class="mb-4">
-                    <label asp-for="Account.PasswordHash" class="form-label">Password <span class="text-danger">*</span></label>
-                    <input asp-for="Account.PasswordHash" type="password" class="form-control" placeholder="Enter secure password" />
+                    <label asp-for="Account.PasswordHash" class="form-label">
+                        Password <span class="text-danger">*</span>
+                    </label>
+                    <input asp-for="Account.PasswordHash" type="password" class="form-control" placeholder="Enter new password" />
                     <span asp-validation-for="Account.PasswordHash" class="text-danger"></span>
                 </div>
+
                 <div class="mb-4">
-                    <label asp-for="Account.Role" class="form-label">Role <span class="text-danger">*</span></label>
+                    <label asp-for="Account.Role" class="form-label">
+                        Role <span class="text-danger">*</span>
+                    </label>
                     <select asp-for="Account.Role" asp-items="Model.Roles" class="form-select">
                         <option value="">-- Select a Role --</option>
                     </select>
                     <span asp-validation-for="Account.Role" class="text-danger"></span>
                 </div>
+
                 <div class="mb-4">
-                    <label asp-for="Account.Name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                    <label asp-for="Account.Name" class="form-label">
+                        Full Name <span class="text-danger">*</span>
+                    </label>
                     <input asp-for="Account.Name" class="form-control" placeholder="Enter full name" />
                     <span asp-validation-for="Account.Name" class="text-danger"></span>
                 </div>
-                <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Save</button>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-save"></i> Save Changes
+                    </button>
+                </div>
             </form>
-            <div class="edit-account-actions mt-4">
-                <a asp-page="./Index"><i class="bi bi-arrow-left"></i> Back to List</a>
+            <div class="mt-4 text-center">
+                <a asp-page="./Index" class="btn btn-link text-decoration-none">
+                    <i class="bi bi-arrow-left"></i> Back to Account List
+                </a>
             </div>
         </div>
     </div>

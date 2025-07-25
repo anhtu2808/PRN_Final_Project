@@ -27,5 +27,14 @@ namespace LaptopRentalManagement.Pages.Account
         {
             Account = await _accountService.GetAll();
         }
+        public async Task<IActionResult> OnPostDeleteAsync(int id)
+        {
+            var success = await _accountService.Delete(id);
+            if (!success)
+            {
+                TempData["Error"] = "Failed to delete account.";
+            }
+            return RedirectToPage(); 
+        }
     }
 }
