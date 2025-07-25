@@ -101,18 +101,54 @@
                         <div class="d-flex overflow-auto gap-3">
                             @foreach (var slot in Model.Order.Slots.OrderBy(s => s.SlotDate))
                             {
-                                var isAvailable = slot.Status == "Available";
-                                var cardClass = isAvailable
-                                ? "bg-secondary-subtle border border-secondary text-secondary"
-                                : "bg-success text-white border border-success";
-                                var icon = isAvailable ? "fas fa-times-circle" : "fas fa-check-circle";
+                                string cardClass, icon, statusText, textColor;
+
+                                switch (slot.Status)
+                                {
+                                    case "Available":
+                                        cardClass = "bg-secondary-subtle border border-secondary";
+                                        icon = "fas fa-circle-notch text-secondary";
+                                        statusText = "Available";
+                                        textColor = "text-secondary";
+                                        break;
+
+                                    case "Unavailable":
+                                        cardClass = "bg-warning-subtle border border-warning";
+                                        icon = "fas fa-hourglass-half text-warning";
+                                        statusText = "Pending";
+                                        textColor = "text-warning";
+                                        break;
+
+                                    case "Booked":
+                                        cardClass = "bg-success text-white border border-success";
+                                        icon = "fas fa-box text-white";
+                                        statusText = "Booked";
+                                        textColor = "text-white";
+                                        break;
+
+                                    case "Completed":
+                                        cardClass = "bg-primary text-white border border-primary";
+                                        icon = "fas fa-check-circle text-white";
+                                        statusText = "Completed";
+                                        textColor = "text-white";
+                                        break;
+
+                                    default:
+                                        cardClass = "bg-light border";
+                                        icon = "fas fa-question-circle text-muted";
+                                        statusText = "Unknown";
+                                        textColor = "text-muted";
+                                        break;
+                                }
+
                                 var dayOfWeek = slot.SlotDate.ToString("dddd", new System.Globalization.CultureInfo("vi-VN"));
 
                                 <div class="rounded p-3 text-center shadow-sm min-w-200px @cardClass">
                                     <div class="fw-bold text-uppercase">@dayOfWeek</div>
                                     <div>@slot.SlotDate.ToString("dd/MM/yyyy")</div>
                                     <div class="mt-1">
-                                        <i class="@icon me-1"></i>@slot.Status
+                                        <i class="@icon me-1"></i>
+                                        <span class="fw-semibold @textColor">@statusText</span>
                                     </div>
                                 </div>
                             }
