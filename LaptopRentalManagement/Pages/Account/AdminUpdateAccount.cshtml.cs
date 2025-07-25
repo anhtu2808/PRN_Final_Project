@@ -2,28 +2,31 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LaptopRentalManagement.BLL.DTOs.Request;
+using LaptopRentalManagement.BLL.DTOs.Response;
+using LaptopRentalManagement.BLL.Interfaces;
+using LaptopRentalManagement.DAL.Context;
+using LaptopRentalManagement.DAL.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using LaptopRentalManagement.DAL.Context;
-using LaptopRentalManagement.DAL.Entities;
-using LaptopRentalManagement.DAL.Interfaces;
-using LaptopRentalManagement.BLL.Interfaces;
-using LaptopRentalManagement.BLL.DTOs.Request;
+using Microsoft.EntityFrameworkCore;
 
 namespace LaptopRentalManagement.Pages.Account
 {
-    public class CreateModel : PageModel
+    public class EditModel : PageModel
     {
         private readonly IAccountService _accountService;
 
-        public CreateModel(IAccountService accountService)
+        public EditModel(IAccountService accountService)
         {
             _accountService = accountService;
         }
         public List<SelectListItem> Roles { get; set; }
+        [BindProperty]
+        public AccountDetailResponse Account { get; set; } = default!;
 
-        public IActionResult OnGet()
+        public async Task<IActionResult> OnGetAsync(int? id)
         {
             Roles = new List<SelectListItem>
         {
@@ -31,12 +34,21 @@ namespace LaptopRentalManagement.Pages.Account
             new SelectListItem { Value = "Customer", Text = "Customer" },
             new SelectListItem { Value = "Staff", Text = "Staff" }
         };
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var account = await _accountService.GetById(id.Value);
+            if (account == null)
+            {
+                return NotFound();
+            }
+            Account = account;
             return Page();
         }
 
-        [BindProperty]
-        public AccountRegisterRequest Account { get; set; } = default!;
-
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
@@ -50,9 +62,11 @@ namespace LaptopRentalManagement.Pages.Account
         };
                 return Page();
             }
-            await _accountService.AdminCreateAccount(Account);
+
+             //await _accountService.Update(Account);
 
             return RedirectToPage("./Index");
         }
+
     }
 }

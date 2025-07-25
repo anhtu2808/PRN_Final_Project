@@ -1,4 +1,150 @@
 ﻿@page
-@model LaptopRentalManagement.Pages.Account.AdminCreateAccountModel
+@model LaptopRentalManagement.Pages.Account.CreateModel
 @{
+    ViewData["Title"] = "Create Account";
+}
+
+<style>
+    .account-create-bg {
+        background: linear-gradient(135deg, #e3f0ff 0%, #f8f9fa 100%);
+        min-height: 100vh;
+    }
+
+    .account-card {
+        max-width: 500px;
+        margin: 0 auto;
+        border-radius: 18px !important;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.08), 0 1.5px 3px rgba(0,0,0,0.06);
+        background: #fff;
+    }
+
+    .account-card-header {
+        background: linear-gradient(90deg, #1565c0 0%, #42a5f5 100%);
+        color: #fff;
+        border-bottom: none;
+        text-align: center;
+        padding: 2rem 1rem 1.5rem 1rem;
+    }
+
+        .account-card-header h3 {
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 0;
+        }
+
+    .form-label {
+        font-weight: 500;
+        color: #2d3748;
+    }
+
+    .form-control, .form-select {
+        border-radius: 12px;
+        border: 1px solid #b3c2db;
+        box-shadow: none;
+        transition: border-color 0.2s;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #42a5f5;
+            box-shadow: 0 0 0 2px rgba(66,165,245,0.15);
+        }
+
+    .btn-success {
+        border-radius: 12px;
+        font-size: 1.15rem;
+        font-weight: 600;
+        padding: 0.75rem 0;
+        letter-spacing: 1px;
+        background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+        border: none;
+        box-shadow: 0 4px 16px rgba(67,233,123,0.10);
+    }
+
+        .btn-success:hover {
+            background: linear-gradient(90deg,#38f9d7 0%, #43e97b 100%);
+            box-shadow: 0 6px 24px rgba(67,233,123,0.16);
+        }
+
+    .alert-danger {
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+    }
+
+    .btn-link {
+        color: #1565c0;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: color 0.18s;
+    }
+
+        .btn-link:hover {
+            color: #42a5f5;
+            text-decoration: underline;
+        }
+</style>
+
+<div class="account-create-bg py-5">
+    <div class="account-card shadow">
+        <div class="account-card-header">
+            <h3><i class="bi bi-person-plus"></i> Create New Account</h3>
+        </div>
+        <div class="card-body p-4">
+            <form method="post" novalidate>
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <div class="mb-4">
+                    <label asp-for="Account.Email" class="form-label">
+                        Email <span class="text-danger">*</span>
+                    </label>
+                    <input asp-for="Account.Email" class="form-control" placeholder="e.g. user@example.com" />
+                    <span asp-validation-for="Account.Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Account.PasswordHash" class="form-label">
+                        Password <span class="text-danger">*</span>
+                    </label>
+                    <input asp-for="Account.PasswordHash" type="password" class="form-control" placeholder="Enter secure password" />
+                    <span asp-validation-for="Account.PasswordHash" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Account.Role" class="form-label">
+                        Role <span class="text-danger">*</span>
+                    </label>
+                    <select asp-for="Account.Role" asp-items="Model.Roles" class="form-select">
+                        <option value="">-- Select a Role --</option>
+                    </select>
+                    <span asp-validation-for="Account.Role" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Account.Name" class="form-label">
+                        Full Name <span class="text-danger">*</span>
+                    </label>
+                    <input asp-for="Account.Name" class="form-control" placeholder="Enter full name" />
+                    <span asp-validation-for="Account.Name" class="text-danger"></span>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="bi bi-person-plus-fill"></i> Create Account
+                    </button>
+                </div>
+            </form>
+            <div class="mt-4 text-center">
+                <a asp-page="Index" class="btn btn-link text-decoration-none">
+                    <i class="bi bi-arrow-left"></i> Back to Account List
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
