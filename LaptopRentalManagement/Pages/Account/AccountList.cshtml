@@ -174,7 +174,6 @@
                             <td>@Html.DisplayFor(modelItem => item.CreatedAt)</td>
                             <td style="text-align:center;">
                                 <a asp-page="./Edit" asp-route-id="@item.AccountId" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil-square"></i> Edit</a>
-                                <a asp-page="./Delete" asp-route-id="@item.AccountId" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> Delete</a>
                                 <a href="javascript:void(0);" class="btn btn-sm btn-outline-danger"
                                    onclick="confirmDelete('@item.AccountId')">
                                     <i class="bi bi-trash"></i> Delete
