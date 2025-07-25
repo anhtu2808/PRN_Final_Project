@@ -37,7 +37,7 @@ namespace LaptopRentalManagement.BLL.Services
 			Order? order = await _orderRepository.GetByIdAsync(orderId);
 			if (order != null) 
 			{
-				order.Status = "Renting";
+				order.Status = "Approved";
 				IList<Slot> slots = await _slotRepository.GetByOrderId(orderId);
 				foreach (Slot slot in slots)
 				{
@@ -92,8 +92,19 @@ namespace LaptopRentalManagement.BLL.Services
 			return response;
 		}
 
+        public async Task SetStatusAsync(int orderId, string newStatus)
+        {
+            var order = await _orderRepository.GetByIdAsync(orderId);
+			if (order == null)
+				return;
 
-		public async Task<IList<OrderResponse>> GetAllAsync(OrderFilter orderFilter)
+            order.Status = newStatus;
+            order.UpdatedAt = DateTime.UtcNow;
+
+            await _orderRepository.UpdateAsync(order);
+        }
+
+        public async Task<IList<OrderResponse>> GetAllAsync(OrderFilter orderFilter)
 		{
 			IList<Order> orders = await _orderRepository.GetAllAsync(orderFilter);
             IList<OrderResponse> responses = new List<OrderResponse>();

@@ -13,9 +13,11 @@
 
     var currentStep = status switch
     {
-        "PendingApproval" => 1,
-        "Renting" => 2,
-        "Complete" => 3,
+        "Pending" => 1,
+        "Approved" => 2,
+        "Delivering" => 3,
+        "Renting" => 4,
+        "Complete" => 5,
         _ => 0
     };
 }
@@ -43,21 +45,33 @@
         <div class="mb-5">
             <h5 class="fw-bold mb-4">Order Progress</h5>
             <div class="stepper">
-                <!-- Step 1 -->
+                <!-- Step 1: Pending -->
                 <div class="step @(currentStep > 1 ? "complete" : currentStep == 1 ? "active" : "upcoming")">
                     <div class="circle">1</div>
-                    <div class="step-label">Pending Approval</div>
+                    <div class="step-label">Pending</div>
                 </div>
 
-                <!-- Step 2 -->
+                <!-- Step 2: Approved -->
                 <div class="step @(currentStep > 2 ? "complete" : currentStep == 2 ? "active" : "upcoming")">
                     <div class="circle">2</div>
+                    <div class="step-label">Approved</div>
+                </div>
+
+                <!-- Step 3: Delivering -->
+                <div class="step @(currentStep > 3 ? "complete" : currentStep == 3 ? "active" : "upcoming")">
+                    <div class="circle">3</div>
+                    <div class="step-label">Delivering</div>
+                </div>
+
+                <!-- Step 4: Renting -->
+                <div class="step @(currentStep > 4 ? "complete" : currentStep == 4 ? "active" : "upcoming")">
+                    <div class="circle">4</div>
                     <div class="step-label">Renting</div>
                 </div>
 
-                <!-- Step 3 -->
-                <div class="step @(currentStep == 3 ? "active" : "upcoming")">
-                    <div class="circle">3</div>
+                <!-- Step 5: Complete -->
+                <div class="step @(currentStep == 5 ? "active" : "upcoming")">
+                    <div class="circle">5</div>
                     <div class="step-label">Complete</div>
                 </div>
             </div>
