@@ -1,0 +1,25 @@
+@page
+@model LaptopRentalManagement.Pages.PaymentCallbackModel
+
+@{
+    ViewData["Title"] = "Kết quả thanh toán";
+}
+
+@if (Model.IsSuccess)
+{
+    <div class="alert alert-success">
+        <h1>Thanh toán hoàn tất</h1>
+        <p>@Model.Message</p>
+        <p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!</p>
+    </div>
+}
+else
+{
+    <div class="alert alert-danger">
+        <h1>Thanh toán không thành công</h1>
+        <p>@Model.Message</p>
+        <p>Vui lòng thử lại hoặc liên hệ hỗ trợ.</p>
+    </div>
+}
+
+<a asp-page="/Index">Quay về trang chủ</a>

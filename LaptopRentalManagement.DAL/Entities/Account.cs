@@ -20,4 +20,9 @@ public partial class Account
     public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
 
     public virtual ICollection<Laptop> Laptops { get; set; } = new List<Laptop>();
+
+    // Chat relationships
+    public virtual ICollection<ChatRoom> CustomerChatRooms { get; set; } = new List<ChatRoom>();
+    public virtual ICollection<ChatRoom> StaffChatRooms { get; set; } = new List<ChatRoom>();
+    public virtual ICollection<ChatMessage> SentMessages { get; set; } = new List<ChatMessage>();
 }

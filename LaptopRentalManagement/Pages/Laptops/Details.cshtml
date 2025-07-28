@@ -2,13 +2,12 @@
 @using LaptopRentalManagement.BLL.DTOs.Response
 @model LaptopRentalManagement.Pages.Laptops.DetailsModel
 @{
-    ViewData["Title"] = "Laptop Details";
-    Layout = "~/Pages/Shared/_CustomerLayout.cshtml";
-    var summary = Model.ReviewSummary;
+ViewData["Title"] = "Laptop Details";
+Layout = "~/Pages/Shared/_CustomerLayout.cshtml";
+var summary = Model.ReviewSummary;
 }
 
 <div class="container py-4">
-    <!-- Breadcrumb -->
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/">Home</a></li>
@@ -18,10 +17,8 @@
     </nav>
 
     <div class="row">
-        <!-- Laptop Images -->
         <div class="col-lg-6 mb-4">
             <div class="laptop-detail-images">
-                <!-- Main Image -->
                 <div class="main-image mb-3">
                     <img
                         src="https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=600&h=400&fit=crop"
@@ -29,11 +26,11 @@
                     <div class="image-badges">
                         @if (Model.Laptop?.Status == "Available")
                         {
-                            <span class="badge bg-success">Available</span>
+                        <span class="badge bg-success">Available</span>
                         }
                         else
                         {
-                            <span class="badge bg-secondary">Rented</span>
+                        <span class="badge bg-secondary">Rented</span>
                         }
                     </div>
                 </div>
@@ -41,10 +38,8 @@
             </div>
         </div>
 
-        <!-- Laptop Info & Booking -->
         <div class="col-lg-6">
             <div class="laptop-detail-info">
-                <!-- Brand & Title -->
                 <div class="laptop-header mb-3">
                     <div class="laptop-brand h6 text-primary">@Model.Laptop?.Brand?.Name</div>
                     <h1 class="laptop-title h2 mb-2">@Model.Laptop?.Name</h1>
@@ -52,7 +47,6 @@
                         entertainment.
                     </div>
                 </div>
-                <!--User Profile -->
                 <div class="laptop-owner mb-3">
                     <div class="fw-bold">Rented by:</div>
                     <div class="d-flex align-items-center mt-1">
@@ -63,7 +57,6 @@
                     </div>
                 </div>
 
-                <!-- Rating & Reviews -->
                 <div class="laptop-rating mb-3">
                     <div class="stars">
                         <i class="fas fa-star text-warning"></i>
@@ -75,32 +68,33 @@
                     <span class="rating-text ms-2">4.5 (127 reviews)</span>
                 </div>
 
-                <!-- Pricing -->
                 <div class="price-daily h3 text-primary mb-2">
                     @Model.Laptop?.PricePerDay.ToString("N0") ₫ <span class="price-label h6 text-muted">per day</span>
                 </div>
 
-                <!-- Booking Form -->
-                <form method="post" class="booking-form bg-light p-4 rounded mb-4">
+                <form method="post" asp-page="/Checkout/Index" class="booking-form bg-light p-4 rounded mb-4">
                     @Html.AntiForgeryToken()
+
+                    <input type="hidden" name="id" value="@Model.Laptop.LaptopId" />
+
                     <h5 class="mb-3">Chọn ngày thuê</h5>
 
                     <div class="row g-2 mb-3">
                         @foreach (var slot in Model.Slots.OrderBy(s => s.SlotDate))
                         {
-                            var isAvailable = slot.Status == "Available";
-                            var dateLabel = slot.SlotDate.ToString("dd/MM/yyyy");
-                            var id = $"slot_{slot.SlotId}";
+                        var isAvailable = slot.Status == "Available";
+                        var dateLabel = slot.SlotDate.ToString("dd/MM/yyyy");
+                        var id = $"slot_{slot.SlotId}";
 
-                            <div class="col-6 col-md-4 col-lg-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="@id" name="SelectedSlots"
-                                           value="@slot.SlotId" @(isAvailable ? "" : "disabled")/>
-                                    <label class="form-check-label @(isAvailable ? "" : "text-muted")" for="@id">
-                                        @dateLabel
-                                    </label>
-                                </div>
+                        <div class="col-6 col-md-4 col-lg-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="@id" name="SelectedSlots"
+                                       value="@slot.SlotId" @(isAvailable ? "" : "disabled")/>
+                                <label class="form-check-label @(isAvailable ? "" : "text-muted")" for="@id">
+                                    @dateLabel
+                                </label>
                             </div>
+                        </div>
                         }
                     </div>
 
@@ -125,7 +119,6 @@
                     </button>
                 </form>
 
-                <!-- Quick Info -->
                 <div class="quick-info">
                     <div class="row text-center">
                         <div class="col-4">
@@ -152,7 +145,6 @@
         </div>
     </div>
 
-    <!-- Detailed Info Tabs -->
     <div class="row mt-5">
         <div class="col-12">
             <ul class="nav nav-tabs" id="laptopDetailTabs" role="tablist">
@@ -162,16 +154,10 @@
                         <i class="fas fa-microchip me-2"></i>Specifications
                     </button>
                 </li>
-                @* <li class="nav-item" role="presentation"> *@
-                @*     <button class="nav-link" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" *@
-                @*             type="button"> *@
-                @*         <i class="fas fa-info-circle me-2"></i>Description *@
-                @*     </button> *@
-                @* </li> *@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews"
                             type="button">
-                        <i class="fas fa-star me-2"></i>Reviews (127)
+                        <i class="fas fa-star me-2"></i>Reviews (@(summary?.TotalReviews ?? 0))
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
@@ -183,7 +169,6 @@
             </ul>
 
             <div class="tab-content" id="laptopDetailTabsContent">
-                <!-- Specifications -->
                 <div class="tab-pane fade show active" id="specs" role="tabpanel">
                     <div class="specs-content p-4">
                         <div class="row">
@@ -206,9 +191,9 @@
 
                                 <h6 class="fw-bold">Categories</h6>
                                 <p>
-                                    @foreach (var category in Model.Laptop?.Categories ?? new List<CategoryResponse>())
+                                    @if(Model.Laptop?.Categories != null && Model.Laptop.Categories.Any())
                                     {
-                                        @category.Name<br/>
+                                    @string.Join(", ", Model.Laptop.Categories.Select(c => c.Name))
                                     }
                                 </p>
 
@@ -220,7 +205,6 @@
                 </div>
 
 
-                <!-- Description -->
                 <div class="tab-pane fade" id="description" role="tabpanel">
                     <div class="description-content p-4">
                         <h5>About This Laptop</h5>
@@ -236,93 +220,72 @@
                             <li>Business presentations and productivity</li>
                             <li>Scientific computing and data analysis</li>
                         </ul>
-
-                        <h6>Included Accessories:</h6>
-                        <ul>
-                            <li>MagSafe 3 charging cable</li>
-                            <li>67W USB-C Power Adapter</li>
-                            <li>Laptop carrying case</li>
-                            <li>Cleaning cloth</li>
-                        </ul>
                     </div>
                 </div>
 
-                <!-- Reviews -->
                 <div class="tab-pane fade" id="reviews" role="tabpanel">
                     <div class="reviews-content p-4">
                         @if (summary != null && summary.TotalReviews > 0)
                         {
-                            <div class="review-summary mb-4">
-                                <div class="row align-items-center">
-                                    <div class="col-md-3 text-center">
-                                        <div class="overall-rating">
-                                            <div class="rating-number h2">@summary.AverageRating</div>
-                                            <div class="stars mb-2">
-                                                @for (int i = 1; i <= 5; i++)
-                                                {
-                                                    if (i <= summary.AverageRating)
-                                                    {
-                                                        <i class="fas fa-star text-warning"></i>
-                                                    }
-                                                    else if (i - 0.5 <= summary.AverageRating)
-                                                    {
-                                                        <i class="fas fa-star-half-alt text-warning"></i>
-                                                    }
-                                                    else
-                                                    {
-                                                        <i class="far fa-star text-warning"></i>
-                                                    }
-                                                }
-                                            </div>
-                                            <div class="text-muted">@summary.TotalReviews reviews</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <div class="rating-breakdown">
-                                            @foreach (var dist in summary.RatingDistribution.OrderByDescending(d => d.Key))
+                        <div class="review-summary mb-4">
+                            <div class="row align-items-center">
+                                <div class="col-md-3 text-center">
+                                    <div class="overall-rating">
+                                        <div class="rating-number h2">@summary.AverageRating.ToString("F1")</div>
+                                        <div class="stars mb-2">
+                                            @for (int i = 1; i <= 5; i++)
                                             {
-                                                var percentage = summary.TotalReviews > 0 ? (double)dist.Value / summary.TotalReviews * 100 : 0;
-                                                <div class="rating-bar d-flex align-items-center mb-2">
-                                                    <span class="rating-label">@dist.Key stars</span>
-                                                    <div class="progress flex-grow-1 mx-3">
-                                                        <div class="progress-bar bg-warning"
-                                                             style="width: @percentage.ToString("F0")%"></div>
-                                                    </div>
-                                                    <span class="rating-count">@dist.Value</span>
-                                                </div>
+                                            if (i <= summary.AverageRating)
+                                            {
+                                            <i class="fas fa-star text-warning"></i>
+                                            }
+                                            else if (i - 0.5 <= summary.AverageRating)
+                                            {
+                                            <i class="fas fa-star-half-alt text-warning"></i>
+                                            }
+                                            else
+                                            {
+                                            <i class="far fa-star text-secondary"></i>
+                                            }
                                             }
                                         </div>
+                                        <div class="text-muted">@summary.TotalReviews reviews</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="rating-breakdown">
+                                        @foreach (var dist in summary.RatingDistribution.OrderByDescending(d => d.Key))
+                                        {
+                                        var percentage = summary.TotalReviews > 0 ? (double)dist.Value / summary.TotalReviews * 100 : 0;
+                                        <div class="rating-bar d-flex align-items-center mb-2">
+                                            <span class="rating-label">@dist.Key stars</span>
+                                            <div class="progress flex-grow-1 mx-3">
+                                                <div class="progress-bar bg-warning"
+                                                     style="width: @percentage.ToString("F0")%"></div>
+                                            </div>
+                                            <span class="rating-count">@dist.Value</span>
+                                        </div>
+                                        }
                                     </div>
                                 </div>
                             </div>
+                        </div>
                         }
 
-                        <!-- Write a Review Form -->
-                        <!-- Write a Review Form -->
                         <div class="write-review-section border-top pt-4 mt-4">
-                            @* Để phục vụ mục đích test, chúng ta sẽ tạm thời luôn hiển thị form này *@
-                            @* và ẩn đi các điều kiện kiểm tra đăng nhập. *@
-
                             <h5>Write a Review</h5>
                             <form method="post" asp-page-handler="SubmitReview">
                                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-                                @* Giá trị này sẽ được gán ở backend để test *@
                                 <input type="hidden" asp-for="NewReview.OrderId"/>
 
                                 <div class="mb-3">
                                     <label asp-for="NewReview.Rating" class="form-label">Your Rating</label>
                                     <div class="star-rating-input">
-                                        <input type="radio" id="star5" asp-for="NewReview.Rating" value="5"/><label
-                                            for="star5" title="5 stars"></label>
-                                        <input type="radio" id="star4" asp-for="NewReview.Rating" value="4"/><label
-                                            for="star4" title="4 stars"></label>
-                                        <input type="radio" id="star3" asp-for="NewReview.Rating" value="3"/><label
-                                            for="star3" title="3 stars"></label>
-                                        <input type="radio" id="star2" asp-for="NewReview.Rating" value="2"/><label
-                                            for="star2" title="2 stars"></label>
-                                        <input type="radio" id="star1" asp-for="NewReview.Rating" value="1"/><label
-                                            for="star1" title="1 star"></label>
+                                        <input type="radio" id="star5" asp-for="NewReview.Rating" value="5"/><label for="star5" title="5 stars"></label>
+                                        <input type="radio" id="star4" asp-for="NewReview.Rating" value="4"/><label for="star4" title="4 stars"></label>
+                                        <input type="radio" id="star3" asp-for="NewReview.Rating" value="3"/><label for="star3" title="3 stars"></label>
+                                        <input type="radio" id="star2" asp-for="NewReview.Rating" value="2"/><label for="star2" title="2 stars"></label>
+                                        <input type="radio" id="star1" asp-for="NewReview.Rating" value="1"/><label for="star1" title="1 star"></label>
                                     </div>
                                     <span asp-validation-for="NewReview.Rating" class="text-danger"></span>
                                 </div>
@@ -337,109 +300,74 @@
                             </form>
                         </div>
 
-
-                        <!-- Individual Reviews -->
                         <div class="individual-reviews mt-4">
                             @if (summary != null && summary.Reviews.Any())
                             {
-                                @foreach (var review in summary.Reviews)
-                                {
-                                    <div class="review-item border-top pt-3 mt-3">
-                                        <div class="d-flex justify-content-between align-items-start mb-2">
-                                            <div>
-                                                <div class="reviewer-name fw-bold">@review.RaterName</div>
-                                                <div class="review-stars">
-                                                    @for (int i = 0; i < review.Rating; i++)
-                                                    {
-                                                        <i class="fas fa-star text-warning"></i>
-                                                    }
-                                                    @for (int i = review.Rating; i < 5; i++)
-                                                    {
-                                                        <i class="far fa-star text-warning"></i>
-                                                    }
-                                                </div>
-                                            </div>
-                                            <div
-                                                class="review-date text-muted">@review.CreatedAt.ToString("dd MMM yyyy")</div>
+                            @foreach (var review in summary.Reviews)
+                            {
+                            <div class="review-item border-top pt-3 mt-3">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <div class="reviewer-name fw-bold">@review.RaterName</div>
+                                        <div class="review-stars">
+                                            @for (int i = 0; i < review.Rating; i++)
+                                            {
+                                            <i class="fas fa-star text-warning"></i>
+                                            }
+                                            @for (int i = review.Rating; i < 5; i++)
+                                            {
+                                            <i class="far fa-star text-secondary"></i>
+                                            }
                                         </div>
-                                        <div class="review-text">@review.Comment</div>
                                     </div>
-                                }
+                                    <div class="review-date text-muted">@review.CreatedAt.ToString("dd MMM yyyy")</div>
+                                </div>
+                                <div class="review-text">@review.Comment</div>
+                            </div>
+                            }
                             }
                             else
                             {
-                                <div class="text-center p-4">
-                                    <p class="text-muted">Be the first to review this laptop!</p>
-                                </div>
+                            <div class="text-center p-4">
+                                <p class="text-muted">Be the first to review this laptop!</p>
+                            </div>
                             }
                         </div>
                     </div>
                 </div>
 
-                <!-- Policies -->
                 <div class="tab-pane fade" id="policies" role="tabpanel">
                     <div class="policies-content p-4">
                         <h5>Rental Terms & Conditions</h5>
-
-                        <h6>Rental Period</h6>
-                        <ul>
-                            <li>Minimum rental period: 1 day</li>
-                            <li>Maximum rental period: 6 months</li>
-                            <li>Extensions possible with advance notice</li>
-                        </ul>
-
-                        <h6>Damage Policy</h6>
-                        <ul>
-                            <li>Security deposit: ₫5,000,000 (refundable)</li>
-                            <li>Minor cosmetic damage: No charge</li>
-                            <li>Repair costs charged for functional damage</li>
-                            <li>Replacement cost for lost/stolen devices</li>
-                        </ul>
-
-                        <h6>Delivery & Pickup</h6>
-                        <ul>
-                            <li>Free delivery within 20km of city center</li>
-                            <li>Same-day delivery available for orders before 2 PM</li>
-                            <li>Free pickup at end of rental period</li>
-                            <li>Express delivery available for additional fee</li>
-                        </ul>
-
-                        <h6>Cancellation Policy</h6>
-                        <ul>
-                            <li>Free cancellation up to 24 hours before start date</li>
-                            <li>50% refund for cancellations within 24 hours</li>
-                            <li>No refund for cancellations after delivery</li>
-                        </ul>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Related Laptops -->
     <div class="row mt-5">
         <div class="col-12">
             <h3 class="mb-4">You Might Also Like</h3>
             <div class="row">
                 @foreach (var laptop in Model.SimilarLaptops)
                 {
-                    <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="laptop-card">
-                            <div class="laptop-image">
-                                <img
-                                    src="@(string.IsNullOrEmpty(laptop.ImageURL) ? "https://techterms.com/img/xl/laptop_586.png" : laptop.ImageURL)"
-                                    alt="@laptop.Name" class="img-fluid">
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="laptop-card">
+                        <div class="laptop-image">
+                            <img
+                                src="@(string.IsNullOrEmpty(laptop.ImageURL) ? "https://techterms.com/img/xl/laptop_586.png" : laptop.ImageURL)"
+                                alt="@laptop.Name" class="img-fluid">
+                        </div>
+                        <div class="laptop-info">
+                            <div class="laptop-brand">@laptop.Brand.Name</div>
+                            <h6 class="laptop-title">@laptop.Name</h6>
+                            <div class="price-daily">@($"{laptop.PricePerDay:N0}₫") <span class="price-label">per day</span>
                             </div>
-                            <div class="laptop-info">
-                                <div class="laptop-brand">@laptop.Brand.Name</div>
-                                <h6 class="laptop-title">@laptop.Name</h6>
-                                <div class="price-daily">@($"{laptop.PricePerDay:N0}₫") <span class="price-label">per day</span>
-                                </div>
-                                <a href="/laptops/details/@laptop.LaptopId" class="btn btn-outline-primary btn-sm mt-2">View
-                                    Details</a>
-                            </div>
+                            <a href="/laptops/details/@laptop.LaptopId" class="btn btn-outline-primary btn-sm mt-2">View
+                                Details</a>
                         </div>
                     </div>
+                </div>
                 }
             </div>
         </div>
@@ -448,21 +376,24 @@
 </div>
 
 @section Scripts {
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const slotCheckboxes = document.querySelectorAll('input[name="SelectedSlots"]');
-            const selectedCount = document.getElementById('selectedCount');
-            const totalPrice = document.getElementById('totalPrice');
-            const dailyRate = @Model.Laptop?.PricePerDay ?? 0;
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const slotCheckboxes = document.querySelectorAll('input[name="SelectedSlots"]');
+        const selectedCount = document.getElementById('selectedCount');
+        const totalPrice = document.getElementById('totalPrice');
+        const dailyRate = @(Model.Laptop?.PricePerDay ?? 0);
 
-            function updateSummary() {
-                const selected = Array.from(slotCheckboxes).filter(cb => cb.checked).length;
-                const total = selected * dailyRate;
-                selectedCount.textContent = `${selected} ngày`;
-                totalPrice.textContent = `₫${total.toLocaleString()}`;
-            }
+        function updateSummary() {
+            const selected = Array.from(slotCheckboxes).filter(cb => cb.checked).length;
+            const total = selected * dailyRate;
+            selectedCount.textContent = `${selected} ngày`;
+            totalPrice.textContent = `₫${total.toLocaleString()}`;
+        }
 
-            slotCheckboxes.forEach(cb => cb.addEventListener('change', updateSummary));
-        });
-    </script>
+        slotCheckboxes.forEach(cb => cb.addEventListener('change', updateSummary));
+
+        // Cập nhật giá lần đầu khi tải trang
+        updateSummary();
+    });
+</script>
 }

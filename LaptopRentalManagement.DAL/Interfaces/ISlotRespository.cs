@@ -18,5 +18,6 @@ namespace LaptopRentalManagement.DAL.Interfaces
 		Task DeleteAsync(int id);
 
 		Task<IList<Slot>> GetAllAsync(SlotFilter slotFilter);
+		Task<List<Slot>> GetByIdsAsync(List<int> slotIds);
 	}
 }

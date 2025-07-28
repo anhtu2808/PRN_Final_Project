@@ -5,11 +5,7 @@ using LaptopRentalManagement.BLL.Interfaces;
 using LaptopRentalManagement.DAL.Entities;
 using LaptopRentalManagement.DAL.Interfaces;
 using LaptopRentalManagement.Model.DTOs.Request;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace LaptopRentalManagement.BLL.Services
 {
@@ -35,6 +31,12 @@ namespace LaptopRentalManagement.BLL.Services
         public async Task<IList<SlotResponse>> GetAllAsync(SlotFilter slotFilter)
         {
             return _mapper.Map<IList<SlotResponse>>(await _slotRepository.GetAllAsync(slotFilter));
+        }
+        
+        public async Task<List<SlotResponse>> GetByIdsAsync(List<int> slotIds)
+        {
+            var slots = await _slotRepository.GetByIdsAsync(slotIds);
+            return _mapper.Map<List<SlotResponse>>(slots);
         }
     }
 }

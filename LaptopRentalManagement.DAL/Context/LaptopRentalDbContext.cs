@@ -27,6 +27,10 @@ public partial class LaptopRentalDbContext : DbContext
     
     // Thêm DbSet cho Ticket
     public virtual DbSet<Ticket> Tickets { get; set; }
+    
+    // Chat system
+    public virtual DbSet<ChatRoom> ChatRooms { get; set; }
+    public virtual DbSet<ChatMessage> ChatMessages { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -239,6 +243,55 @@ public partial class LaptopRentalDbContext : DbContext
                 .HasForeignKey(t => t.OwnerId)
                 .OnDelete(DeleteBehavior.ClientSetNull) // Không xóa Account khi Ticket bị xóa
                 .HasConstraintName("fk_Ticket_OwnerAccount");
+        });
+
+        // Chat system configuration
+        modelBuilder.Entity<ChatRoom>(entity =>
+        {
+            entity.HasKey(e => e.ChatRoomId);
+            entity.ToTable("ChatRoom");
+
+            entity.Property(e => e.Subject).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.Status).HasMaxLength(20).HasDefaultValue("Open");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
+
+            // Relationship with Customer
+            entity.HasOne(cr => cr.Customer)
+                .WithMany(a => a.CustomerChatRooms)
+                .HasForeignKey(cr => cr.CustomerId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_ChatRoom_Customer");
+
+            // Relationship with Staff (nullable)
+            entity.HasOne(cr => cr.Staff)
+                .WithMany(a => a.StaffChatRooms)
+                .HasForeignKey(cr => cr.StaffId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("fk_ChatRoom_Staff");
+        });
+
+        modelBuilder.Entity<ChatMessage>(entity =>
+        {
+            entity.HasKey(e => e.ChatMessageId);
+            entity.ToTable("ChatMessage");
+
+            entity.Property(e => e.Content).IsRequired().HasMaxLength(2000);
+            entity.Property(e => e.MessageType).HasMaxLength(20).HasDefaultValue("Text");
+            entity.Property(e => e.SentAt).HasDefaultValueSql("(sysutcdatetime())");
+
+            // Relationship with ChatRoom
+            entity.HasOne(cm => cm.ChatRoom)
+                .WithMany(cr => cr.Messages)
+                .HasForeignKey(cm => cm.ChatRoomId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("fk_ChatMessage_ChatRoom");
+
+            // Relationship with Sender
+            entity.HasOne(cm => cm.Sender)
+                .WithMany(a => a.SentMessages)
+                .HasForeignKey(cm => cm.SenderId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_ChatMessage_Sender");
         });
 
         OnModelCreatingPartial(modelBuilder);
