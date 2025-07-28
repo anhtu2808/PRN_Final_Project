@@ -99,7 +99,7 @@ namespace LaptopRentalManagement.Pages.Account
                     return account.Role switch
                     {
                         "Admin" => RedirectToPage("/Manage"),
-                        "Staff" => RedirectToPage("/Manage/Orders"),
+                        "Staff" => RedirectToPage("/Manage/Orders/OrderList"),
                         "Customer" => string.IsNullOrEmpty(returnUrl) || returnUrl == "/"
                             ? RedirectToPage("/Index")
                             : LocalRedirect(returnUrl),

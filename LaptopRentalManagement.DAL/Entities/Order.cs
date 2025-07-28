@@ -8,6 +8,8 @@ public partial class Order
 
     public decimal TotalCharge { get; set; }
 
+    public decimal DepositAmount { get; set; }
+
     public DateOnly StartDate { get; set; }
 
     public DateOnly EndDate { get; set; }

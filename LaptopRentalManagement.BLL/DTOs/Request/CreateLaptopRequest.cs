@@ -24,6 +24,9 @@ public class CreateLaptopRequest
     public decimal PricePerDay { get; set; }
 
     [Required] 
+    public decimal Deposit { get; set; }
+
+    [Required] 
     public string Cpu { get; set; } = null!;
 
     [Required] 

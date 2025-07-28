@@ -13,6 +13,7 @@ public class EditLaptopRequest
     public int? BrandId { get; set; }
     public int? AccountId { get; set; }
     public decimal? PricePerDay { get; set; }
+    public decimal? Deposit { get; set; }
     public string? Cpu { get; set; }
     public int? Ram { get; set; }
     public int? Storage { get; set; }

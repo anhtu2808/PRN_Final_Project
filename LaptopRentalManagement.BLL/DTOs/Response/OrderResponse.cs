@@ -12,6 +12,7 @@ namespace LaptopRentalManagement.BLL.DTOs.Response
 		public string Status { get; set; } = null!;
 
 		public decimal TotalCharge { get; set; }
+		public decimal DepositAmount { get; set; }
 		public DateOnly StartDate { get; set; }
 
 		public DateOnly EndDate { get; set; }
