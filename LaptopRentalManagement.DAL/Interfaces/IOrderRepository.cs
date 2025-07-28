@@ -15,5 +15,9 @@ namespace LaptopRentalManagement.DAL.Interfaces
 		Task<Order> CreateAsync(Order order);
 		Task<Order> UpdateAsync(Order order);
 		Task DeleteAsync(int id);
+		
+		// ZaloPay methods
+		Task<Order?> GetByZaloPayTransactionIdAsync(string transactionId);
+		Task UpdateZaloPayTransactionIdAsync(int orderId, string transactionId);
 	}
 }

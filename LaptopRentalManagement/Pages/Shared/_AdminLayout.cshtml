@@ -6,6 +6,7 @@
     <title>@ViewData["Title"] - Admin Panel</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/chat.css" asp-append-version="true" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -36,7 +37,7 @@
                     </li>
                     
                     <li class="nav-item">
-                        <a class="nav-link" href="/manage/orders" data-tooltip="Orders">
+                        <a class="nav-link" href="/manage/Orders/OrderList" data-tooltip="Orders">
                             <i class="fas fa-shopping-cart"></i>
                             <span class="sidebar-text">Orders</span>
                             <span class="badge badge-danger sidebar-text">5</span>
@@ -68,6 +69,13 @@
                         <a class="nav-link" href="/manage/categories" data-tooltip="Categories">
                             <i class="fas fa-list"></i>
                             <span class="sidebar-text">Categories</span>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="/chat" data-tooltip="Customer Support">
+                            <i class="fas fa-comments"></i>
+                            <span class="sidebar-text">Chat Support</span>
                         </a>
                     </li>
                     

@@ -9,11 +9,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace LaptopRentalManagement.Pages.Account
 {
-    public class CustomerRegisterModel : PageModel
+    public class RegisterModel : PageModel
     {
         private readonly IAccountService _accountService;
 
-        public CustomerRegisterModel(IAccountService accountService)
+        public RegisterModel(IAccountService accountService)
         {
             _accountService = accountService;
         }
@@ -26,6 +26,7 @@ namespace LaptopRentalManagement.Pages.Account
 
         public class InputModel
         {
+
             public string Name { get; set; } = string.Empty;
             public string Email { get; set; } = string.Empty;
             public string Password { get; set; } = string.Empty;
@@ -35,11 +36,6 @@ namespace LaptopRentalManagement.Pages.Account
             [Display(Name = "Confirm Password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match")]
             public string ConfirmPassword { get; set; } = string.Empty;
-
-            [Required(ErrorMessage = "You must agree to the terms and conditions")]
-            [Range(typeof(bool), "true", "true", ErrorMessage = "You must agree to the terms and conditions")]
-            [Display(Name = "I agree to the Terms of Service and Privacy Policy")]
-            public bool AgreeToTerms { get; set; }
         }
 
         public void OnGet()
@@ -64,7 +60,7 @@ namespace LaptopRentalManagement.Pages.Account
                 {
                     Name = Input.Name,
                     Email = Input.Email,
-                    PasswordHash = Input.Password, // This will be hashed in the service layer
+                    PasswordHash = Input.Password,
                     Role = "Customer"
                 };
 
@@ -95,7 +91,7 @@ namespace LaptopRentalManagement.Pages.Account
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal, authProperties);
 
                     // Redirect to customer dashboard or welcome page
-                    return RedirectToPage("/Customer/Dashboard");
+                    return RedirectToPage("/Index");
                 }
                 else
                 {

@@ -14,19 +14,23 @@ public partial class LaptopRentalDbContext : DbContext
 	{
 	}
 
-	public virtual DbSet<Account> Accounts { get; set; }
-	public virtual DbSet<Brand> Brands { get; set; }
-	public virtual DbSet<Category> Categories { get; set; }
-	public virtual DbSet<Laptop> Laptops { get; set; }
-	public virtual DbSet<Notification> Notifications { get; set; }
-	public virtual DbSet<Order> Orders { get; set; }
-	public virtual DbSet<OrderLog> OrderLogs { get; set; }
-	public virtual DbSet<OrderLogImg> OrderLogImgs { get; set; }
-	public virtual DbSet<Review> Reviews { get; set; }
-	public virtual DbSet<Slot> Slots { get; set; }
-
-	// Thêm DbSet cho Ticket
-	public virtual DbSet<Ticket> Tickets { get; set; }
+    public virtual DbSet<Account> Accounts { get; set; }
+    public virtual DbSet<Brand> Brands { get; set; }
+    public virtual DbSet<Category> Categories { get; set; }
+    public virtual DbSet<Laptop> Laptops { get; set; }
+    public virtual DbSet<Notification> Notifications { get; set; }
+    public virtual DbSet<Order> Orders { get; set; }
+    public virtual DbSet<OrderLog> OrderLogs { get; set; }
+    public virtual DbSet<OrderLogImg> OrderLogImgs { get; set; }
+    public virtual DbSet<Review> Reviews { get; set; }
+    public virtual DbSet<Slot> Slots { get; set; }
+    
+    // Thêm DbSet cho Ticket
+    public virtual DbSet<Ticket> Tickets { get; set; }
+    
+    // Chat system
+    public virtual DbSet<ChatRoom> ChatRooms { get; set; }
+    public virtual DbSet<ChatMessage> ChatMessages { get; set; }
 
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -116,18 +120,19 @@ public partial class LaptopRentalDbContext : DbContext
 				.HasConstraintName("fk_Notification_Account");
 		});
 
-		modelBuilder.Entity<Order>(entity =>
-		{
-			entity.HasKey(e => e.OrderId).HasName("PK__Order__C3905BCFAA91515F");
-			entity.ToTable("Order");
-			entity.HasIndex(e => e.LaptopId, "ix_Order_LaptopId");
-			entity.HasIndex(e => e.OwnerId, "ix_Order_OwnerId");
-			entity.HasIndex(e => e.RenterId, "ix_Order_RenterId");
-			entity.HasIndex(e => e.StartDate, "ix_Order_StartDate");
-			entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
-			entity.Property(e => e.Status).HasMaxLength(20).HasDefaultValue("Pending");
-			entity.Property(e => e.TotalCharge).HasColumnType("decimal(18, 2)");
-			entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
+        modelBuilder.Entity<Order>(entity =>
+        {
+            entity.HasKey(e => e.OrderId).HasName("PK__Order__C3905BCFAA91515F");
+            entity.ToTable("Order");
+            entity.HasIndex(e => e.LaptopId, "ix_Order_LaptopId");
+            entity.HasIndex(e => e.OwnerId, "ix_Order_OwnerId");
+            entity.HasIndex(e => e.RenterId, "ix_Order_RenterId");
+            entity.HasIndex(e => e.StartDate, "ix_Order_StartDate");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.Status).HasMaxLength(20).HasDefaultValue("Pending");
+            entity.Property(e => e.TotalCharge).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.ZaloPayTransactionId).HasMaxLength(100);
 
 			entity.HasOne(d => d.Laptop).WithMany(p => p.Orders)
 				.HasForeignKey(d => d.LaptopId)
@@ -242,8 +247,57 @@ public partial class LaptopRentalDbContext : DbContext
 
 		});
 
-		OnModelCreatingPartial(modelBuilder);
-	}
+        // Chat system configuration
+        modelBuilder.Entity<ChatRoom>(entity =>
+        {
+            entity.HasKey(e => e.ChatRoomId);
+            entity.ToTable("ChatRoom");
+
+            entity.Property(e => e.Subject).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.Status).HasMaxLength(20).HasDefaultValue("Open");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
+
+            // Relationship with Customer
+            entity.HasOne(cr => cr.Customer)
+                .WithMany(a => a.CustomerChatRooms)
+                .HasForeignKey(cr => cr.CustomerId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_ChatRoom_Customer");
+
+            // Relationship with Staff (nullable)
+            entity.HasOne(cr => cr.Staff)
+                .WithMany(a => a.StaffChatRooms)
+                .HasForeignKey(cr => cr.StaffId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("fk_ChatRoom_Staff");
+        });
+
+        modelBuilder.Entity<ChatMessage>(entity =>
+        {
+            entity.HasKey(e => e.ChatMessageId);
+            entity.ToTable("ChatMessage");
+
+            entity.Property(e => e.Content).IsRequired().HasMaxLength(2000);
+            entity.Property(e => e.MessageType).HasMaxLength(20).HasDefaultValue("Text");
+            entity.Property(e => e.SentAt).HasDefaultValueSql("(sysutcdatetime())");
+
+            // Relationship with ChatRoom
+            entity.HasOne(cm => cm.ChatRoom)
+                .WithMany(cr => cr.Messages)
+                .HasForeignKey(cm => cm.ChatRoomId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("fk_ChatMessage_ChatRoom");
+
+            // Relationship with Sender
+            entity.HasOne(cm => cm.Sender)
+                .WithMany(a => a.SentMessages)
+                .HasForeignKey(cm => cm.SenderId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_ChatMessage_Sender");
+        });
+
+        OnModelCreatingPartial(modelBuilder);
+    }
 
 
 

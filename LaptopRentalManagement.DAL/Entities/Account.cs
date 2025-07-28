@@ -24,4 +24,8 @@ public partial class Account
 	public virtual ICollection<Ticket> OwnerTickets { get; set; } = new List<Ticket>();
 
 	public virtual ICollection<Ticket> RenterTickets { get; set; } = new List<Ticket>();
+    // Chat relationships
+    public virtual ICollection<ChatRoom> CustomerChatRooms { get; set; } = new List<ChatRoom>();
+    public virtual ICollection<ChatRoom> StaffChatRooms { get; set; } = new List<ChatRoom>();
+    public virtual ICollection<ChatMessage> SentMessages { get; set; } = new List<ChatMessage>();
 }

@@ -1,24 +1,27 @@
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace LaptopRentalManagement.Model.DTOs.Response.Order;
 
 public class ZaloPayCreateOrderResponse
 {
-    [JsonPropertyName("return_code")]
+    [JsonProperty("return_code")]
     public int ReturnCode { get; set; }
 
-    [JsonPropertyName("return_message")]
-    public string ReturnMessage { get; set; }
+    [JsonProperty("return_message")]
+    public string ReturnMessage { get; set; } = string.Empty;
 
-    [JsonPropertyName("sub_return_code")]
+    [JsonProperty("sub_return_code")]
     public int SubReturnCode { get; set; }
 
-    [JsonPropertyName("sub_return_message")]
-    public string SubReturnMessage { get; set; }
+    [JsonProperty("sub_return_message")]
+    public string SubReturnMessage { get; set; } = string.Empty;
 
-    [JsonPropertyName("order_url")]
-    public string OrderUrl { get; set; }
+    [JsonProperty("order_url")]
+    public string OrderUrl { get; set; } = string.Empty;
 
-    [JsonPropertyName("zp_trans_token")]
-    public string ZpTransToken { get; set; }
+    [JsonProperty("zp_trans_token")]
+    public string ZpTransToken { get; set; } = string.Empty;
+
+    [JsonProperty("order_token")]
+    public string OrderToken { get; set; } = string.Empty;
 }

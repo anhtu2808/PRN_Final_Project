@@ -12,6 +12,7 @@ namespace LaptopRentalManagement.BLL.Interfaces
     public interface ISlotService
     {
         Task<IList<SlotResponse>> GetAllAsync(SlotFilter slotFilter);
+        Task<List<SlotResponse>> GetByIdsAsync(List<int> slotIds);
 
         Task CreateAsync(CreateSlotRequest request);
 

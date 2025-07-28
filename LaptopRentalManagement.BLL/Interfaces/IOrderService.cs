@@ -1,5 +1,6 @@
 ﻿using LaptopRentalManagement.BLL.DTOs.Request;
 using LaptopRentalManagement.BLL.DTOs.Response;
+using LaptopRentalManagement.DAL.Entities;
 using LaptopRentalManagement.Model.DTOs.Request;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -19,5 +20,13 @@ namespace LaptopRentalManagement.BLL.Interfaces
         Task<OrderResponse?> ApproveAsync(int orderId);
 		Task<OrderResponse?> ConfirmReturn(int orderId);
         Task SetStatusAsync(OrderLogRequest request);
+
+        Task SetStatusAsync(int orderId, string newStatus);
+
+        // ZaloPay payment methods
+        Task<OrderResponse> CreateOrderForPaymentAsync(CreateOrderRequest request);
+        Task<bool> UpdateOrderPaymentStatusAsync(string zaloPayTransactionId, string status);
+        Task<Order?> GetOrderByZaloPayTransactionIdAsync(string transactionId);
+        Task<Order?> GetOrderEntityByIdAsync(int orderId);
     }
 }

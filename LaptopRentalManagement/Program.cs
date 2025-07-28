@@ -4,7 +4,6 @@ using Amazon.S3;
 using LaptopRentalManagement.BLL.Mappings;
 using LaptopRentalManagement.BLL.Interfaces;
 using LaptopRentalManagement.BLL.Services;
-using LaptopRentalManagement.BLL.Hubs;
 using LaptopRentalManagement.DAL.Context;
 using LaptopRentalManagement.DAL.Interfaces;
 using LaptopRentalManagement.DAL.Repositories;
@@ -99,12 +98,15 @@ builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 builder.Services.AddScoped<ITicketService, TicketService>();
 
-// Register Hub Service
-builder.Services.AddScoped<IHubService, HubService>();
+// Register Chat services
+builder.Services.AddScoped<IChatRoomRepository, ChatRoomRepository>();
+builder.Services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
+builder.Services.AddScoped<IChatService, ChatService>();
 
-// Register other services using SignalR
-builder.Services.AddScoped<INotificationService, NotificationService>();
-builder.Services.AddScoped<IHubService, HubService>();
+// Register ZaloPay services
+builder.Services.AddScoped<IZaloPayService, ZaloPayService>();
+builder.Services.AddHttpClient();
+
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<ISlotService, SlotService>();
 builder.Services.AddScoped<IOrderLogService, OrderLogService>();
@@ -129,10 +131,7 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 
-// Map SignalR Hubs
-app.MapHub<BaseHub>("/baseHub");
-app.MapHub<NotificationHub>("/notificationHub");
-app.MapHub<ChatHub>("/chatHub");
-app.MapHub<OrderHub>("/orderHub");
+// Map new ChatHub
+app.MapHub<ChatHub>("/chathub");
 
 app.Run();

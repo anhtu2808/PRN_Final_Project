@@ -1,0 +1,152 @@
+@page
+@model LaptopRentalManagement.Pages.Checkout
+@{
+ViewData["Title"] = "Checkout";
+}
+
+@* CSS để định dạng các ô ngày tháng *@
+<style>
+    .date-slot-item {
+        border: 1px solid #e0e0e0;
+        border-radius: 8px; /* Bo tròn góc */
+        padding: 8px 12px;
+        text-align: center;
+        background-color: #f8f9fa;
+        font-size: 0.9rem;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        min-width: 80px;
+    }
+    .date-slot-day {
+        display: block;
+        font-weight: 600;
+        color: #333;
+    }
+    .date-slot-date {
+        display: block;
+        color: #555;
+    }
+    .specs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        font-size: 0.9rem;
+    }
+    .spec-item {
+        background: #f8f9fa;
+        padding: 0.5rem;
+        border-radius: 5px;
+    }
+    .spec-label {
+        font-weight: bold;
+        color: #555;
+    }
+</style>
+
+<div class="container my-5">
+    <h2><i class="fas fa-shopping-cart me-2"></i>Confirm and Checkout</h2>
+    <hr />
+
+    @if (Model.Laptop != null && Model.Laptop.LaptopId > 0)
+    {
+    <div class="row g-4">
+        <div class="col-md-8">
+            <h4>Rental Information</h4>
+            <div class="card">
+                <div class="row g-0">
+                    <div class="col-md-5">
+                        <img src="@Model.Laptop.ImageURL" class="img-fluid rounded-start h-100" alt="@Model.Laptop.Name" style="object-fit: cover;">
+                    </div>
+                    <div class="col-md-7">
+                        <div class="card-body">
+                            <div class="text-muted">@Model.Laptop.Brand?.Name</div>
+                            <h5 class="card-title">@Model.Laptop.Name</h5>
+                            <p class="card-text"><small>@Model.Laptop.Description</small></p>
+
+                            <hr>
+
+                            <h6 class="mb-3">Specifications</h6>
+                            <div class="specs-grid mb-3">
+                                <div class="spec-item">
+                                    <span class="spec-label">CPU:</span> @Model.Laptop.Cpu
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">RAM:</span> @Model.Laptop.Ram GB
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Storage:</span> @Model.Laptop.Storage GB SSD
+                                </div>
+                            </div>
+
+                            @if (Model.Slots != null && Model.Slots.Any())
+                            {
+                            <div class="mt-3">
+                                <strong>Selected dates:</strong>
+                                <div class="d-flex flex-wrap mt-2" style="gap: 10px;">
+                                    @foreach (var slot in Model.Slots.OrderBy(s => s.SlotDate))
+                                    {
+                                    <div class="date-slot-item">
+                                        <span class="date-slot-day">@slot.SlotDate.ToString("ddd", new System.Globalization.CultureInfo("en-US"))</span>
+                                        <span class="date-slot-date">@slot.SlotDate.ToString("dd/MM")</span>
+                                    </div>
+                                    }
+                                </div>
+                            </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Order Summary</h4>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <span>Price per day:</span>
+                        <span>@Model.Laptop.PricePerDay.ToString("N0") VND</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Number of days:</span>
+                        <span>x @(Model.SelectedSlots?.Count ?? 0)</span>
+                    </div>
+                    <hr />
+                    <div class="d-flex justify-content-between fw-bold fs-5">
+                        <span>Total</span>
+                        <span>@Model.TotalCharge.ToString("N0") VND</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <form method="post">
+                        <button type="submit" asp-page-handler="ConfirmOrder" class="btn btn-primary w-100">
+                            <i class="fas fa-credit-card me-2"></i>
+                            Pay with ZaloPay
+                        </button>
+
+                        <input type="hidden" asp-for="LaptopId" />
+
+                        @if (Model.SelectedSlots != null)
+                        {
+                        @foreach (var slotId in Model.SelectedSlots)
+                        {
+                        <input type="hidden" name="SelectedSlots" value="@slotId" />
+                        }
+                        }
+                    </form>
+                </div>
+            </div>
+            <div class="text-center mt-3">
+                <a asp-page="/Laptops/Details" asp-route-id="@Model.LaptopId">Back to details</a>
+            </div>
+        </div>
+    </div>
+    }
+    else
+    {
+    <div class="alert alert-warning">
+        There is no information to check out. Please try again from the product details page.
+    </div>
+    }
+</div>

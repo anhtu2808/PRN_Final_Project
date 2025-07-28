@@ -158,6 +158,101 @@ namespace LaptopRentalManagement.DAL.Migrations
                     b.ToTable("Category", (string)null);
                 });
 
+            modelBuilder.Entity("LaptopRentalManagement.DAL.Entities.ChatMessage", b =>
+                {
+                    b.Property<int>("ChatMessageId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ChatMessageId"));
+
+                    b.Property<int>("ChatRoomId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("MessageType")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasDefaultValue("Text");
+
+                    b.Property<int>("SenderId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("SentAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("(sysutcdatetime())");
+
+                    b.HasKey("ChatMessageId");
+
+                    b.HasIndex("ChatRoomId");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("ChatMessage", (string)null);
+                });
+
+            modelBuilder.Entity("LaptopRentalManagement.DAL.Entities.ChatRoom", b =>
+                {
+                    b.Property<int>("ChatRoomId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ChatRoomId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("(sysutcdatetime())");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsCustomerActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsStaffActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastMessageAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("StaffId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasDefaultValue("Open");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("ChatRoomId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("StaffId");
+
+                    b.ToTable("ChatRoom", (string)null);
+                });
+
             modelBuilder.Entity("LaptopRentalManagement.DAL.Entities.Laptop", b =>
                 {
                     b.Property<int>("LaptopId")
@@ -306,6 +401,10 @@ namespace LaptopRentalManagement.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("(sysutcdatetime())");
+
+                    b.Property<string>("ZaloPayTransactionId")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("OrderId")
                         .HasName("PK__Order__C3905BCFAA91515F");
@@ -536,6 +635,45 @@ namespace LaptopRentalManagement.DAL.Migrations
                         .HasConstraintName("fk_LaptopCategory_Laptop");
                 });
 
+            modelBuilder.Entity("LaptopRentalManagement.DAL.Entities.ChatMessage", b =>
+                {
+                    b.HasOne("LaptopRentalManagement.DAL.Entities.ChatRoom", "ChatRoom")
+                        .WithMany("Messages")
+                        .HasForeignKey("ChatRoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_ChatMessage_ChatRoom");
+
+                    b.HasOne("LaptopRentalManagement.DAL.Entities.Account", "Sender")
+                        .WithMany("SentMessages")
+                        .HasForeignKey("SenderId")
+                        .IsRequired()
+                        .HasConstraintName("fk_ChatMessage_Sender");
+
+                    b.Navigation("ChatRoom");
+
+                    b.Navigation("Sender");
+                });
+
+            modelBuilder.Entity("LaptopRentalManagement.DAL.Entities.ChatRoom", b =>
+                {
+                    b.HasOne("LaptopRentalManagement.DAL.Entities.Account", "Customer")
+                        .WithMany("CustomerChatRooms")
+                        .HasForeignKey("CustomerId")
+                        .IsRequired()
+                        .HasConstraintName("fk_ChatRoom_Customer");
+
+                    b.HasOne("LaptopRentalManagement.DAL.Entities.Account", "Staff")
+                        .WithMany("StaffChatRooms")
+                        .HasForeignKey("StaffId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_ChatRoom_Staff");
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Staff");
+                });
+
             modelBuilder.Entity("LaptopRentalManagement.DAL.Entities.Laptop", b =>
                 {
                     b.HasOne("LaptopRentalManagement.DAL.Entities.Account", "Account")
@@ -685,6 +823,8 @@ namespace LaptopRentalManagement.DAL.Migrations
 
             modelBuilder.Entity("LaptopRentalManagement.DAL.Entities.Account", b =>
                 {
+                    b.Navigation("CustomerChatRooms");
+
                     b.Navigation("Laptops");
 
                     b.Navigation("Notifications");
@@ -698,11 +838,20 @@ namespace LaptopRentalManagement.DAL.Migrations
                     b.Navigation("RenterTickets");
 
                     b.Navigation("Reviews");
+
+                    b.Navigation("SentMessages");
+
+                    b.Navigation("StaffChatRooms");
                 });
 
             modelBuilder.Entity("LaptopRentalManagement.DAL.Entities.Brand", b =>
                 {
                     b.Navigation("Laptops");
+                });
+
+            modelBuilder.Entity("LaptopRentalManagement.DAL.Entities.ChatRoom", b =>
+                {
+                    b.Navigation("Messages");
                 });
 
             modelBuilder.Entity("LaptopRentalManagement.DAL.Entities.Laptop", b =>
