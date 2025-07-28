@@ -125,7 +125,6 @@ namespace LaptopRentalManagement.BLL.Mappings
                 .ForMember(dest => dest.Owner, opt => opt.Ignore())
                 .ForMember(dest => dest.Renter, opt => opt.Ignore())
                 .ForMember(dest => dest.Laptop, opt => opt.Ignore());
-            CreateMap<CreateSlotRequest, Slot>();
 
             //Laptop mappings
             CreateMap<Laptop, LaptopResponse>()
@@ -153,6 +152,9 @@ namespace LaptopRentalManagement.BLL.Mappings
             CreateMap<CreateSlotRequest, Slot>()
                 .ForMember(dest => dest.Order, opt => opt.Ignore())
                 .ForMember(dest => dest.Laptop, opt => opt.Ignore());
+
+            CreateMap<CreateOrderLogRequest, OrderLog>();
+            CreateMap<OrderLog, OrderLogResponse>();
         }
     }
 }

@@ -89,7 +89,7 @@ namespace LaptopRentalManagement.Pages.User.Rental_orders
 
         public async Task<IActionResult> OnPostDeliveredFailAsync(int orderId, int id)
         {
-            await _orderService.SetStatusAsync(orderId, "Delivering");
+            await _orderService.SetStatusAsync(orderId, "DeliveringFail");
             TempData["Warning"] = $"Giao hàng đơn #{orderId} thất bại. Trạng thái quay về 'Delivering'.";
             return RedirectToPage("/User/Laptop/Index", new { id });
         }

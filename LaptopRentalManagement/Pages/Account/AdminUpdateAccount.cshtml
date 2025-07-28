@@ -1,11 +1,11 @@
 ﻿@page
-@model LaptopRentalManagement.Pages.Account.CreateModel
+@model LaptopRentalManagement.Pages.Account.EditModel
 @{
-    ViewData["Title"] = "Create Account";
+    ViewData["Title"] = "Edit Account";
 }
 
 <style>
-    .account-create-bg {
+    .account-edit-bg {
         background: linear-gradient(135deg, #e3f0ff 0%, #f8f9fa 100%);
         min-height: 100vh;
     }
@@ -50,7 +50,7 @@
             box-shadow: 0 0 0 2px rgba(66,165,245,0.15);
         }
 
-    .btn-success {
+    .btn-primary {
         border-radius: 12px;
         font-size: 1.15rem;
         font-weight: 600;
@@ -59,11 +59,13 @@
         background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
         border: none;
         box-shadow: 0 4px 16px rgba(67,233,123,0.10);
+        color: #fff;
     }
 
-        .btn-success:hover {
+        .btn-primary:hover {
             background: linear-gradient(90deg,#38f9d7 0%, #43e97b 100%);
             box-shadow: 0 6px 24px rgba(67,233,123,0.16);
+            color: #fff;
         }
 
     .alert-danger {
@@ -84,13 +86,14 @@
         }
 </style>
 
-<div class="account-create-bg py-5">
+<div class="account-edit-bg py-5">
     <div class="account-card shadow">
         <div class="account-card-header">
-            <h3><i class="bi bi-person-plus"></i> Create New Account</h3>
+            <h3><i class="bi bi-pencil-square"></i> Edit Account</h3>
         </div>
         <div class="card-body p-4">
             <form method="post" novalidate>
+                <input type="hidden" asp-for="Account.AccountId" />
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
                 <div class="mb-4">
@@ -105,7 +108,7 @@
                     <label asp-for="Account.PasswordHash" class="form-label">
                         Password <span class="text-danger">*</span>
                     </label>
-                    <input asp-for="Account.PasswordHash" type="password" class="form-control" placeholder="Enter secure password" />
+                    <input asp-for="Account.PasswordHash" type="password" class="form-control" placeholder="Enter new password" />
                     <span asp-validation-for="Account.PasswordHash" class="text-danger"></span>
                 </div>
 
@@ -128,13 +131,13 @@
                 </div>
 
                 <div class="d-grid">
-                    <button type="submit" class="btn btn-success btn-lg">
-                        <i class="bi bi-person-plus-fill"></i> Create Account
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-save"></i> Save Changes
                     </button>
                 </div>
             </form>
             <div class="mt-4 text-center">
-                <a asp-page="Index" class="btn btn-link text-decoration-none">
+                <a asp-page="./Index" class="btn btn-link text-decoration-none">
                     <i class="bi bi-arrow-left"></i> Back to Account List
                 </a>
             </div>

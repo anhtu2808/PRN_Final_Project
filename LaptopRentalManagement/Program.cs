@@ -85,6 +85,9 @@ builder.Services.AddScoped<ILaptopRepository, LaptopRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<ISlotRespository, SlotRepository>();
+builder.Services.AddScoped<IOrderLogRepository, OrderLogRepository>();
+builder.Services.AddScoped<IOrderLogImgRepository, OrderLogImgRepository>();
+builder.Services.AddScoped<ISlotRespository, SlotRepository>();
 
 // Register services
 builder.Services.AddScoped<ICategoryService, CategoryService>();
@@ -102,7 +105,7 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IHubService, HubService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<ISlotService, SlotService>();
-
+builder.Services.AddScoped<IOrderLogService, OrderLogService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

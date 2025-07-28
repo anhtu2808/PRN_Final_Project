@@ -1,17 +1,14 @@
-﻿namespace LaptopRentalManagement.DAL.Entities;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace LaptopRentalManagement.DAL.Entities;
 
 public partial class Account
 {
     public int AccountId { get; set; }
-
     public string Email { get; set; } = null!;
-
     public string PasswordHash { get; set; } = null!;
-
     public string Role { get; set; } = null!;
-
     public string? Name { get; set; }
-
     public DateTime CreatedAt { get; set; }
 
     public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();

@@ -92,14 +92,6 @@
                                     </form>
                                     break;
 
-                                case "Renting":
-                                    <form method="post" asp-page-handler="ConfirmReturn" asp-route-orderId="@order.OrderId" asp-route-id="@Model.Laptop.LaptopId" class="d-inline">
-                                        <button type="submit" class="btn btn-sm btn-success">
-                                            <i class="fas fa-check me-1"></i>Confirm Return
-                                        </button>
-                                    </form>
-                                    break;
-
                                 default:
                                     <span class="text-muted">No actions</span>
                                     break;
