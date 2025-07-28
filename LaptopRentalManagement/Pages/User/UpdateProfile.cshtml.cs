@@ -1,12 +1,14 @@
 using LaptopRentalManagement.BLL.DTOs.Request;
 using LaptopRentalManagement.BLL.DTOs.Response;
 using LaptopRentalManagement.BLL.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace LaptopRentalManagement.Pages.User
 {
+    [Authorize(Policy = "CustomerOnly")]
     public class UpdateProfileModel : PageModel
     {
         private readonly IAccountService _accountService;
@@ -45,9 +47,11 @@ namespace LaptopRentalManagement.Pages.User
 
             var updateRequest = new AccountUpdateRequest
             {
+                AccountId = Account.AccountId,
                 Email = Account.Email,
                 Role = Account.Role,
-                Name = Account.Name
+                Name = Account.Name,
+                PasswordHash = Account.PasswordHash
             };
 
             await _accountService.Update(updateRequest);

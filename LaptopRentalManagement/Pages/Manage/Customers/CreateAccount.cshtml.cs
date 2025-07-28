@@ -1,13 +1,16 @@
 using LaptopRentalManagement.BLL.DTOs.Request;
 using LaptopRentalManagement.BLL.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace LaptopRentalManagement.Pages.Manage.Customers
 {
+    //[Authorize(Policy = "AdminOnly")]
     public class CreateAccountModel : PageModel
     {
+
         private readonly IAccountService _accountService;
 
         public CreateAccountModel(IAccountService accountService)
@@ -45,7 +48,7 @@ namespace LaptopRentalManagement.Pages.Manage.Customers
             }
             await _accountService.AdminCreateAccount(Account);
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("./AccountList");
         }
     }
 }
