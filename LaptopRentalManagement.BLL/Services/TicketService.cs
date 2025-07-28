@@ -61,5 +61,71 @@ namespace LaptopRentalManagement.BLL.Services
 			}
 			return responses;
 		}
+
+		public async Task<IList<TicketResponse>> GetAllAsync()
+		{
+			var tickets = await _ticketRepository.GetAllAsync();
+			IList<TicketResponse> responses = new List<TicketResponse>();
+			
+			foreach (Ticket ticket in tickets)
+			{
+				var response = _mapper.Map<TicketResponse>(ticket);
+				var renter = _mapper.Map<AccountResponse>(await _accountRepository.GetByIdAsync(ticket.RenterId));
+				var order = _mapper.Map<OrderResponse>(await _orderRepository.GetByIdAsync(ticket.OrderId));
+				
+				AccountResponse? owner = null;
+				if (ticket.OwnerId.HasValue)
+				{
+					owner = _mapper.Map<AccountResponse>(await _accountRepository.GetByIdAsync(ticket.OwnerId.Value));
+				}
+				
+				response.Renter = renter;
+				response.Owner = owner;
+				response.Order = order;
+				responses.Add(response);
+			}
+			
+			return responses;
+		}
+
+		public async Task<TicketResponse?> GetByIdAsync(int id)
+		{
+			var ticket = await _ticketRepository.GetByIdAsync(id);
+			if (ticket == null) return null;
+			
+			var response = _mapper.Map<TicketResponse>(ticket);
+			var renter = _mapper.Map<AccountResponse>(await _accountRepository.GetByIdAsync(ticket.RenterId));
+			var order = _mapper.Map<OrderResponse>(await _orderRepository.GetByIdAsync(ticket.OrderId));
+			
+			AccountResponse? owner = null;
+			if (ticket.OwnerId.HasValue)
+			{
+				owner = _mapper.Map<AccountResponse>(await _accountRepository.GetByIdAsync(ticket.OwnerId.Value));
+			}
+			
+			response.Renter = renter;
+			response.Owner = owner;
+			response.Order = order;
+			
+			return response;
+		}
+
+		public async Task UpdateAsync(UpdateTicketRequest request)
+		{
+			var ticket = await _ticketRepository.GetByIdAsync(request.TicketId);
+			if (ticket == null) 
+				throw new KeyNotFoundException($"Ticket with ID {request.TicketId} not found.");
+			
+			ticket.Status = request.Status;
+			ticket.Response = request.Response;
+			ticket.RespondedAt = DateTime.UtcNow;
+			
+			await _ticketRepository.UpdateAsync(ticket);
+		}
+
+		public async Task DeleteAsync(int id)
+		{
+			await _ticketRepository.DeleteAsync(id);
+		}
 	}
 }

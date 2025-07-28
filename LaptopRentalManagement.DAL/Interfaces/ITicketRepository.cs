@@ -11,5 +11,9 @@ namespace LaptopRentalManagement.DAL.Interfaces
     {
 		Task<Ticket> CreateAsync(Ticket ticket);
 		Task<IList<Ticket>> GetAllByOrderIdAsync(int id);
+		Task<IList<Ticket>> GetAllAsync();
+		Task<Ticket?> GetByIdAsync(int id);
+		Task<Ticket> UpdateAsync(Ticket ticket);
+		Task DeleteAsync(int id);
 	}
 }

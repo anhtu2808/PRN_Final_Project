@@ -31,5 +31,41 @@ namespace LaptopRentalManagement.DAL.Repositories
 				.Where(t => t.OrderId == id)
 				.ToListAsync();
 		}
+
+		public async Task<IList<Ticket>> GetAllAsync()
+		{
+			return await _context.Tickets
+				.Include(t => t.Order)
+				.Include(t => t.Renter)
+				.Include(t => t.Owner)
+				.OrderByDescending(t => t.CreatedAt)
+				.ToListAsync();
+		}
+
+		public async Task<Ticket?> GetByIdAsync(int id)
+		{
+			return await _context.Tickets
+				.Include(t => t.Order)
+				.Include(t => t.Renter)
+				.Include(t => t.Owner)
+				.FirstOrDefaultAsync(t => t.TicketId == id);
+		}
+
+		public async Task<Ticket> UpdateAsync(Ticket ticket)
+		{
+			_context.Tickets.Update(ticket);
+			await _context.SaveChangesAsync();
+			return ticket;
+		}
+
+		public async Task DeleteAsync(int id)
+		{
+			var ticket = await _context.Tickets.FindAsync(id);
+			if (ticket != null)
+			{
+				_context.Tickets.Remove(ticket);
+				await _context.SaveChangesAsync();
+			}
+		}
 	}
 }
