@@ -47,10 +47,10 @@ namespace LaptopRentalManagement.BLL.Services
             return _mapper.Map<AccountDetailResponse>(acc);
         }
 
-        public async Task<IEnumerable<AccountDetailResponse>> GetAll()
+        public async Task<IEnumerable<AccountResponse>> GetAll()
         {
             var accounts = await _accountRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<AccountDetailResponse>>(accounts);
+            return _mapper.Map<IEnumerable<AccountResponse>>(accounts);
         }
 
         public async Task<AccountDetailResponse> Update(AccountUpdateRequest request)

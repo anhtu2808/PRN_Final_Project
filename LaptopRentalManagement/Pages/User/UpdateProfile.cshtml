@@ -1,7 +1,7 @@
 ﻿@page
-@model LaptopRentalManagement.Pages.Account.EditModel
+@model LaptopRentalManagement.Pages.User.UpdateProfileModel
 @{
-    ViewData["Title"] = "Edit Account";
+    ViewData["Title"] = "Update Profile";
 }
 
 <style>
@@ -110,16 +110,6 @@
                     </label>
                     <input asp-for="Account.PasswordHash" type="password" class="form-control" placeholder="Enter new password" />
                     <span asp-validation-for="Account.PasswordHash" class="text-danger"></span>
-                </div>
-
-                <div class="mb-4">
-                    <label asp-for="Account.Role" class="form-label">
-                        Role <span class="text-danger">*</span>
-                    </label>
-                    <select asp-for="Account.Role" asp-items="Model.Roles" class="form-select">
-                        <option value="">-- Select a Role --</option>
-                    </select>
-                    <span asp-validation-for="Account.Role" class="text-danger"></span>
                 </div>
 
                 <div class="mb-4">

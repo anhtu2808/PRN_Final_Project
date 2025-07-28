@@ -14,7 +14,7 @@ namespace LaptopRentalManagement.BLL.Interfaces
         Task<AccountDetailResponse> AdminCreateAccount(AccountRegisterRequest request);
         Task<AccountDetailResponse> Login(string email, string password);
         Task<AccountDetailResponse> GetById(int id);
-        Task<IEnumerable<AccountDetailResponse>> GetAll();
+        Task<IEnumerable<AccountResponse>> GetAll();
         Task<AccountDetailResponse> Update(AccountUpdateRequest request);
         Task<bool> Delete(int id);
     }
