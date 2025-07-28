@@ -2,9 +2,9 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using LaptopRentalManagement.BLL.Interfaces;
+using Microsoft.AspNetCore.Http;
 
-
-namespace LaptopRentalManagement.Services
+namespace LaptopRentalManagement.BLL.Services
 {
     public class FileUploadService : IFileUploadService
     {

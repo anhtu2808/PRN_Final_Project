@@ -49,13 +49,13 @@ Layout = "~/Pages/Shared/_AdminLayout.cshtml";
                                 <td>
                                     @if (!string.IsNullOrEmpty(l.ImageURL))
                                     {
-                                        <img src="@l.ImageURL" alt="@l.Name" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;" />
+                                    <img src="@l.ImageURL" alt="@l.Name" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;" />
                                     }
                                     else
                                     {
-                                        <div class="bg-light d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                                            <i class="fas fa-laptop text-muted"></i>
-                                        </div>
+                                    <div class="bg-light d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                        <i class="fas fa-laptop text-muted"></i>
+                                    </div>
                                     }
                                 </td>
                                 <td>@l.Name</td>
@@ -89,6 +89,7 @@ Layout = "~/Pages/Shared/_AdminLayout.cshtml";
     </div>
 </div>
 
+@* Create Laptop Modal *@
 <div class="modal fade" id="createLaptopModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -104,21 +105,30 @@ Layout = "~/Pages/Shared/_AdminLayout.cshtml";
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label asp-for="CreateForm.Name" class="form-label"></label>
-                            <input asp-for="CreateForm.Name" class="form-control" required/>
+                            <input asp-for="CreateForm.Name" class="form-control" required />
                         </div>
                         <div class="col-md-6">
                             <label asp-for="CreateForm.PricePerDay" class="form-label"></label>
-                            <input type="number" step="0.01" asp-for="CreateForm.PricePerDay" class="form-control" required/>
+                            <input type="number" step="0.01" asp-for="CreateForm.PricePerDay" class="form-control" required />
                         </div>
                         <div class="col-12">
                             <label asp-for="CreateForm.Description" class="form-label">Description</label>
                             <textarea asp-for="CreateForm.Description" class="form-control" rows="3"></textarea>
                         </div>
+
+                        @* Image Preview and Upload Section for Create Modal *@
                         <div class="col-12">
-                            <label asp-for="CreateForm.ImageFile" class="form-label">Laptop Image</label>
-                            <input asp-for="CreateForm.ImageFile" type="file" class="form-control" accept="image/*"/>
-                            <div class="form-text">Supported formats: JPG, JPEG, PNG, GIF, BMP. Max size: 5MB.</div>
+                            <label class="form-label">Laptop Image</label>
+                            <div class="text-center mb-2">
+                                <img id="createImagePreview" src="#" alt="Image Preview" class="img-thumbnail" style="width: 150px; height: 150px; object-fit: cover; display: none;" />
+                                <div id="createImagePlaceholder" class="bg-light d-flex align-items-center justify-content-center rounded" style="width: 150px; height: 150px; margin: 0 auto;">
+                                    <i class="fas fa-camera text-muted fs-1"></i>
+                                </div>
+                            </div>
+                            <input asp-for="CreateForm.ImageFile" id="createImageInput" type="file" class="form-control" accept="image/*" />
+                            <div class="form-text">Supported formats: JPG, PNG, etc. Max size: 5MB.</div>
                         </div>
+
                         <div class="col-md-6">
                             <label asp-for="CreateForm.BrandId" class="form-label">Brand</label>
                             <select asp-for="CreateForm.BrandId" class="form-select" asp-items="Model.BrandSelect" required>
@@ -147,15 +157,15 @@ Layout = "~/Pages/Shared/_AdminLayout.cshtml";
                         </div>
                         <div class="col-md-4">
                             <label asp-for="CreateForm.Cpu" class="form-label"></label>
-                            <input asp-for="CreateForm.Cpu" class="form-control" required/>
+                            <input asp-for="CreateForm.Cpu" class="form-control" required />
                         </div>
                         <div class="col-md-4">
                             <label asp-for="CreateForm.Ram" class="form-label">RAM (GB)</label>
-                            <input type="number" asp-for="CreateForm.Ram" class="form-control" required/>
+                            <input type="number" asp-for="CreateForm.Ram" class="form-control" required />
                         </div>
                         <div class="col-md-4">
                             <label asp-for="CreateForm.Storage" class="form-label">Storage (GB)</label>
-                            <input type="number" asp-for="CreateForm.Storage" class="form-control" required/>
+                            <input type="number" asp-for="CreateForm.Storage" class="form-control" required />
                         </div>
                     </div>
                 </div>
@@ -168,13 +178,13 @@ Layout = "~/Pages/Shared/_AdminLayout.cshtml";
     </div>
 </div>
 
-
+@* Edit Laptop Modal *@
 <div class="modal fade" id="editLaptopModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <form id="editLaptopForm" method="post" asp-page-handler="Edit">
+            <form id="editLaptopForm" method="post" asp-page-handler="Edit" enctype="multipart/form-data">
                 @Html.AntiForgeryToken()
-                <input type="hidden" asp-for="EditForm.LaptopId" id="editLaptopId"/>
+                <input type="hidden" asp-for="EditForm.LaptopId" id="editLaptopId" />
 
                 <div class="modal-header">
                     <h5 class="modal-title">Edit Laptop</h5>
@@ -191,12 +201,28 @@ Layout = "~/Pages/Shared/_AdminLayout.cshtml";
                     <div class="row g-3" id="editModalFormContent" style="display: none;">
                         <div class="col-md-6">
                             <label asp-for="EditForm.Name" class="form-label"></label>
-                            <input asp-for="EditForm.Name" id="editName" class="form-control" required/>
+                            <input asp-for="EditForm.Name" id="editName" class="form-control" required />
                         </div>
                         <div class="col-md-6">
                             <label asp-for="EditForm.PricePerDay" class="form-label"></label>
-                            <input type="number" step="0.01" asp-for="EditForm.PricePerDay" id="editPrice" class="form-control" required/>
+                            <input type="number" step="0.01" asp-for="EditForm.PricePerDay" id="editPrice" class="form-control" required />
                         </div>
+
+                        @* Image Preview and Upload Section for Edit Modal *@
+                        <div class="col-12">
+                            <label class="form-label">Laptop Image</label>
+                            <div class="d-flex align-items-end gap-3">
+                                <div>
+                                    <img id="editImagePreview" src="" alt="Laptop Image" class="img-thumbnail" style="width: 100px; height: 100px; object-fit: cover;" />
+                                </div>
+                                <div class="flex-grow-1">
+                                    <label asp-for="EditForm.ImageFile" class="form-label" style="font-size: 0.8em">Change Image</label>
+                                    <input asp-for="EditForm.ImageFile" id="editImageInput" type="file" class="form-control" accept="image/*" />
+                                    <div class="form-text">Leave blank to keep current image.</div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="col-md-6">
                             <label asp-for="EditForm.BrandId" class="form-label">Brand</label>
                             <select asp-for="EditForm.BrandId" id="editBrandId" class="form-select" asp-items="Model.BrandSelect" required></select>
@@ -222,15 +248,15 @@ Layout = "~/Pages/Shared/_AdminLayout.cshtml";
                         </div>
                         <div class="col-md-4">
                             <label asp-for="EditForm.Cpu" class="form-label"></label>
-                            <input asp-for="EditForm.Cpu" id="editCpu" class="form-control" required/>
+                            <input asp-for="EditForm.Cpu" id="editCpu" class="form-control" required />
                         </div>
                         <div class="col-md-4">
                             <label asp-for="EditForm.Ram" class="form-label">RAM (GB)</label>
-                            <input type="number" asp-for="EditForm.Ram" id="editRam" class="form-control" required/>
+                            <input type="number" asp-for="EditForm.Ram" id="editRam" class="form-control" required />
                         </div>
                         <div class="col-md-4">
                             <label asp-for="EditForm.Storage" class="form-label">Storage (GB)</label>
-                            <input type="number" asp-for="EditForm.Storage" id="editStorage" class="form-control" required/>
+                            <input type="number" asp-for="EditForm.Storage" id="editStorage" class="form-control" required />
                         </div>
                     </div>
                 </div>
@@ -246,11 +272,63 @@ Layout = "~/Pages/Shared/_AdminLayout.cshtml";
 @section Scripts {
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Code cho Edit Modal
+
+        // --- Universal function to handle image preview ---
+        function setupImagePreview(inputId, previewId, placeholderId) {
+            const fileInput = document.getElementById(inputId);
+            const preview = document.getElementById(previewId);
+            const placeholder = document.getElementById(placeholderId);
+
+            if (fileInput) {
+                fileInput.addEventListener('change', function(event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            preview.src = e.target.result;
+                            if (preview) preview.style.display = 'block';
+                            if (placeholder) placeholder.style.display = 'none';
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+        }
+
+        // --- Setup for Create Modal ---
+        const createModalEl = document.getElementById('createLaptopModal');
+        if (createModalEl) {
+            setupImagePreview('createImageInput', 'createImagePreview', 'createImagePlaceholder');
+
+            createModalEl.addEventListener('hidden.bs.modal', function () {
+                document.getElementById('createLaptopForm').reset();
+                const preview = document.getElementById('createImagePreview');
+                const placeholder = document.getElementById('createImagePlaceholder');
+                if (preview) preview.style.display = 'none';
+                if (placeholder) placeholder.style.display = 'block';
+            });
+        }
+
+        // --- Setup for Edit Modal ---
         const editModalEl = document.getElementById('editLaptopModal');
         if (editModalEl) {
             const spinner = document.getElementById('editModalSpinner');
             const formContent = document.getElementById('editModalFormContent');
+            const editForm = document.getElementById('editLaptopForm');
+            const imgPreview = document.getElementById('editImagePreview');
+            const imgInput = document.getElementById('editImageInput');
+
+            // Listen for new file selection in Edit modal to update preview
+            imgInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if(file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imgPreview.src = e.target.result;
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
 
             editModalEl.addEventListener('show.bs.modal', async function (event) {
                 spinner.style.display = 'block';
@@ -277,14 +355,21 @@ Layout = "~/Pages/Shared/_AdminLayout.cshtml";
                     document.getElementById('editRam').value = data.ram;
                     document.getElementById('editStorage').value = data.storage;
 
+                    // Set the initial image
+                    if (data.imageUrl && data.imageUrl.length > 0) {
+                        imgPreview.src = data.imageUrl;
+                    } else {
+                        // Set a default placeholder if no image exists
+                        imgPreview.src = "/images/default-laptop.png"; // Thay bằng đường dẫn ảnh placeholder của bạn
+                    }
+
+                    // Reset checkboxes before setting new values
                     const categoryCheckboxes = document.querySelectorAll('input[name="EditForm.CategoryIds"]');
                     categoryCheckboxes.forEach(cb => cb.checked = false);
                     if (data.categoryIds && data.categoryIds.length > 0) {
                         data.categoryIds.forEach(catId => {
                             const checkbox = document.querySelector(`input[name="EditForm.CategoryIds"][value="${catId}"]`);
-                            if (checkbox) {
-                                checkbox.checked = true;
-                            }
+                            if (checkbox) checkbox.checked = true;
                         });
                     }
 
@@ -295,17 +380,10 @@ Layout = "~/Pages/Shared/_AdminLayout.cshtml";
                 }
             });
 
-            editModalEl.addEventListener('hidden.bs.modal', function() {
+            editModalEl.addEventListener('hidden.bs.modal', function () {
                 spinner.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>';
-            });
-        }
-
-        // --- THÊM CODE MỚI CHO CREATE MODAL ---
-        const createModalEl = document.getElementById('createLaptopModal');
-        if (createModalEl) {
-            createModalEl.addEventListener('hidden.bs.modal', function() {
-                // Tìm form và reset nó về trạng thái ban đầu khi đóng modal
-                document.getElementById('createLaptopForm').reset();
+                editForm.reset();
+                imgPreview.src = ""; // Clear preview
             });
         }
     });

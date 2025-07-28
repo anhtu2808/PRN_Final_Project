@@ -21,7 +21,6 @@ namespace LaptopRentalManagement.Pages.Manage.Laptops
 
         [BindProperty] public EditLaptopRequest EditForm { get; set; }
 
-        // --- THÊM THUỘC TÍNH NÀY VÀO ---
         [BindProperty] public CreateLaptopRequest CreateForm { get; set; }
 
         public SelectList CategorySelect { get; set; }
@@ -75,6 +74,7 @@ namespace LaptopRentalManagement.Pages.Manage.Laptops
                 name = laptop.Name,
                 brandId = laptop.Brand.BrandId,
                 accountId = laptop.Owner.AccountId,
+                imageUrl = laptop.ImageURL,
                 categoryIds = laptop.Categories.Select(c => c.CategoryId).ToList(),
                 pricePerDay = laptop.PricePerDay,
                 cpu = laptop.Cpu,
@@ -85,12 +85,6 @@ namespace LaptopRentalManagement.Pages.Manage.Laptops
 
         public async Task<IActionResult> OnPostEditAsync()
         {
-            // if (!ModelState.IsValid)
-            // {
-            //     await OnGetAsync();
-            //     return Page();
-            // }
-
             var request = new EditLaptopRequest
             {
                 LaptopId = EditForm.LaptopId,
@@ -101,7 +95,8 @@ namespace LaptopRentalManagement.Pages.Manage.Laptops
                 Cpu = EditForm.Cpu,
                 Ram = EditForm.Ram,
                 Storage = EditForm.Storage,
-                CategoryIds = EditForm.CategoryIds
+                CategoryIds = EditForm.CategoryIds,
+                ImageFile = EditForm.ImageFile 
             };
 
             await _laptopService.UpdateAsync(request);
@@ -109,15 +104,8 @@ namespace LaptopRentalManagement.Pages.Manage.Laptops
             return RedirectToPage();
         }
 
-        // --- THÊM HANDLER NÀY VÀO ---
         public async Task<IActionResult> OnPostCreateAsync()
         {
-            // if (!ModelState.IsValid)
-            // {
-            //     await OnGetAsync(); // Tải lại các SelectList nếu có lỗi
-            //     return Page();
-            // }
-
             var request = new CreateLaptopRequest
             {
                 Name = CreateForm.Name,

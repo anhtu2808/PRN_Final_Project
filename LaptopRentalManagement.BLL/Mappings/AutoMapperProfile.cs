@@ -142,6 +142,8 @@ namespace LaptopRentalManagement.BLL.Mappings
                 .ForMember(dest => dest.ImageURL,
                     opt => opt.MapFrom(src => src.ImageUrl));
             CreateMap<EditLaptopRequest, Laptop>()
+                .ForMember(dest => dest.LaptopId, opt => opt.Ignore())
+                .ForMember(dest => dest.AccountId, opt => opt.Ignore())
                 .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
             CreateMap<CreateLaptopRequest, Laptop>();
             CreateMap<Slot, SlotResponse>()

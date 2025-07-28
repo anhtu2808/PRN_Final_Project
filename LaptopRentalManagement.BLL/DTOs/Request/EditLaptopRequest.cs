@@ -17,8 +17,5 @@ public class EditLaptopRequest
     public int? Ram { get; set; }
     public int? Storage { get; set; }
     public List<int>? CategoryIds { get; set; }
-    
-    // Thêm thuộc tính này để cho phép cập nhật ảnh
-    // Để là nullable, nếu người dùng không upload file mới thì không thay đổi ảnh cũ
     public IFormFile? ImageFile { get; set; }
 }

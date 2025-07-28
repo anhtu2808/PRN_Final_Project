@@ -22,12 +22,11 @@ public class LaptopRepository : ILaptopRepository
             .Include(l => l.Categories)
             .Include(l => l.Account)
             .AsQueryable();
-		if (filter.CategoryId.HasValue)
-			query = query.Where(l => l.Categories.Any(c => c.CategoryId == filter.CategoryId));
+      
 
-		//if (filter.CategoryIds?.Count > 0)
-		//	query = query.Where(l => l.Categories.Any(c => filter.CategoryIds.Contains(c.CategoryId)));
-		if (filter.BrandId.HasValue)
+        if (filter.CategoryIds?.Count > 0)
+        	query = query.Where(l => l.Categories.Any(c => filter.CategoryIds.Contains(c.CategoryId)));
+        if (filter.BrandId.HasValue)
             query = query.Where(l => l.BrandId == filter.BrandId.Value);
 
         if (filter.BrandIds != null && filter.BrandIds.Any())
@@ -73,7 +72,6 @@ public class LaptopRepository : ILaptopRepository
     public async Task<Laptop?> GetByIdAsync(int id)
     {
         return await _context.Laptops
-            .AsNoTracking()
             .Include(l => l.Brand)
             .Include(l => l.Account)
             .Include(l => l.Categories)
@@ -99,33 +97,9 @@ public class LaptopRepository : ILaptopRepository
 
     public async Task<Laptop> UpdateAsync(Laptop laptop)
     {
-        // Load entity đang được tracking từ DB
-        var existingLaptop = await _context.Laptops
-            .Include(l => l.Categories)
-            .FirstOrDefaultAsync(x => x.LaptopId == laptop.LaptopId);
-
-        if (existingLaptop == null)
-            throw new Exception("Laptop not found");
-
-        // Cập nhật các property
-        existingLaptop.Name = laptop.Name;
-        existingLaptop.Cpu = laptop.Cpu;
-        existingLaptop.Ram = laptop.Ram;
-        existingLaptop.Storage = laptop.Storage;
-        existingLaptop.Description = laptop.Description;
-        existingLaptop.PricePerDay = laptop.PricePerDay;
-
-        // Cập nhật categories (nếu có nhiều category)
-        existingLaptop.Categories.Clear();
-        foreach (var cat in laptop.Categories)
-        {
-            var trackedCat = await _context.Categories.FindAsync(cat.CategoryId);
-            if (trackedCat != null)
-                existingLaptop.Categories.Add(trackedCat);
-        }
-
+        _context.Laptops.Update(laptop);
         await _context.SaveChangesAsync();
-        return existingLaptop;
+        return laptop;
     }
 
 

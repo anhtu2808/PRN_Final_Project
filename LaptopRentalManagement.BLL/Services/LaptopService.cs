@@ -17,9 +17,17 @@ public class LaptopService : ILaptopService
     private readonly IAccountRepository _accountRepository;
     private readonly ISlotRespository _slotRespository;
     private readonly IFileUploadService _fileUploadService;
+    private readonly IBrandRepository _brandRepository;
 
-    public LaptopService(ILaptopRepository laptopRepository, IMapper mapper, IAccountRepository accountRepository,
-        ISlotRespository slotRespository, ICategoryRepository categoryRepository, IFileUploadService fileUploadService)
+    public LaptopService(
+        ILaptopRepository laptopRepository,
+        IMapper mapper,
+        IAccountRepository accountRepository,
+        ISlotRespository slotRespository,
+        ICategoryRepository categoryRepository,
+        IFileUploadService fileUploadService,
+        IBrandRepository brandRepository
+    )
     {
         _mapper = mapper;
         _laptopRepository = laptopRepository;
@@ -27,6 +35,7 @@ public class LaptopService : ILaptopService
         _slotRespository = slotRespository;
         _categoryRepository = categoryRepository;
         _fileUploadService = fileUploadService;
+        _brandRepository = brandRepository;
     }
 
     public async Task<IList<LaptopResponse>> GetAllAsync(LaptopFilter filter)
@@ -93,15 +102,30 @@ public class LaptopService : ILaptopService
             throw new KeyNotFoundException($"Laptop with ID {request.LaptopId} not found.");
         }
 
+        // Handle image upload if provided
+        string? imageUrl = null;
+        if (request.ImageFile != null && request.ImageFile.Length > 0)
+        {
+            imageUrl = await _fileUploadService.UploadImageAsync(request.ImageFile, "laptops");
+        }
+
         _mapper.Map(request, laptop);
+        laptop.ImageUrl = imageUrl ?? laptop.ImageUrl;
 
         var categories = new List<Category>();
+        var brand = new Brand();
         if (request.CategoryIds != null)
         {
             categories = await _categoryRepository.GetByIds(request.CategoryIds);
         }
 
+        if (request.BrandId != null)
+        {
+            brand = await _brandRepository.GetByIdAsync(request.BrandId.Value);
+        }
+
         laptop.Categories = categories;
+        laptop.Brand = brand;
         var updatedLaptop = await _laptopRepository.UpdateAsync(laptop);
         var response = _mapper.Map<LaptopResponse>(updatedLaptop);
         return response;
