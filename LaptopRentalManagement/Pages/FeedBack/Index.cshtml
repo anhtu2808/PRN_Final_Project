@@ -5,275 +5,451 @@
     Layout = "~/Pages/Shared/_AdminLayout.cshtml";
 }
 
-<div class="admin-content">
-    <div class="content-header">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <h1 class="h3 mb-0">Feedback Management</h1>
-                <p class="text-muted">Manage customer reviews and feedback</p>
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-0">Feedback Management</h1>
+                    <p class="text-muted mb-0">Manage customer reviews and feedback</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Filters -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <form method="get" class="row g-3">
-                <div class="col-md-3">
-                    <label for="rating" class="form-label">Rating</label>
-                    <select name="rating" id="rating" class="form-select">
-                        <option value="">All Ratings</option>
-                        <option value="5">5 Stars</option>
-                        <option value="4">4 Stars</option>
-                        <option value="3">3 Stars</option>
-                        <option value="2">2 Stars</option>
-                        <option value="1">1 Star</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label for="search" class="form-label">Search</label>
-                    <input type="text" name="search" id="search" class="form-control"
-                           placeholder="Search by comment..." value="@Model.SearchTerm">
-                </div>
-                <div class="col-md-3">
-                    <label for="dateFrom" class="form-label">From Date</label>
-                    <input type="date" name="dateFrom" id="dateFrom" class="form-control" value="@Model.DateFrom?.ToString("yyyy-MM-dd")">
-                </div>
-                <div class="col-md-3">
-                    <label for="dateTo" class="form-label">To Date</label>
-                    <input type="date" name="dateTo" id="dateTo" class="form-control" value="@Model.DateTo?.ToString("yyyy-MM-dd")">
-                </div>
-                <div class="col-12">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-search me-2"></i>Filter
-                    </button>
-                    <a href="/feedback" class="btn btn-outline-secondary">
-                        <i class="fas fa-times me-2"></i>Clear
-                    </a>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Statistics Cards -->
+    <!-- Stats Cards -->
     <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-star text-warning fa-2x"></i>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <div class="small text-muted">Total Reviews</div>
-                            <div class="h4 mb-0">@Model.TotalReviews</div>
-                        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-primary text-white mb-4">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="small text-white-50">Total Reviews</div>
+                        <div class="h4 mb-0">@Model.Stats.TotalReviews</div>
                     </div>
+                    <i class="fas fa-comments fa-2x"></i>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-chart-line text-success fa-2x"></i>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <div class="small text-muted">Average Rating</div>
-                            <div class="h4 mb-0">@Model.AverageRating.ToString("F1")</div>
-                        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-success text-white mb-4">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="small text-white-50">Average Rating</div>
+                        <div class="h4 mb-0">@Model.Stats.AverageRating.ToString("F1") ★</div>
                     </div>
+                    <i class="fas fa-star-half-alt fa-2x"></i>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-thumbs-up text-info fa-2x"></i>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <div class="small text-muted">Positive Reviews</div>
-                            <div class="h4 mb-0">@Model.PositiveReviews</div>
-                        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-info text-white mb-4">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="small text-white-50">Positive Reviews</div>
+                        <div class="h4 mb-0">@Model.Stats.PositiveReviews</div>
                     </div>
+                    <i class="fas fa-thumbs-up fa-2x"></i>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-calendar text-primary fa-2x"></i>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <div class="small text-muted">This Month</div>
-                            <div class="h4 mb-0">@Model.ThisMonthReviews</div>
-                        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-secondary text-white mb-4">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="small text-white-50">This Month</div>
+                        <div class="h4 mb-0">@Model.Stats.ThisMonthReviews</div>
                     </div>
+                    <i class="fas fa-calendar-alt fa-2x"></i>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Reviews Table -->
-    <div class="card">
-        <div class="card-header">
-            <h5 class="card-title mb-0">Reviews List</h5>
-        </div>
-        <div class="card-body p-0">
-            @if (Model.Reviews.Any())
-            {
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Review ID</th>
-                                <th>Order ID</th>
-                                <th>Customer</th>
-                                <th>Rating</th>
-                                <th>Comment</th>
-                                <th>Date</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var review in Model.Reviews)
-                            {
-                                <tr>
-                                    <td>
-                                        <span class="badge bg-light text-dark">#@review.ReviewId</span>
-                                    </td>
-                                    <td>
-                                        <a href="/orders/@review.OrderId" class="text-decoration-none">
-                                            #@review.OrderId
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <img src="https://ui-avatars.com/api/?name=@(review.Rater.Name ?? review.Rater.Email)&size=32"
-                                                 class="rounded-circle me-2" alt="Avatar">
-                                            <div>
-                                                <div class="fw-medium">@(review.Rater.Name ?? "Anonymous")</div>
-                                                <small class="text-muted">@review.Rater.Email</small>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="rating-stars">
-                                            @for (int i = 1; i <= 5; i++)
-                                            {
-                                                <i class="fas fa-star @(i <= review.Rating ? "text-warning" : "text-muted")"></i>
-                                            }
-                                            <span class="ms-1 small text-muted">(@review.Rating/5)</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        @if (!string.IsNullOrEmpty(review.Comment))
-                                        {
-                                            <div class="comment-preview">
-                                                @(review.Comment.Length > 50 ? review.Comment.Substring(0, 50) + "..." : review.Comment)
-                                            </div>
-                                        }
-                                        else
-                                        {
-                                            <span class="text-muted fst-italic">No comment</span>
-                                        }
-                                    </td>
-                                    <td>
-                                        <div>@review.CreatedAt.ToString("MMM dd, yyyy")</div>
-                                        <small class="text-muted">@review.CreatedAt.ToString("HH:mm")</small>
-                                    </td>
-                                    <td>
-                                        <div class="btn-group" role="group">
-                                            <a href="/feedback/details/@review.ReviewId"
-                                               class="btn btn-sm btn-outline-primary"
-                                               data-bs-toggle="tooltip" title="View Details">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a href="/feedback/edit/@review.ReviewId"
-                                               class="btn btn-sm btn-outline-secondary"
-                                               data-bs-toggle="tooltip" title="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <button type="button"
-                                                    class="btn btn-sm btn-outline-danger"
-                                                    data-bs-toggle="tooltip" title="Delete"
-                                                    onclick="confirmDelete(@review.ReviewId)">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
+    <!-- Main Content Area -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Filter & Search</h5>
                 </div>
-
-                <!-- Pagination -->
-                @if (Model.TotalPages > 1)
-                {
-                    <div class="card-footer">
-                        <nav aria-label="Reviews pagination">
-                            <ul class="pagination pagination-sm justify-content-center mb-0">
-                                <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
-                                    <a class="page-link" href="?page=@(Model.CurrentPage - 1)&search=@Model.SearchTerm&rating=@Model.SelectedRating">Previous</a>
-                                </li>
-
-                                @for (int i = Math.Max(1, Model.CurrentPage - 2); i <= Math.Min(Model.TotalPages, Model.CurrentPage + 2); i++)
-                                {
-                                    <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
-                                        <a class="page-link" href="?page=@i&search=@Model.SearchTerm&rating=@Model.SelectedRating">@i</a>
-                                    </li>
-                                }
-
-                                <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
-                                    <a class="page-link" href="?page=@(Model.CurrentPage + 1)&search=@Model.SearchTerm&rating=@Model.SelectedRating">Next</a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
-                }
-            }
-            else
-            {
-                <div class="text-center py-5">
-                    <i class="fas fa-comments fa-3x text-muted mb-3"></i>
-                    <h5 class="text-muted">No reviews found</h5>
-                    <p class="text-muted">There are no reviews matching your criteria.</p>
+                <div class="card-body">
+                    <form method="get" class="row g-3 align-items-end">
+                        <div class="col-md-3">
+                            <label for="rating" class="form-label">Filter by Rating</label>
+                            <select name="SelectedRating" id="rating" class="form-select" asp-for="SelectedRating">
+                                <option value="">All Ratings</option>
+                                <option value="5">★★★★★ (5 Stars)</option>
+                                <option value="4">★★★★☆ (4 Stars)</option>
+                                <option value="3">★★★☆☆ (3 Stars)</option>
+                                <option value="2">★★☆☆☆ (2 Stars)</option>
+                                <option value="1">★☆☆☆☆ (1 Star)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="search" class="form-label">Search in Comment</label>
+                            <input type="text" name="SearchTerm" id="search" class="form-control"
+                                   placeholder="e.g. 'good', 'slow'..." value="@Model.SearchTerm">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="dateFrom" class="form-label">From Date</label>
+                            <input type="date" name="DateFrom" id="dateFrom" class="form-control"
+                                   value="@Model.DateFrom?.ToString("yyyy-MM-dd")">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="dateTo" class="form-label">To Date</label>
+                            <input type="date" name="DateTo" id="dateTo" class="form-control"
+                                   value="@Model.DateTo?.ToString("yyyy-MM-dd")">
+                        </div>
+                        <div class="col-md-2">
+                            <div class="d-grid gap-2 d-md-flex">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-filter me-1"></i>Filter
+                                </button>
+                                <a href="/manage/reviews" class="btn btn-outline-secondary w-100">
+                                    <i class="fas fa-times me-1"></i>Clear
+                                </a>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-            }
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-header"><h5 class="card-title mb-0">Reviews List (@Model.Stats.TotalReviews)</h5></div>
+                <div class="card-body p-0">
+                    @if (Model.Reviews.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Customer</th>
+                                        <th>Rating</th>
+                                        <th>Comment</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var review in Model.Reviews)
+                                    {
+                                        <tr>
+                                            <td><span class="badge bg-light text-dark">#@review.ReviewId</span></td>
+                                            <td>
+                                                <div class="fw-medium">@review.RaterName</div>
+                                                <small class="text-muted">ID: @review.RaterId</small>
+                                            </td>
+                                            <td>
+                                                <div class="rating-stars">
+                                                    @for (int i = 1; i <= 5; i++)
+                                                    {
+                                                        <i class="fas fa-star @(i <= review.Rating ? "text-warning" : "text-muted")"></i>
+                                                    }
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="comment-preview" title="@review.Comment">
+                                                    @(review.Comment != null && review.Comment.Length > 50 ? review.Comment.Substring(0, 50) + "..." : review.Comment ?? "N/A")
+                                                </div>
+                                            </td>
+                                            <td>@review.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <button type="button" class="btn btn-sm btn-outline-info" title="View Details" onclick="viewReview(@review.ReviewId)">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-outline-warning" title="Edit" onclick="editReview(@review.ReviewId)">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger" title="Delete" onclick="confirmDelete(@review.ReviewId, '#@review.ReviewId')">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Pagination -->
+                        @if (Model.TotalPages > 1)
+                        {
+                            <div class="card-footer d-flex justify-content-center">
+                                <nav>
+                                    <ul class="pagination mb-0">
+                                        @for (int i = 1; i <= Model.TotalPages; i++)
+                                        {
+                                            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                                <a class="page-link" href="@Url.Page("/FeedBack/Index", new { CurrentPage = i, Model.SearchTerm, Model.SelectedRating, Model.DateFrom, Model.DateTo })">@i</a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </nav>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No reviews found</h5>
+                            <p class="text-muted">There are no reviews matching your current filter criteria.</p>
+                        </div>
+                    }
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
+<!-- Modals -->
+<!-- View Details Modal -->
+<div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">Review Details</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body" id="viewModalBody"><p class="text-center py-5"><i class="fas fa-spinner fa-spin fa-2x"></i><br>Loading...</p></div>
+            <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="editForm" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="editReviewId" name="id" />
+                <div class="modal-header"><h5 class="modal-title">Edit Review</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body" id="editModalBody"><p class="text-center py-5"><i class="fas fa-spinner fa-spin fa-2x"></i><br>Loading...</p></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i>Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">Confirm Deletion</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete review <strong id="deleteReviewIdentifier"></strong>? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" id="deleteReviewId" />
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 @section Scripts {
     <script>
-        function confirmDelete(reviewId) {
-            if (confirm('Are you sure you want to delete this review?')) {
-                fetch(`/feedback/delete/${reviewId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+        const viewModal = new bootstrap.Modal(document.getElementById('viewModal'));
+        const editModal = new bootstrap.Modal(document.getElementById('editModal'));
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+
+        // --- VIEW REVIEW ---
+        async function viewReview(reviewId) {
+            const viewModalBody = document.getElementById('viewModalBody');
+            viewModalBody.innerHTML = '<p class="text-center py-5"><i class="fas fa-spinner fa-spin fa-2x"></i><br>Loading...</p>';
+            viewModal.show();
+
+            try {
+                const response = await fetch(`?handler=ReviewDetails&id=${reviewId}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    const review = result.review;
+                    let stars = '';
+                    for (let i = 1; i <= 5; i++) {
+                        stars += `<i class="fas fa-star ${i <= review.rating ? 'text-warning' : 'text-muted'}"></i>`;
                     }
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            location.reload();
-                        } else {
-                            alert('Error deleting review');
-                        }
-                    });
+
+                    viewModalBody.innerHTML = `
+                        <dl class="row">
+                            <dt class="col-sm-3">Review ID:</dt><dd class="col-sm-9">#${review.reviewId}</dd>
+                            <dt class="col-sm-3">Customer:</dt><dd class="col-sm-9">${review.raterName} (ID: ${review.raterId})</dd>
+                            <dt class="col-sm-3">Laptop:</dt><dd class="col-sm-9">${review.laptopName}</dd>
+                            <dt class="col-sm-3">Rating:</dt><dd class="col-sm-9">${stars}</dd>
+                            <dt class="col-sm-3">Date:</dt><dd class="col-sm-9">${new Date(review.createdAt).toLocaleString()}</dd>
+                            <dt class="col-sm-3">Comment:</dt><dd class="col-sm-9" style="white-space: pre-wrap;">${review.comment || 'N/A'}</dd>
+                        </dl>`;
+                } else {
+                    viewModalBody.innerHTML = `<div class="alert alert-danger">${result.message}</div>`;
+                }
+            } catch (error) {
+                viewModalBody.innerHTML = '<div class="alert alert-danger">Failed to load review details. Please try again.</div>';
             }
         }
 
-        // Initialize tooltips
-        $(document).ready(function () {
-            $('[data-bs-toggle="tooltip"]').tooltip();
+        // --- EDIT REVIEW ---
+        async function editReview(reviewId) {
+            const editModalBody = document.getElementById('editModalBody');
+            editModalBody.innerHTML = '<p class="text-center py-5"><i class="fas fa-spinner fa-spin fa-2x"></i><br>Loading...</p>';
+            document.getElementById('editReviewId').value = reviewId;
+            editModal.show();
+
+            try {
+                const response = await fetch(`?handler=ReviewDetails&id=${reviewId}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    const review = result.review;
+                    editModalBody.innerHTML = `
+                        <div class="mb-3">
+                            <label for="editRating" class="form-label">Rating</label>
+                            <select id="editRating" name="Rating" class="form-select">
+                                <option value="1" ${review.rating == 1 ? 'selected' : ''}>1 Star</option>
+                                <option value="2" ${review.rating == 2 ? 'selected' : ''}>2 Stars</option>
+                                <option value="3" ${review.rating == 3 ? 'selected' : ''}>3 Stars</option>
+                                <option value="4" ${review.rating == 4 ? 'selected' : ''}>4 Stars</option>
+                                <option value="5" ${review.rating == 5 ? 'selected' : ''}>5 Stars</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editComment" class="form-label">Comment</label>
+                            <textarea id="editComment" name="Comment" class="form-control" rows="5">${review.comment || ''}</textarea>
+                        </div>`;
+                } else {
+                    editModalBody.innerHTML = `<div class="alert alert-danger">${result.message}</div>`;
+                }
+            } catch (error) {
+                editModalBody.innerHTML = '<div class="alert alert-danger">Failed to load review for editing. Please try again.</div>';
+            }
+        }
+
+        // Handle Edit Form Submission
+        document.getElementById('editForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const reviewId = document.getElementById('editReviewId').value;
+            const formData = new FormData(this);
+            
+            try {
+                const response = await fetch(`?handler=Update&id=${reviewId}`, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'RequestVerificationToken': formData.get('__RequestVerificationToken')
+                    }
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    editModal.hide();
+                    showAlert('Review updated successfully!', 'success');
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    alert(result.message || "An error occurred.");
+                }
+
+            } catch (error) {
+                console.error('Error updating review:', error);
+                alert('An unexpected error occurred.');
+            }
         });
+
+        // --- DELETE REVIEW (Correct and Complete) ---
+        function confirmDelete(reviewId, identifier) {
+            document.getElementById('deleteReviewId').value = reviewId;
+            document.getElementById('deleteReviewIdentifier').textContent = identifier;
+            deleteModal.show();
+        }
+
+        // <<< PHẦN XỬ LÝ SUBMIT FORM XÓA MỚI ĐƯỢC THÊM VÀO ĐÂY >>>
+        document.getElementById('deleteForm').addEventListener('submit', async function (e) {
+            e.preventDefault(); // Ngăn form submit theo cách truyền thống
+            const deleteButton = this.querySelector('button[type="submit"]');
+            deleteButton.disabled = true;
+            deleteButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+            
+            const formData = new FormData(this);
+
+            try {
+                const response = await fetch('?handler=Delete', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'RequestVerificationToken': formData.get('__RequestVerificationToken')
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    deleteModal.hide();
+                    // Tải lại trang để cập nhật danh sách và hiển thị thông báo thành công
+                    location.reload(); 
+                } else {
+                    alert(result.message || "An error occurred while deleting.");
+                    deleteButton.disabled = false;
+                    deleteButton.innerHTML = 'Delete';
+                }
+
+            } catch (error) {
+                console.error('Error deleting review:', error);
+                alert('An unexpected error occurred during deletion.');
+                deleteButton.disabled = false;
+                deleteButton.innerHTML = 'Delete';
+            }
+        });
+        
+        // --- ALERT & TEMP DATA HANDLING ---
+        document.addEventListener('DOMContentLoaded', function () {
+        @if (TempData["Success"] != null)
+        {
+            <text>
+                showAlert('@TempData["Success"]', 'success');
+            </text>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <text>
+                showAlert('@TempData["Error"]', 'danger');
+            </text>
+        }
+        });
+
+        function showAlert(message, type = 'success') {
+            const alertContainer = document.getElementById('alert-container') || createAlertContainer();
+            const alertWrapper = document.createElement('div');
+            alertWrapper.innerHTML = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`;
+            
+            alertContainer.appendChild(alertWrapper);
+            
+            const newAlert = bootstrap.Alert.getOrCreateInstance(alertWrapper.querySelector('.alert'));
+            setTimeout(() => {
+                if(newAlert) {
+                    newAlert.close();
+                }
+            }, 5000);
+        }
+
+        function createAlertContainer() {
+            const container = document.createElement('div');
+            container.id = 'alert-container';
+            container.style.position = 'fixed';
+            container.style.top = '20px';
+            container.style.right = '20px';
+            container.style.zIndex = '1056';
+            container.style.minWidth = '300px';
+            document.body.appendChild(container);
+            return container;
+        }
     </script>
 }

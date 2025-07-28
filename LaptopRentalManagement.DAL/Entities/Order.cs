@@ -31,4 +31,5 @@ public partial class Order
     public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
 
     public virtual ICollection<Slot> Slots { get; set; } = new List<Slot>();
+    public virtual ICollection<OrderLog> OrderLogs { get; set; } = new List<OrderLog>();
 }

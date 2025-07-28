@@ -18,5 +18,6 @@ namespace LaptopRentalManagement.BLL.Interfaces
         Task<OrderResponse?> ApproveAsync(int orderId);
 
 		Task<OrderResponse?> ConfirmReturn(int orderId);
-	}
+        Task SetStatusAsync(int orderId, string newStatus);
+    }
 }

@@ -23,7 +23,7 @@ namespace LaptopRentalManagement.DAL.Repositories
 		{
 			order.CreatedAt = DateTime.UtcNow;
 			order.UpdatedAt = DateTime.UtcNow;
-			order.Status = "PendingApproval";
+			order.Status = "Pending";
 			_context.Orders.Add(order);
 			await _context.SaveChangesAsync();
 			return order;

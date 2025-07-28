@@ -25,6 +25,8 @@ public partial class LaptopRentalDbContext : DbContext
     public virtual DbSet<Notification> Notifications { get; set; }
 
     public virtual DbSet<Order> Orders { get; set; }
+    public virtual DbSet<OrderLog> OrderLogs { get; set; }
+    public virtual DbSet<OrderLogImg> OrderLogImgs { get; set; }
 
     public virtual DbSet<Review> Reviews { get; set; }
 
@@ -179,6 +181,39 @@ public partial class LaptopRentalDbContext : DbContext
                 .HasForeignKey(d => d.RenterId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_Order_Renter");
+        });
+
+        modelBuilder.Entity<OrderLog>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_OrderLog");
+            entity.Property(e => e.Content)
+                .HasMaxLength(1000);
+            entity.Property(e => e.OldStatus)
+                .HasMaxLength(50);
+            entity.Property(e => e.NewStatus)
+                .HasMaxLength(50);
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(sysutcdatetime())");
+
+            entity.HasOne(e => e.Order)
+                .WithMany(o => o.OrderLogs)
+                .HasForeignKey(e => e.OrderId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_OrderLog_Order");
+        });
+
+        modelBuilder.Entity<OrderLogImg>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_OrderLogImg");
+
+            entity.Property(e => e.ImgUrl)
+                .HasMaxLength(500);
+
+            entity.HasOne(e => e.OrderLog)
+                .WithMany(l => l.OrderLogImgs)
+                .HasForeignKey(e => e.OrderLogId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_OrderLogImg_OrderLog");
         });
 
         modelBuilder.Entity<Review>(entity =>

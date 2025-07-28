@@ -1,15 +1,15 @@
-﻿using LaptopRentalManagement.Models.Dashboard;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LaptopRentalManagement.Model.DTOs.Response.Dashboard;
 
 namespace LaptopRentalManagement.BLL.Interfaces
 {
     public interface IDashboardService
     {
-        Task<DashboardViewModel> GetDashboardDataAsync();
+        Task<DashboardDataRespone> GetDashboardDataAsync();
         Task<DashboardStats> GetStatsAsync();
         Task<List<RecentOrder>> GetRecentOrdersAsync(int count = 10);
         Task<List<TopLaptop>> GetTopLaptopsAsync(int count = 5);

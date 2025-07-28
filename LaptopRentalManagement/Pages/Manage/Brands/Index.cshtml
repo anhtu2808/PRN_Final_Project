@@ -1,0 +1,485 @@
+﻿@page
+@model LaptopRentalManagement.Pages.Manage.Brands.IndexModel
+@{
+    ViewData["Title"] = "Brand Management";
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-0">Brand Management</h1>
+                    <p class="text-muted mb-0">Manage laptop brands in the system</p>
+                </div>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#createBrandModal">
+                    <i class="fas fa-plus"></i> Add Brand
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards (No changes needed here) -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-primary text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="small text-white-50">Total Brands</div>
+                            <div class="h4 mb-0">@Model.Brands.Count()</div>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-tags fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-success text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="small text-white-50">With Laptops</div>
+                            <div class="h4 mb-0">@Model.Brands.Count(b => b.LaptopCount > 0)</div>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-laptop fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-warning text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="small text-white-50">Empty Brands</div>
+                            <div class="h4 mb-0">@Model.Brands.Count(b => b.LaptopCount == 0)</div>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-folder-open fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-info text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="small text-white-50">Total Laptops</div>
+                            <div class="h4 mb-0">@Model.Brands.Sum(b => b.LaptopCount)</div>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-calculator fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Brands Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Brands List</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.Brands.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Logo</th>
+                                        <th>Name</th>
+                                        <th>Description</th>
+                                        <th>Laptops</th>
+                                        <th>Created Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var brand in Model.Brands)
+                                    {
+                                        <tr>
+                                            <td>@brand.BrandId</td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(brand.LogoUrl))
+                                                {
+                                                    <img src="@brand.LogoUrl" alt="@brand.Name Logo" class="img-thumbnail" style="width: 40px; height: 40px; object-fit: contain;" />
+                                                }
+                                                else
+                                                {
+                                                    <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                        <i class="fas fa-image text-muted"></i>
+                                                    </div>
+                                                }
+                                            </td>
+                                            <td>
+                                                <strong>@brand.Name</strong>
+                                            </td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(brand.Description))
+                                                {
+                                                    @(brand.Description.Length > 50 ? brand.Description.Substring(0, 50) + "..." : brand.Description)
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">No description</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <span class="badge @(brand.LaptopCount > 0 ? "bg-success" : "bg-secondary")">
+                                                    @brand.LaptopCount laptops
+                                                </span>
+                                            </td>
+                                            <td>@brand.CreatedAt.ToString("MM/dd/yyyy HH:mm")</td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <button type="button" class="btn btn-sm btn-outline-info"
+                                                            title="View details"
+                                                            onclick="viewBrand(@brand.BrandId)">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-outline-warning"
+                                                            title="Edit"
+                                                            onclick="editBrand(@brand.BrandId, '@brand.Name', '@brand.LogoUrl', '@brand.Description')">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    @if (brand.LaptopCount == 0)
+                                                    {
+                                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                                                title="Delete"
+                                                                onclick="confirmDelete(@brand.BrandId, '@brand.Name')">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    }
+                                                    else
+                                                    {
+                                                        <button type="button" class="btn btn-sm btn-outline-secondary"
+                                                                title="Cannot delete (has laptops)" disabled>
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    }
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No brands found</h5>
+                            <p class="text-muted">Click "Add Brand" button to create your first brand.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Brand Modal -->
+<div class="modal fade" id="createBrandModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Brand</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="createBrandForm" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="createName" class="form-label">Brand Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="createName" name="Name" required placeholder="Enter brand name" />
+                        <div class="invalid-feedback" id="createNameError"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="createLogoUrl" class="form-label">Logo URL</label>
+                        <input type="url" class="form-control" id="createLogoUrl" name="LogoUrl" placeholder="https://example.com/logo.png" />
+                        <div class="form-text">Enter the full URL for the brand's logo.</div>
+                        <div class="invalid-feedback" id="createLogoUrlError"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="createDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="createDescription" name="Description" rows="3" placeholder="Enter a description for this brand..."></textarea>
+                        <div class="invalid-feedback" id="createDescriptionError"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Brand</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Brand Modal -->
+<div class="modal fade" id="editBrandModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Brand</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editBrandForm" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <input type="hidden" id="editBrandId" name="BrandId" />
+                    <div class="mb-3">
+                        <label for="editName" class="form-label">Brand Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="editName" name="Name" required placeholder="Enter brand name" />
+                        <div class="invalid-feedback" id="editNameError"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editLogoUrl" class="form-label">Logo URL</label>
+                        <input type="url" class="form-control" id="editLogoUrl" name="LogoUrl" placeholder="https://example.com/logo.png" />
+                        <div class="form-text">Enter the full URL for the brand's logo.</div>
+                        <div class="invalid-feedback" id="editLogoUrlError"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="editDescription" name="Description" rows="3" placeholder="Enter description..."></textarea>
+                        <div class="invalid-feedback" id="editDescriptionError"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- View Brand Modal -->
+<div class="modal fade" id="viewBrandModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Brand Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <dl class="row">
+                    <dt class="col-sm-4">ID:</dt>
+                    <dd class="col-sm-8" id="viewBrandId"></dd>
+                    <dt class="col-sm-4">Name:</dt>
+                    <dd class="col-sm-8" id="viewBrandName"></dd>
+                    <dt class="col-sm-4">Logo:</dt>
+                    <dd class="col-sm-8" id="viewBrandLogoContainer"></dd>
+                    <dt class="col-sm-4">Description:</dt>
+                    <dd class="col-sm-8" id="viewBrandDescription"></dd>
+                    <dt class="col-sm-4">Laptops:</dt>
+                    <dd class="col-sm-8" id="viewBrandLaptopCount"></dd>
+                    <dt class="col-sm-4">Created Date:</dt>
+                    <dd class="col-sm-8" id="viewBrandCreatedAt"></dd>
+                </dl>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the brand <strong id="deleteBrandName"></strong>?</p>
+                <p class="text-warning">This action cannot be undone!</p>
+            </div>
+            <div class="modal-footer">
+                <form id="deleteForm" method="post" asp-page-handler="Delete">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" id="deleteBrandId" />
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // View Brand Function
+        async function viewBrand(brandId) {
+            try {
+                const response = await fetch(`/Manage/Brands?handler=GetBrand&id=${brandId}`);
+                if (!response.ok) throw new Error('Network response was not ok');
+
+                const brand = await response.json();
+
+                document.getElementById('viewBrandId').textContent = brand.brandId;
+                document.getElementById('viewBrandName').textContent = brand.name;
+
+                const logoContainer = document.getElementById('viewBrandLogoContainer');
+                if (brand.logoUrl) {
+                    logoContainer.innerHTML = `<img src="${brand.logoUrl}" alt="${brand.name} Logo" class="img-fluid rounded" style="max-height: 80px;">`;
+                } else {
+                    logoContainer.innerHTML = `<span class="text-muted">No logo provided</span>`;
+                }
+
+                document.getElementById('viewBrandDescription').textContent = brand.description || 'No description';
+                document.getElementById('viewBrandLaptopCount').innerHTML =
+                    `<span class="badge ${brand.laptopCount > 0 ? 'bg-success' : 'bg-secondary'}">${brand.laptopCount} laptops</span>`;
+                document.getElementById('viewBrandCreatedAt').textContent = new Date(brand.createdAt).toLocaleString('en-US');
+
+                new bootstrap.Modal(document.getElementById('viewBrandModal')).show();
+            } catch (error) {
+                console.error('Error fetching brand details:', error);
+                showToast('Error loading brand information.', 'error');
+            }
+        }
+
+        // Edit Brand Function
+        function editBrand(id, name, logoUrl, description) {
+            document.getElementById('editBrandId').value = id;
+            document.getElementById('editName').value = name;
+            document.getElementById('editLogoUrl').value = logoUrl || '';
+            document.getElementById('editDescription').value = description || '';
+            clearValidationErrors('edit');
+            new bootstrap.Modal(document.getElementById('editBrandModal')).show();
+        }
+
+        // Delete Brand Function
+        function confirmDelete(brandId, brandName) {
+            document.getElementById('deleteBrandId').value = brandId;
+            document.getElementById('deleteBrandName').textContent = brandName;
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        }
+
+        // Clear Validation Errors
+        function clearValidationErrors(prefix) {
+            ['Name', 'LogoUrl', 'Description'].forEach(f => {
+                const inp = document.getElementById(prefix + f);
+                const err = document.getElementById(prefix + f + 'Error');
+                if (inp) inp.classList.remove('is-invalid');
+                if (err) err.textContent = '';
+            });
+        }
+
+        // Show Validation Errors
+        function showValidationErrors(prefix, errors) {
+            clearValidationErrors(prefix);
+            for (const [field, messages] of Object.entries(errors)) {
+                // Capitalize first letter for ID matching
+                const capitalizedField = field.charAt(0).toUpperCase() + field.slice(1);
+                const inputEl = document.getElementById(prefix + capitalizedField);
+                const errorEl = document.getElementById(prefix + capitalizedField + 'Error');
+                if (inputEl && errorEl) {
+                    inputEl.classList.add('is-invalid');
+                    errorEl.textContent = messages.join(' ');
+                }
+            }
+        }
+
+        // Handle Form Submission with Fetch API
+        async function handleFormSubmit(form, url) {
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'RequestVerificationToken': form.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: new FormData(form)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    const modalId = form.closest('.modal').id;
+                    bootstrap.Modal.getInstance(document.getElementById(modalId)).hide();
+                    location.reload(); // Easiest way to show updated data
+                } else {
+                    const prefix = form.id.includes('create') ? 'create' : 'edit';
+                    // result.errors dictionary keys are often camelCase from JSON serialization
+                    showValidationErrors(prefix, result.errors);
+                }
+            } catch (error) {
+                console.error('Form submission error:', error);
+                showToast('An unexpected error occurred.', 'error');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Handle Create Form Reset
+            document.getElementById('createBrandModal').addEventListener('hidden.bs.modal', () => {
+                document.getElementById('createBrandForm').reset();
+                clearValidationErrors('create');
+            });
+
+            // Handle Edit Form Reset
+            document.getElementById('editBrandModal').addEventListener('hidden.bs.modal', () => {
+                clearValidationErrors('edit');
+            });
+
+            // Handle Create Form Submission
+            document.getElementById('createBrandForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                handleFormSubmit(this, '/Manage/Brands?handler=Create');
+            });
+
+            // Handle Edit Form Submission
+            document.getElementById('editBrandForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                handleFormSubmit(this, '/Manage/Brands?handler=Update');
+            });
+
+            // Display TempData messages as toasts
+            const successMessage = '@(TempData["Success"] as string)';
+            const errorMessage = '@(TempData["Error"] as string)';
+
+            if (successMessage) {
+                showToast(successMessage, 'success');
+            }
+            if (errorMessage) {
+                showToast(errorMessage, 'error');
+            }
+        });
+
+        // Simple Toast Notification Function
+        function showToast(message, type = 'success') {
+            const toastContainer = document.createElement('div');
+            toastContainer.style.position = 'fixed';
+            toastContainer.style.top = '20px';
+            toastContainer.style.right = '20px';
+            toastContainer.style.zIndex = '1055';
+            document.body.appendChild(toastContainer);
+
+            const toast = document.createElement('div');
+            toast.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
+            toast.role = 'alert';
+            toast.innerHTML = `${message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
+
+            toastContainer.appendChild(toast);
+
+            const bsToast = new bootstrap.Toast(toast, { delay: 5000 });
+            bsToast.show();
+        }
+    </script>
+}

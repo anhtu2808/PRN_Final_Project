@@ -1,0 +1,124 @@
+﻿@page
+@model LaptopRentalManagement.Pages.Brands.IndexModel
+@{
+    ViewData["Title"] = "Brands";
+    Layout = "~/Pages/Shared/_CustomerLayout.cshtml";
+}
+
+<div class="container py-4">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-gradient">Browse by Brand</h1>
+        <p class="lead text-muted">Discover laptops from the world's leading brands</p>
+    </div>
+
+    <div class="row">
+        @if (Model.Brands.Any())
+        {
+            @foreach (var brand in Model.Brands)
+            {
+                // Sử dụng LogoUrl của thương hiệu nếu có, nếu không thì dùng ảnh dự phòng
+                string brandImage = !string.IsNullOrEmpty(brand.LogoUrl)
+                ? brand.LogoUrl
+                : "https://via.placeholder.com/400x250/f8f9fa/6c757d?text=No+Logo"; // Ảnh dự phòng tốt hơn
+
+                // Chọn icon dựa trên tên thương hiệu
+                string brandIcon = "fas fa-laptop-code"; // Icon mặc định
+                var lowerName = brand.Name.ToLower();
+
+                if (lowerName.Contains("apple")) { brandIcon = "fab fa-apple"; }
+                else if (lowerName.Contains("dell")) { brandIcon = "fab fa-dell"; }
+                else if (lowerName.Contains("hp")) { brandIcon = "fab fa-hp"; }
+                else if (lowerName.Contains("lenovo")) { brandIcon = "fab fa-linux"; }
+                else if (lowerName.Contains("microsoft")) { brandIcon = "fab fa-windows"; }
+
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <a href="/laptops?brandId=@brand.BrandId" class="brand-card text-decoration-none">
+                        <div class="brand-image-container">
+                            <img src="@brandImage" alt="@brand.Name Logo">
+                        </div>
+                        <div class="brand-overlay">
+                            <div class="brand-icon"><i class="@brandIcon fa-lg"></i></div>
+                            <div class="brand-content">
+                                <h4>@brand.Name</h4>
+                                <span class="badge bg-light text-dark">@brand.LaptopCount laptop(s) available</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center">
+                <p class="lead">No brands are available at the moment. Please check back later.</p>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .brand-card {
+        display: block;
+        position: relative; /* Quan trọng cho overlay */
+        overflow: hidden;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 250px; /* Đặt chiều cao cố định cho card */
+        background-color: #fff; /* Nền trắng cho card */
+    }
+
+        .brand-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+    .brand-image-container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem; /* Thêm khoảng đệm xung quanh logo */
+    }
+
+        .brand-image-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain; /* Hiển thị toàn bộ logo, giữ đúng tỷ lệ */
+        }
+
+    .brand-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0) 50%, rgba(0,0,0,0) 100%);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end; /* Đẩy nội dung xuống dưới */
+        padding: 1rem;
+        transition: opacity 0.3s ease;
+        opacity: 0; /* Ẩn đi mặc định */
+    }
+
+    .brand-card:hover .brand-overlay {
+        opacity: 1; /* Hiện ra khi hover */
+    }
+
+    .brand-icon {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-size: 1.5rem;
+        opacity: 0.8;
+    }
+
+    .brand-content h4 {
+        font-weight: bold;
+        margin-bottom: 0.25rem;
+        color: #fff;
+    }
+</style>

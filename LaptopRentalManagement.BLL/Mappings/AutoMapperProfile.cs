@@ -4,6 +4,8 @@ using LaptopRentalManagement.BLL.DTOs.Response;
 using LaptopRentalManagement.BLL.DTOs.Request;
 using LaptopRentalManagement.BLL.DTOs.Response;
 using LaptopRentalManagement.DAL.Entities;
+using LaptopRentalManagement.Model.DTOs.Request;
+using LaptopRentalManagement.Model.DTOs.Response.Brand;
 
 namespace LaptopRentalManagement.BLL.Mappings
 {
@@ -51,8 +53,23 @@ namespace LaptopRentalManagement.BLL.Mappings
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
 
             // Brand mappings
-            CreateMap<Brand, BrandResponse>()
-                .ForMember(dest => dest.BrandId, opt => opt.Ignore());
+
+            CreateMap<Brand, BrandResponse>();
+
+
+            CreateMap<CreateBrandRequest, Brand>()
+                .ForMember(dest => dest.BrandId, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.Laptops, opt => opt.Ignore());
+
+            CreateMap<UpdateBrandRequest, Brand>()
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.Laptops, opt => opt.Ignore());
+
+            CreateMap<Brand, BrandSelectDto>();
+
 
             // Category mappings
             CreateMap<Category, CategoryResponse>();
@@ -83,6 +100,8 @@ namespace LaptopRentalManagement.BLL.Mappings
                 .ForMember(dest => dest.LaptopName, opt => opt.MapFrom(src => src.Order.Laptop.Name))
                 .ForMember(dest => dest.LaptopImageUrl, opt => opt.MapFrom(src => src.Order.Laptop.ImageUrl))
                 .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => (int)src.Rating));
+            CreateMap<CreateReviewRequest, Review>();
+            CreateMap<UpdateReviewRequest, Review>();
 
             // CreateReviewRequest -> Review Entity
             CreateMap<CreateReviewRequest, Review>()
@@ -93,16 +112,6 @@ namespace LaptopRentalManagement.BLL.Mappings
             CreateMap<Slot, Slot>()
                 .ForMember(dest => dest.SlotId, opt => opt.Ignore());
 
-            CreateMap<Laptop, LaptopResponse>()
-                // map nested Brand → BrandResponse
-                .ForMember(dest => dest.Brand,
-                    opt => opt.MapFrom(src => src.Brand))
-                // map nested Account → AccountResponse
-                .ForMember(dest => dest.Owner,
-                    opt => opt.MapFrom(src => src.Account))
-                // map Categories collection → List<CategoryResponse>
-                .ForMember(dest => dest.Categories,
-                    opt => opt.MapFrom(src => src.Categories));
 
             // Notification mappings
             CreateMap<Notification, Notification>()
@@ -116,28 +125,31 @@ namespace LaptopRentalManagement.BLL.Mappings
                 .ForMember(dest => dest.Owner, opt => opt.Ignore())
                 .ForMember(dest => dest.Renter, opt => opt.Ignore())
                 .ForMember(dest => dest.Laptop, opt => opt.Ignore());
-            CreateMap<CreateSlotRequest, Slot>();
 
             //Laptop mappings
-            CreateMap<Laptop, LaptopResponse>();
+            CreateMap<Laptop, LaptopResponse>()
+                // map nested Brand → BrandResponse
+                .ForMember(dest => dest.Brand,
+                    opt => opt.MapFrom(src => src.Brand))
+                // map nested Account → AccountResponse
+                .ForMember(dest => dest.Owner,
+                    opt => opt.MapFrom(src => src.Account))
+                // map Categories collection → List<CategoryResponse>
+                .ForMember(dest => dest.Categories,
+                    opt => opt.MapFrom(src => src.Categories));
             CreateMap<EditLaptopRequest, Laptop>()
                 .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
-            CreateMap<CreateLaptopRequest, Laptop>()
-                .ForMember(dest => dest.LaptopId, opt => opt.Ignore()) // Khóa chính do DB sinh
-                .ForMember(dest => dest.Categories,
-                    opt => opt.Ignore()) // Danh sách categories sẽ gán thủ công trong service
-                .ForMember(dest => dest.Brand,
-                    opt => opt.Ignore()) // Nếu bạn gán Brand navigation, hoặc map BrandId tự động
-                .ForMember(dest => dest.Account, opt => opt.Ignore()); // Owner sẽ set qua AccountId
-
-            CreateMap<Account, AccountResponse>();
+            CreateMap<CreateLaptopRequest, Laptop>();
             CreateMap<Slot, SlotResponse>()
-                 .ForMember(dest => dest.Order, opt => opt.Ignore())
-                 .ForMember(dest => dest.Laptop, opt => opt.Ignore());
+                .ForMember(dest => dest.Order, opt => opt.Ignore())
+                .ForMember(dest => dest.Laptop, opt => opt.Ignore());
 
             CreateMap<CreateSlotRequest, Slot>()
                 .ForMember(dest => dest.Order, opt => opt.Ignore())
                 .ForMember(dest => dest.Laptop, opt => opt.Ignore());
+
+            CreateMap<CreateOrderLogRequest, OrderLog>();
+            CreateMap<OrderLog, OrderLogResponse>();
         }
     }
 }

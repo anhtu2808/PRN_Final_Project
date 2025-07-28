@@ -321,6 +321,69 @@ namespace LaptopRentalManagement.DAL.Migrations
                     b.ToTable("Order", (string)null);
                 });
 
+            modelBuilder.Entity("LaptopRentalManagement.DAL.Entities.OrderLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("(sysutcdatetime())");
+
+                    b.Property<string>("NewStatus")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("OldStatus")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id")
+                        .HasName("PK_OrderLog");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderLogs");
+                });
+
+            modelBuilder.Entity("LaptopRentalManagement.DAL.Entities.OrderLogImg", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ImgUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("OrderLogId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id")
+                        .HasName("PK_OrderLogImg");
+
+                    b.HasIndex("OrderLogId");
+
+                    b.ToTable("OrderLogImgs");
+                });
+
             modelBuilder.Entity("LaptopRentalManagement.DAL.Entities.Review", b =>
                 {
                     b.Property<int>("ReviewId")
@@ -478,6 +541,30 @@ namespace LaptopRentalManagement.DAL.Migrations
                     b.Navigation("Renter");
                 });
 
+            modelBuilder.Entity("LaptopRentalManagement.DAL.Entities.OrderLog", b =>
+                {
+                    b.HasOne("LaptopRentalManagement.DAL.Entities.Order", "Order")
+                        .WithMany("OrderLogs")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_OrderLog_Order");
+
+                    b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("LaptopRentalManagement.DAL.Entities.OrderLogImg", b =>
+                {
+                    b.HasOne("LaptopRentalManagement.DAL.Entities.OrderLog", "OrderLog")
+                        .WithMany("OrderLogImgs")
+                        .HasForeignKey("OrderLogId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_OrderLogImg_OrderLog");
+
+                    b.Navigation("OrderLog");
+                });
+
             modelBuilder.Entity("LaptopRentalManagement.DAL.Entities.Review", b =>
                 {
                     b.HasOne("LaptopRentalManagement.DAL.Entities.Order", "Order")
@@ -544,9 +631,16 @@ namespace LaptopRentalManagement.DAL.Migrations
 
             modelBuilder.Entity("LaptopRentalManagement.DAL.Entities.Order", b =>
                 {
+                    b.Navigation("OrderLogs");
+
                     b.Navigation("Reviews");
 
                     b.Navigation("Slots");
+                });
+
+            modelBuilder.Entity("LaptopRentalManagement.DAL.Entities.OrderLog", b =>
+                {
+                    b.Navigation("OrderLogImgs");
                 });
 #pragma warning restore 612, 618
         }

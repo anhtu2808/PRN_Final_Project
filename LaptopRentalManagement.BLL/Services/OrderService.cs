@@ -14,40 +14,53 @@ using System.Threading.Tasks;
 
 namespace LaptopRentalManagement.BLL.Services
 {
-	public class OrderService : IOrderService
-	{
-		private readonly IOrderRepository _orderRepository;
-		private readonly ISlotRespository _slotRepository;
-		private readonly ILaptopRepository _laptopRepository;
-		private readonly IAccountRepository _accountRepository;
-		private readonly IMapper _mapper;
+    public class OrderService : IOrderService
+    {
+        private readonly IOrderRepository _orderRepository;
+        private readonly ISlotRespository _slotRepository;
+        private readonly ILaptopRepository _laptopRepository;
+        private readonly IAccountRepository _accountRepository;
+        private readonly IOrderLogRepository _orderLogRepository;
+        private readonly IMapper _mapper;
 
-		public OrderService(IOrderRepository orderRepository, ISlotRespository slotRepository, IMapper mapper, ILaptopRepository laptopRepository, IAccountRepository accountRepository)
-		{
-			_orderRepository = orderRepository;
-			_slotRepository = slotRepository;
-			_laptopRepository = laptopRepository;
-			_accountRepository = accountRepository;
-			_mapper = mapper;
-		}
+        public OrderService(IOrderRepository orderRepository, ISlotRespository slotRepository, IMapper mapper, ILaptopRepository laptopRepository, IAccountRepository accountRepository, IOrderLogRepository orderLogRepository)
+        {
+            _orderRepository = orderRepository;
+            _slotRepository = slotRepository;
+            _laptopRepository = laptopRepository;
+            _accountRepository = accountRepository;
+            _mapper = mapper;
+            _orderLogRepository = orderLogRepository;
+        }
 
         public async Task<OrderResponse?> ApproveAsync(int orderId)
         {
-			OrderResponse? response = null;
-			Order? order = await _orderRepository.GetByIdAsync(orderId);
-			if (order != null) 
-			{
-				order.Status = "Renting";
-				IList<Slot> slots = await _slotRepository.GetByOrderId(orderId);
-				foreach (Slot slot in slots)
-				{
-					slot.Status = "Booked";
-					await _slotRepository.Update(slot);
-				}
-				await _orderRepository.UpdateAsync(order);
-				response = _mapper.Map<OrderResponse>(order);
-			}
-			return response;
+            OrderResponse? response = null;
+            Order? order = await _orderRepository.GetByIdAsync(orderId);
+            if (order != null)
+            {
+
+                OrderLog log = new()
+                {
+                    OldStatus = order.Status,
+                    NewStatus = "Approved",
+                    Content = "Rental request has been accepted",
+                    OrderId = order.OrderId
+                };
+                IList<Slot> slots = await _slotRepository.GetByOrderId(orderId);
+                foreach (Slot slot in slots)
+                {
+                    slot.Status = "Booked";
+                    await _slotRepository.Update(slot);
+                }
+
+                await _orderLogRepository.CreateAsync(log);
+
+                order.Status = "Approved";
+                await _orderRepository.UpdateAsync(order);
+                response = _mapper.Map<OrderResponse>(order);
+            }
+            return response;
         }
 
         public async Task<OrderResponse?> RejectAsync(int orderId)
@@ -56,12 +69,12 @@ namespace LaptopRentalManagement.BLL.Services
             Order? order = await _orderRepository.GetByIdAsync(orderId);
             if (order != null)
             {
-				IList<Slot> slots = await _slotRepository.GetByOrderId(orderId);
-				foreach (Slot slot in slots) 
-				{
-					slot.Status = "Available";
-					await _slotRepository.Update(slot);
-				}
+                IList<Slot> slots = await _slotRepository.GetByOrderId(orderId);
+                foreach (Slot slot in slots)
+                {
+                    slot.Status = "Available";
+                    await _slotRepository.Update(slot);
+                }
                 await _orderRepository.DeleteAsync(order.OrderId);
                 response = _mapper.Map<OrderResponse>(order);
             }
@@ -69,57 +82,90 @@ namespace LaptopRentalManagement.BLL.Services
         }
 
         public async Task<OrderResponse> CreateAsync(CreateOrderRequest request)
-		{
-			Order order = _mapper.Map<Order>(request);
-			var laptop = await _laptopRepository.GetByIdAsync(request.LaptopId);
-			var owner = await _accountRepository.GetByIdAsync(laptop.AccountId);
-			order.OwnerId = owner.AccountId;
-			order = await _orderRepository.CreateAsync(order);
+        {
+            Order order = _mapper.Map<Order>(request);
+            var laptop = await _laptopRepository.GetByIdAsync(request.LaptopId);
+            var owner = await _accountRepository.GetByIdAsync(laptop.AccountId);
+            order.OwnerId = owner.AccountId;
+            order = await _orderRepository.CreateAsync(order);
 
-			foreach (int index in request.SlotIds)
-			{
-				Slot? slot = await _slotRepository.GetById(index);
-				if (slot != null)
-				{
-					slot.Status = "Unavailable";
-					slot.OrderId = order.OrderId;
-					await _slotRepository.Update(slot);
+            foreach (int index in request.SlotIds)
+            {
+                Slot? slot = await _slotRepository.GetById(index);
+                if (slot != null)
+                {
+                    slot.Status = "Unavailable";
+                    slot.OrderId = order.OrderId;
+                    await _slotRepository.Update(slot);
                 }
-			}
+            }
 
-			OrderResponse response = _mapper.Map<OrderResponse>(order);
+            OrderResponse response = _mapper.Map<OrderResponse>(order);
 
-			return response;
-		}
+            return response;
+        }
 
+        public async Task SetStatusAsync(int orderId, string newStatus)
+        {
+            var order = await _orderRepository.GetByIdAsync(orderId);
+            if (order == null)
+                return;
+            var content = "";
+            if (newStatus == "Delivering")
+            {
+                content = "Laptop is being delivered to you";
+            }
+            else if (newStatus == "Renting")
+            {
+                content = "Laptop has been delivered successfully";
+            }
+            else
+            {
+                content = "Laptop has been delivered failed";
+                newStatus = "Delivering";
+            }
 
-		public async Task<IList<OrderResponse>> GetAllAsync(OrderFilter orderFilter)
-		{
-			IList<Order> orders = await _orderRepository.GetAllAsync(orderFilter);
+            OrderLog log = new()
+            {
+                OldStatus = order.Status,
+                NewStatus = newStatus,
+                Content = content,
+                OrderId = order.OrderId
+            };
+
+            await _orderLogRepository.CreateAsync(log);
+            order.Status = newStatus;
+
+            await _orderRepository.UpdateAsync(order);
+        }
+
+        public async Task<IList<OrderResponse>> GetAllAsync(OrderFilter orderFilter)
+        {
+            IList<Order> orders = await _orderRepository.GetAllAsync(orderFilter);
             IList<OrderResponse> responses = new List<OrderResponse>();
 
             foreach (Order order in orders)
-			{ 
-				responses.Add(await buildOrderResponse(order));
+            {
+                responses.Add(await buildOrderResponse(order));
             }
 
-			return responses;
+            return responses;
 
         }
 
         public async Task<OrderResponse?> GetByIdAsync(int orderId)
         {
-			Order? order = await _orderRepository.GetByIdAsync(orderId);
-			OrderResponse? response = null;
-			if (order != null)
-			{
-				response = await buildOrderResponse(order);
+            Order? order = await _orderRepository.GetByIdAsync(orderId);
+            OrderResponse? response = null;
+            if (order != null)
+            {
+                response = await buildOrderResponse(order);
             }
-			return response;
+            return response;
         }
 
-		private async Task<OrderResponse> buildOrderResponse(Order order)
-		{
+        private async Task<OrderResponse> buildOrderResponse(Order order)
+        {
             OrderResponse response = _mapper.Map<OrderResponse>(order);
             LaptopResponse laptopResponse = _mapper.Map<LaptopResponse>(await _laptopRepository.GetByIdAsync(order.LaptopId));
             AccountResponse ownerResponse = _mapper.Map<AccountResponse>(await _accountRepository.GetByIdAsync(order.OwnerId));
@@ -137,22 +183,34 @@ namespace LaptopRentalManagement.BLL.Services
             return response;
         }
 
-		public async Task<OrderResponse?> ConfirmReturn(int orderId)
-		{
-			OrderResponse? response = null;
-			Order? order = await _orderRepository.GetByIdAsync(orderId);
-			if (order != null)
-			{
-				order.Status = "Completed";
-				IList<Slot> slots = await _slotRepository.GetByOrderId(orderId);
-				foreach (Slot slot in slots)
-				{
-					await _slotRepository.DeleteAsync(slot.SlotId);
-				}
-				await _orderRepository.UpdateAsync(order);
-				response = _mapper.Map<OrderResponse>(order);
-			}
-			return response;
-		}
-	}
+        public async Task<OrderResponse?> ConfirmReturn(int orderId)
+        {
+            OrderResponse? response = null;
+            bool stillRent = false;
+            Order? order = await _orderRepository.GetByIdAsync(orderId);
+            if (order != null)
+            {
+                DateTime date = DateTime.UtcNow;
+                IList<Slot> slots = await _slotRepository.GetByOrderId(orderId);
+                foreach (Slot slot in slots)
+                {
+                    DateTime slotStart = slot.SlotDate.ToDateTime(new TimeOnly(8, 0));       // 8:00 sáng SlotDate
+                    DateTime slotEnd = slot.SlotDate.AddDays(1).ToDateTime(new TimeOnly(7, 0)); // 7:00 sáng hôm sau
+
+                    if (date >= slotStart && date < slotEnd)
+                    {
+                        //slot.Status = "Completed"; check có bị phạt hay không
+                    }
+                    DateOnly dateOnly = DateOnly.FromDateTime(date);
+                    stillRent = dateOnly <= slot.SlotDate ? true : false;
+
+                }
+                order.Status = stillRent ? "Approved" : "Completed";
+
+                await _orderRepository.UpdateAsync(order);
+                response = _mapper.Map<OrderResponse>(order);
+            }
+            return response;
+        }
+    }
 }

@@ -70,13 +70,13 @@ namespace LaptopRentalManagement.DAL.Repositories
         public async Task DeleteAsync(int reviewId)
         {
             var review = await _context.Reviews.FindAsync(reviewId);
+
             if (review != null)
             {
                 _context.Reviews.Remove(review);
                 await _context.SaveChangesAsync();
             }
         }
-
         public async Task<double> GetAverageRatingByLaptopIdAsync(int laptopId)
         {
             var reviews = await _context.Reviews
@@ -127,6 +127,66 @@ namespace LaptopRentalManagement.DAL.Repositories
                 .AnyAsync(r => r.OrderId == orderId);
 
             return canReview && !existingReview;
+        }
+
+        public async Task<(IEnumerable<Review> Reviews, int TotalCount)> GetFilteredAsync(
+    string? searchTerm, int? selectedRating, DateTime? dateFrom, DateTime? dateTo, int currentPage, int pageSize)
+        {
+            var query = _context.Reviews
+                .AsNoTracking()
+                .Include(r => r.Rater)
+                .Include(r => r.Order).ThenInclude(o => o.Laptop)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query = query.Where(r => r.Comment != null && EF.Functions.Like(r.Comment, $"%{searchTerm}%"));
+            }
+            if (selectedRating.HasValue)
+            {
+                query = query.Where(r => r.Rating == selectedRating.Value);
+            }
+            if (dateFrom.HasValue)
+            {
+                query = query.Where(r => r.CreatedAt >= dateFrom.Value);
+            }
+            if (dateTo.HasValue)
+            {
+                var endDate = dateTo.Value.Date.AddDays(1);
+                query = query.Where(r => r.CreatedAt < endDate);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            var reviews = await query
+                .OrderByDescending(r => r.CreatedAt)
+                .Skip((currentPage - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (reviews, totalCount);
+        }
+
+        public async Task<int> CountAllAsync()
+        {
+            return await _context.Reviews.CountAsync();
+        }
+
+        public async Task<double> GetAverageRatingAllAsync()
+        {
+            return await _context.Reviews.AnyAsync()
+                ? await _context.Reviews.AverageAsync(r => r.Rating)
+                : 0;
+        }
+
+        public async Task<int> CountPositiveReviewsAsync()
+        {
+            return await _context.Reviews.CountAsync(r => r.Rating >= 4);
+        }
+
+        public async Task<int> CountThisMonthReviewsAsync()
+        {
+            return await _context.Reviews.CountAsync(r => r.CreatedAt >= DateTime.UtcNow.AddDays(-30));
         }
     }
 }

@@ -56,27 +56,45 @@
                         <td>@order.Status</td>
                         <td>@order.TotalCharge.ToString("N0") đ</td>
                         <td class="text-nowrap">
-                            @if (order.Status == "Renting")
+                            @switch (order.Status)
                             {
-                                <form method="post" asp-page-handler="ConfirmReturn" asp-route-orderId="@order.OrderId" asp-route-id="@Model.Laptop.LaptopId" class="d-inline">
-                                    <button type="submit" class="btn btn-sm btn-success">
-                                        <i class="fas fa-check me-1"></i><strong>Confirm Return</strong>
-                                    </button>
-                                </form>
-                            }
-                            else
-                            {
-                                <form method="post" asp-page-handler="Approve" asp-route-orderId="@order.OrderId" asp-route-id="@Model.Laptop.LaptopId" class="d-inline">
-                                    <button type="submit" class="btn btn-sm btn-success">
-                                        <i class="fas fa-check me-1"></i>Approve
-                                    </button>
-                                </form>
+                                case "Pending":
+                                    <form method="post" asp-page-handler="Approve" asp-route-orderId="@order.OrderId" asp-route-id="@Model.Laptop.LaptopId" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-success">
+                                            <i class="fas fa-check me-1"></i>Approve
+                                        </button>
+                                    </form>
+                                    <form method="post" asp-page-handler="Reject" asp-route-orderId="@order.OrderId" asp-route-id="@Model.Laptop.LaptopId" class="d-inline ms-1">
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-times me-1"></i>Reject
+                                        </button>
+                                    </form>
+                                    break;
 
-                                <form method="post" asp-page-handler="Reject" asp-route-orderId="@order.OrderId" asp-route-id="@Model.Laptop.LaptopId" class="d-inline ms-1">
-                                    <button type="submit" class="btn btn-sm btn-danger">
-                                        <i class="fas fa-times me-1"></i>Reject
-                                    </button>
-                                </form>
+                                case "Approved":
+                                    <form method="post" asp-page-handler="Delivering" asp-route-orderId="@order.OrderId" asp-route-id="@Model.Laptop.LaptopId" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-warning">
+                                            <i class="fas fa-truck me-1"></i>Start Delivery
+                                        </button>
+                                    </form>
+                                    break;
+
+                                case "Delivering":
+                                    <form method="post" asp-page-handler="Delivered" asp-route-orderId="@order.OrderId" asp-route-id="@Model.Laptop.LaptopId" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-success">
+                                            <i class="fas fa-box-check me-1"></i>Delivered
+                                        </button>
+                                    </form>
+                                    <form method="post" asp-page-handler="DeliveredFail" asp-route-orderId="@order.OrderId" asp-route-id="@Model.Laptop.LaptopId" class="d-inline ms-1">
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-times-circle me-1"></i>Delivery Failed
+                                        </button>
+                                    </form>
+                                    break;
+
+                                default:
+                                    <span class="text-muted">No actions</span>
+                                    break;
                             }
                         </td>
                     </tr>

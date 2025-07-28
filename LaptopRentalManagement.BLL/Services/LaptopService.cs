@@ -59,7 +59,6 @@ public class LaptopService : ILaptopService
         laptop.BrandId = request.BrandId;
         laptop.AccountId = request.AccountId;
 
-        // nếu có categoryIds, load từng cái qua repo (EF sẽ tracking tự động)
         if (request.CategoryIds?.Any() == true)
         {
             var cats = new List<Category>();
