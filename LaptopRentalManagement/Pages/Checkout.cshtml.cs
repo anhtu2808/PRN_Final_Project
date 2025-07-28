@@ -55,7 +55,8 @@ namespace LaptopRentalManagement.Pages
 
             LaptopId = Laptop.LaptopId;
             SelectedSlots = selectedSlots;
-            TotalCharge = SelectedSlots.Count * Laptop.PricePerDay;
+            // Cập nhật công thức tính tổng tiền, cộng thêm tiền cọc
+            TotalCharge = (SelectedSlots.Count * Laptop.PricePerDay) + Laptop.Deposit;
 
             return Page();
         }
@@ -65,13 +66,15 @@ namespace LaptopRentalManagement.Pages
         {
             if (!ModelState.IsValid || !SelectedSlots.Any())
             {
-                // Reload data if there's an error
                 if (LaptopId > 0)
                 {
                     Laptop = await _laptopService.GetByIdAsync(LaptopId);
-                    TotalCharge = SelectedSlots.Count * Laptop.PricePerDay;
+                    // Cập nhật công thức tính tổng tiền nếu có lỗi
+                    if (Laptop != null)
+                    {
+                        TotalCharge = (SelectedSlots.Count * Laptop.PricePerDay) + Laptop.Deposit;
+                    }
                 }
-
                 return Page();
             }
 
@@ -79,7 +82,7 @@ namespace LaptopRentalManagement.Pages
             {
                 // Get current user ID
                 var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("AccountId");
-                 if (!int.TryParse(userIdClaim, out var userId))
+                if (!int.TryParse(userIdClaim, out var userId))
                 {
                     TempData["Error"] = "Please login to continue";
                     return RedirectToPage("/Account/Login");
@@ -91,14 +94,15 @@ namespace LaptopRentalManagement.Pages
                     return NotFound("Laptop not found.");
                 }
 
-                var totalCharge = SelectedSlots.Count * laptop.PricePerDay;
+                // Cập nhật công thức tính tổng tiền, cộng thêm tiền cọc
+                var totalCharge = (SelectedSlots.Count * laptop.PricePerDay) + laptop.Deposit;
 
                 // Step 1: Create order with Unpaid status
                 var orderResponse = await _orderService.CreateOrderForPaymentAsync(new CreateOrderRequest
                 {
                     LaptopId = LaptopId,
                     RenterId = userId,
-                    TotalCharge = totalCharge,
+                    TotalCharge = totalCharge, // Sử dụng tổng tiền mới
                     SlotIds = this.SelectedSlots
                 });
 

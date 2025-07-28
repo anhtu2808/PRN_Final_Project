@@ -92,6 +92,7 @@ namespace LaptopRentalManagement.BLL.Services
             var laptop = await _laptopRepository.GetByIdAsync(request.LaptopId);
             var owner = await _accountRepository.GetByIdAsync(laptop.AccountId);
             order.OwnerId = owner.AccountId;
+            order.DepositAmount = request.DepositAmount;
             order = await _orderRepository.CreateAsync(order);
 
             foreach (int index in request.SlotIds)             
@@ -165,6 +166,17 @@ namespace LaptopRentalManagement.BLL.Services
 
             order.Status = request.NewStatus;
             await _orderRepository.UpdateAsync(order);
+        }
+
+        public async Task UpdateStatusAsync(int orderId, string newStatus)
+        {
+            var order = await _orderRepository.GetByIdAsync(orderId);
+            if (order != null)
+            {
+                order.Status = newStatus;
+                order.UpdatedAt = DateTime.UtcNow;
+                await _orderRepository.UpdateAsync(order);
+            }
         }
 
         public async Task<IList<OrderResponse>> GetAllAsync(OrderFilter orderFilter)
@@ -249,6 +261,7 @@ namespace LaptopRentalManagement.BLL.Services
             {
                 LaptopId = request.LaptopId,
                 RenterId = request.RenterId,
+                DepositAmount = request.DepositAmount,
                 TotalCharge = request.TotalCharge,
                 Status = "Unpaid",
                 CreatedAt = DateTime.UtcNow,

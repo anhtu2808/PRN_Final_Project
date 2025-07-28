@@ -14,7 +14,7 @@ namespace LaptopRentalManagement.Pages.Laptops
         private readonly ILaptopService _laptopService;
         private readonly IFeedbackService _feedbackService;
 
-        // IOrderService đã được xóa khỏi đây vì logic tạo đơn hàng đã chuyển qua trang Checkout
+        // IOrderService has been removed as order creation logic moved to the Checkout page
         public DetailsModel(ILaptopService laptopService, IFeedbackService feedbackService)
         {
             _laptopService = laptopService;
@@ -37,6 +37,8 @@ namespace LaptopRentalManagement.Pages.Laptops
                 return NotFound();
             }
             Slots = Laptop.Slots;
+            ReviewSummary = await _feedbackService.GetLaptopReviewsAsync(id);
+
 
             var filter = new LaptopFilter()
             {
@@ -51,18 +53,18 @@ namespace LaptopRentalManagement.Pages.Laptops
             return Page();
         }
 
-        // Phương thức này được gọi khi form trên trang Details được submit
+        // This method is called when the form on the Details page is submitted
         public IActionResult OnPost(int id, List<int> selectedSlots)
         {
-            // Kiểm tra xem người dùng đã chọn ngày nào chưa
-            if (!selectedSlots.Any())
+            // Check if the user has selected any dates
+            if (selectedSlots == null || !selectedSlots.Any())
             {
-                TempData["Error"] = "Vui lòng chọn ít nhất một ngày thuê.";
-                return RedirectToPage(new { id = id }); // Tải lại trang Details nếu chưa chọn
+                TempData["Error"] = "Please select at least one rental day."; // Translated
+                return RedirectToPage(new { id = id }); // Reload the Details page if no selection
             }
 
-            // Chuyển hướng đến trang Checkout, truyền kèm ID laptop và mảng các slot đã chọn
-            // ASP.NET Core sẽ tự động chuyển thành URL dạng: /Checkout/Index?id=123&selectedSlots=1&selectedSlots=2
+            // Redirect to the Checkout page, passing the laptop ID and the array of selected slots
+            // ASP.NET Core will automatically convert this to a URL like: /Checkout?id=123&selectedSlots=1&selectedSlots=2
             return RedirectToPage("/Checkout", new { id = id, selectedSlots = selectedSlots });
         }
 

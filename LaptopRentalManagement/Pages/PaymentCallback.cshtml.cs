@@ -26,56 +26,43 @@ public class PaymentCallbackModel : PageModel
     {
         try
         {
-            // Browser redirect from ZaloPay - show result page
+            // Browser redirect from ZaloPay - process and redirect to payment result page
             var status = Request.Query["status"].ToString();
             var appTransId = Request.Query["apptransid"].ToString();
 
-            // Extract Order ID from appTransId for display (format: 250729_OrderId_timestamp)
-            if (!string.IsNullOrEmpty(appTransId))
+            if (string.IsNullOrEmpty(status) || string.IsNullOrEmpty(appTransId))
             {
-                var parts = appTransId.Split('_');
-                if (parts.Length >= 2 && int.TryParse(parts[1], out int orderId))
-                {
-                    OrderId = orderId;
-                }
+                // Redirect to home with error if missing parameters
+                TempData["PaymentError"] = "Invalid payment parameters";
+                return RedirectToPage("/Index");
             }
 
-            if (status == "1")
+            // Extract Order ID from appTransId (format: 250729_OrderId_timestamp)
+            var parts = appTransId.Split('_');
+            if (parts.Length < 2 || !int.TryParse(parts[1], out int orderId))
             {
-                IsSuccess = true;
-                Message = OrderId > 0
-                    ? $"Payment completed! Your order #{OrderId} is being processed."
-                    : "Payment completed! Please wait for confirmation.";
+                TempData["PaymentError"] = "Invalid transaction ID format";
+                return RedirectToPage("/Index");
             }
-            else
-            {
-                IsSuccess = false;
-                Message = "Payment was cancelled or failed.";
-            }
+
+            // Update order status based on payment result
             if (status == "1") // Success
             {
-				await _orderService.SetStatusAsync(new()
-				{
-					OrderId = OrderId,
-					NewStatus = "Pending"
-				});
-			}
+                await _orderService.UpdateStatusAsync(orderId, "Pending");
+            }
             else
             {
-				await _orderService.SetStatusAsync(new()
-				{
-					OrderId = OrderId,
-					NewStatus = "Cancelled"
-				});
-			}
+                await _orderService.UpdateStatusAsync(orderId, "Cancelled");
+            }
 
-            return Page();
+            // Redirect to payment result page
+            return RedirectToPage("/Payment/Index", new { orderId = orderId });
         }
         catch (Exception ex)
         {
-            IsSuccess = false;
-            Message = $"An error occurred: {ex.Message}";
-            return Page();
+            // On error, redirect to home with error message
+            TempData["PaymentError"] = $"An error occurred: {ex.Message}";
+            return RedirectToPage("/Index");
         }
     }
 
@@ -129,20 +116,12 @@ public class PaymentCallbackModel : PageModel
                     // Update order status based on ZaloPay callback
                     if (status == "1") // Success
                     {
-						await _orderService.SetStatusAsync(new()
-						{
-							OrderId = orderId,
-							NewStatus = "Pending"
-						});
-					}
+                        await _orderService.UpdateStatusAsync(int.Parse(orderId), "Pending");
+                    }
                     else
                     {
-						await _orderService.SetStatusAsync(new()
-						{
-							OrderId = orderId,
-							NewStatus = "Cancelled"
-						});
-					}
+                        await _orderService.UpdateStatusAsync(int.Parse(orderId), "Cancelled");
+                    }
 
                     return new JsonResult(new { return_code = 1, return_message = "Success" });
                 }

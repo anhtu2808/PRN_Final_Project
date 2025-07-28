@@ -1,0 +1,205 @@
+@page "/payment/{orderId:int}"
+@model LaptopRentalManagement.Pages.Payment.IndexModel
+@{
+    ViewData["Title"] = "Payment Result";
+    Layout = "~/Pages/Shared/_CustomerLayout.cshtml";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-body text-center p-5">
+                    @if (Model.PaymentStatus == "success")
+                    {
+                        <!-- Success State -->
+                        <div class="mb-4">
+                            <div class="success-icon mb-3">
+                                <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                            </div>
+                            <h2 class="text-success mb-3">@Model.StatusMessage</h2>
+                            <p class="text-muted mb-4">Your order has been confirmed and is being processed.</p>
+                        </div>
+
+                        @if (Model.Order != null)
+                        {
+                            <!-- Order Details -->
+                            <div class="order-summary bg-light rounded p-4 mb-4">
+                                <h5 class="mb-3">Order Summary</h5>
+                                <div class="row text-start">
+                                    <div class="col-6">
+                                        <strong>Order ID:</strong>
+                                    </div>
+                                    <div class="col-6">
+                                        #@Model.Order.OrderId
+                                    </div>
+                                </div>
+                                <div class="row text-start">
+                                    <div class="col-6">
+                                        <strong>Total Amount:</strong>
+                                    </div>
+                                    <div class="col-6">
+                                        <span class="text-success fw-bold">@string.Format("{0:N0} VNĐ", Model.Order.TotalCharge)</span>
+                                    </div>
+                                </div>
+                                @if (Model.Order.DepositAmount > 0)
+                                {
+                                    <div class="row text-start">
+                                        <div class="col-6">
+                                            <strong>Deposit:</strong>
+                                        </div>
+                                        <div class="col-6">
+                                            <span class="text-warning fw-bold">@string.Format("{0:N0} VNĐ", Model.Order.DepositAmount)</span>
+                                        </div>
+                                    </div>
+                                }
+                                <div class="row text-start">
+                                    <div class="col-6">
+                                        <strong>Status:</strong>
+                                    </div>
+                                    <div class="col-6">
+                                        <span class="badge bg-success">@Model.Order.Status</span>
+                                    </div>
+                                </div>
+                                <div class="row text-start">
+                                    <div class="col-6">
+                                        <strong>Rental Period:</strong>
+                                    </div>
+                                    <div class="col-6">
+                                        @Model.Order.StartDate.ToString("dd/MM/yyyy") - @Model.Order.EndDate.ToString("dd/MM/yyyy")
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-2">
+                            <a href="/User/Rental-order" class="btn btn-primary btn-lg">
+                                <i class="fas fa-list me-2"></i>View My Orders
+                            </a>
+                            <a href="/Laptops" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+                            </a>
+                        </div>
+                    }
+                    else if (Model.PaymentStatus == "failed")
+                    {
+                        <!-- Failed State -->
+                        <div class="mb-4">
+                            <div class="error-icon mb-3">
+                                <i class="fas fa-times-circle text-danger" style="font-size: 4rem;"></i>
+                            </div>
+                            <h2 class="text-danger mb-3">@Model.StatusMessage</h2>
+                            <p class="text-muted mb-4">Your payment could not be processed. Please try again or contact our support team.</p>
+                        </div>
+
+                        @if (Model.Order != null)
+                        {
+                            <!-- Order Details -->
+                            <div class="order-summary bg-light rounded p-4 mb-4">
+                                <h5 class="mb-3">Order Information</h5>
+                                <div class="row text-start">
+                                    <div class="col-6">
+                                        <strong>Order ID:</strong>
+                                    </div>
+                                    <div class="col-6">
+                                        #@Model.Order.OrderId
+                                    </div>
+                                </div>
+                                <div class="row text-start">
+                                    <div class="col-6">
+                                        <strong>Amount:</strong>
+                                    </div>
+                                    <div class="col-6">
+                                        @string.Format("{0:N0} VNĐ", Model.Order.TotalCharge)
+                                    </div>
+                                </div>
+                                <div class="row text-start">
+                                    <div class="col-6">
+                                        <strong>Status:</strong>
+                                    </div>
+                                    <div class="col-6">
+                                        <span class="badge bg-danger">@Model.Order.Status</span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-2">
+                            @if (Model.Order != null)
+                            {
+                                <a href="/checkout?laptopId=@Model.Order.Laptop.LaptopId&slotIds=@string.Join(",", Model.Order.Slots?.Select(s => s.SlotId) ?? new List<int>())" 
+                                   class="btn btn-primary btn-lg">
+                                    <i class="fas fa-redo me-2"></i>Try Payment Again
+                                </a>
+                            }
+                            <a href="/chat" class="btn btn-warning">
+                                <i class="fas fa-comments me-2"></i>Contact Support
+                            </a>
+                            <a href="/Laptops" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Laptops
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <!-- Processing/Error State -->
+                        <div class="mb-4">
+                            <div class="warning-icon mb-3">
+                                <i class="fas fa-exclamation-triangle text-@Model.StatusClass" style="font-size: 4rem;"></i>
+                            </div>
+                            <h2 class="text-@Model.StatusClass mb-3">@Model.StatusMessage</h2>
+                            <p class="text-muted mb-4">
+                                @if (Model.PaymentStatus == "processing")
+                                {
+                                    <span>Your payment is being processed. Please wait...</span>
+                                }
+                                else
+                                {
+                                    <span>Please try again or contact our support team if you continue to experience issues.</span>
+                                }
+                            </p>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-2">
+                            <a href="/User/Rental-order" class="btn btn-primary btn-lg">
+                                <i class="fas fa-list me-2"></i>View My Orders
+                            </a>
+                            <a href="/chat" class="btn btn-warning">
+                                <i class="fas fa-comments me-2"></i>Contact Support
+                            </a>
+                            <a href="/Laptops" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Laptops
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 15px;
+    }
+    
+    .success-icon, .error-icon, .warning-icon {
+        animation: bounceIn 0.6s ease-out;
+    }
+   
+    
+    .order-summary {
+        border: 1px solid #e0e0e0;
+    }
+    
+    .order-summary .row {
+        margin-bottom: 0.5rem;
+    }
+    
+    .order-summary .row:last-child {
+        margin-bottom: 0;
+    }
+</style> 

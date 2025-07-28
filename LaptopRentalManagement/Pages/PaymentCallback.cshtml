@@ -2,73 +2,30 @@
 @model LaptopRentalManagement.Pages.PaymentCallbackModel
 
 @{
-    ViewData["Title"] = "Payment Result";
+    ViewData["Title"] = "Processing Payment";
     Layout = "_CustomerLayout";
 }
 
 <div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            @if (Model.IsSuccess)
-            {
-                <div class="card border-success">
-                    <div class="card-header bg-success text-white text-center">
-                        <i class="fas fa-check-circle fa-3x mb-3"></i>
-                        <h2>Payment Successful!</h2>
+        <div class="col-md-6 text-center">
+            <div class="card">
+                <div class="card-body py-5">
+                    <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status">
+                        <span class="visually-hidden">Loading...</span>
                     </div>
-                    <div class="card-body text-center">
-                        <p class="lead">@Model.Message</p>
-                        @if (Model.OrderId > 0)
-                        {
-                            <p>Order ID: <strong>#@Model.OrderId</strong></p>
-                        }
-                        <p class="text-muted">Thank you for using our service! You will receive a confirmation email
-                            shortly.</p>
-
-                        <div class="mt-4">
-                            <a asp-page="/User" class="btn btn-primary me-3">
-                                <i class="fas fa-list"></i> View My Orders
-                            </a>
-                            <a asp-page="/Index" class="btn btn-outline-secondary">
-                                <i class="fas fa-home"></i> Back to Home
-                            </a>
-                        </div>
-                    </div>
+                    <h4>Processing Payment...</h4>
+                    <p class="text-muted">Please wait while we process your payment result.</p>
+                    <p class="text-muted"><small>You will be redirected automatically.</small></p>
                 </div>
-            }
-            else
-            {
-                <div class="card border-danger">
-                    <div class="card-header bg-danger text-white text-center">
-                        <i class="fas fa-times-circle fa-3x mb-3"></i>
-                        <h2>Payment Failed</h2>
-                    </div>
-                    <div class="card-body text-center">
-                        <p class="lead">@Model.Message</p>
-                        @if (Model.OrderId > 0)
-                        {
-                            <p>Order ID: <strong>#@Model.OrderId</strong></p>
-                        }
-                        <p class="text-muted">Please try again or contact our support team if you continue to experience
-                            issues.</p>
-
-                        <div class="mt-4">
-                            @if (Model.OrderId > 0)
-                            {
-                                <a asp-page="/Checkout" asp-route-id="@Model.OrderId" class="btn btn-primary me-3">
-                                    <i class="fas fa-redo"></i> Try Again
-                                </a>
-                            }
-                            <a asp-page="/Chat" class="btn btn-warning me-3">
-                                <i class="fas fa-comments"></i> Contact Support
-                            </a>
-                            <a asp-page="/Index" class="btn btn-outline-secondary">
-                                <i class="fas fa-home"></i> Back to Home
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            }
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+    // Fallback redirect in case automatic redirect fails
+    setTimeout(function() {
+        window.location.href = '/';
+    }, 5000);
+</script>
