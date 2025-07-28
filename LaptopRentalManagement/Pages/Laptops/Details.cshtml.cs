@@ -2,10 +2,13 @@
 using LaptopRentalManagement.BLL.DTOs.Request;
 using LaptopRentalManagement.BLL.DTOs.Response;
 using LaptopRentalManagement.BLL.Interfaces;
+using LaptopRentalManagement.DAL.Entities;
+using LaptopRentalManagement.Hubs;
 using LaptopRentalManagement.Model.DTOs.Request;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.SignalR;
 
 namespace LaptopRentalManagement.Pages.Laptops
 {
@@ -13,13 +16,15 @@ namespace LaptopRentalManagement.Pages.Laptops
     {
         private readonly ILaptopService _laptopService;
         private readonly IFeedbackService _feedbackService;
+		private readonly IHubContext<RentalHub> _hubContext;
 
-        // IOrderService đã được xóa khỏi đây vì logic tạo đơn hàng đã chuyển qua trang Checkout
-        public DetailsModel(ILaptopService laptopService, IFeedbackService feedbackService)
+		// IOrderService đã được xóa khỏi đây vì logic tạo đơn hàng đã chuyển qua trang Checkout
+		public DetailsModel(ILaptopService laptopService, IFeedbackService feedbackService, IHubContext<RentalHub> hubContext)
         {
             _laptopService = laptopService;
             _feedbackService = feedbackService;
-        }
+			_hubContext = hubContext;
+		}
 
         [BindProperty] public CreateReviewRequest NewReview { get; set; } = new();
         public int? EligibleOrderId { get; set; }
@@ -52,7 +57,7 @@ namespace LaptopRentalManagement.Pages.Laptops
         }
 
         // Phương thức này được gọi khi form trên trang Details được submit
-        public IActionResult OnPost(int id, List<int> selectedSlots)
+        public async Task<IActionResult> OnPost(int id, List<int> selectedSlots)
         {
             // Kiểm tra xem người dùng đã chọn ngày nào chưa
             if (!selectedSlots.Any())
@@ -60,10 +65,16 @@ namespace LaptopRentalManagement.Pages.Laptops
                 TempData["Error"] = "Vui lòng chọn ít nhất một ngày thuê.";
                 return RedirectToPage(new { id = id }); // Tải lại trang Details nếu chưa chọn
             }
-
-            // Chuyển hướng đến trang Checkout, truyền kèm ID laptop và mảng các slot đã chọn
-            // ASP.NET Core sẽ tự động chuyển thành URL dạng: /Checkout/Index?id=123&selectedSlots=1&selectedSlots=2
-            return RedirectToPage("/Checkout", new { id = id, selectedSlots = selectedSlots });
+			await _hubContext.Clients.All.SendAsync("ReceiveSlotUpdate", id, selectedSlots);
+			await _hubContext.Clients.All.SendAsync("ReceiveSlotUpdate", new
+			{
+				LaptopId = id,
+				SlotIds = selectedSlots,
+				NewStatus = "Unavailable"
+			});
+			// Chuyển hướng đến trang Checkout, truyền kèm ID laptop và mảng các slot đã chọn
+			// ASP.NET Core sẽ tự động chuyển thành URL dạng: /Checkout/Index?id=123&selectedSlots=1&selectedSlots=2
+			return RedirectToPage("/Checkout", new { id = id, selectedSlots = selectedSlots });
         }
 
         [Authorize]

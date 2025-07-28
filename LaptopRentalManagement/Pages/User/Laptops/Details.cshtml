@@ -355,4 +355,16 @@
 		});
 
 	</script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+	<script>
+		const connection = new signalR.HubConnectionBuilder()
+			.withUrl("/rentalHub")
+			.build();
+		connection.on("ReceiveSlotUpdate", (data) => {
+			const currentLaptopId = parseInt(document.getElementById("laptopId")?.value);
+			if (data.LaptopId !== currentLaptopId) return;
+
+			location.reload(); // ← Đây là phần reload toàn trang
+		});
+	</script>
 }

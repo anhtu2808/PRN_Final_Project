@@ -25,7 +25,7 @@ public class LaptopRepository : ILaptopRepository
       
 
         if (filter.CategoryIds?.Count > 0)
-        	query = query.Where(l => l.Categories.Any(c => filter.CategoryIds.Contains(c.CategoryId)));
+        	query = query.Where(l => l.Categories.Any(c => EF.Constant(filter.CategoryIds).Contains(c.CategoryId)));
         if (filter.BrandId.HasValue)
             query = query.Where(l => l.BrandId == filter.BrandId.Value);
 

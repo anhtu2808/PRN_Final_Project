@@ -132,6 +132,7 @@ app.UseAuthorization();
 app.MapRazorPages();
 
 // Map new ChatHub
-app.MapHub<ChatHub>("/chathub");
+app.MapHub<ChatHub>("/chathub"); 
+app.MapHub<RentalHub>("/rentalHub");
 
 app.Run();

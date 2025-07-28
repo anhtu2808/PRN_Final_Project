@@ -71,7 +71,9 @@
 				textColor = "text-muted";
 			}
 
-			<div class="calendar-slot @cardClass">
+			<div class="calendar-slot @cardClass"
+				 data-slot-id="@(slot?.SlotId ?? 0)"
+				 data-day="@date.Day">
 				<div class="day-label">@date.Day</div>
 				<div class="d-flex justify-content-center align-items-center gap-1 small">
 					<i class="@icon"></i>

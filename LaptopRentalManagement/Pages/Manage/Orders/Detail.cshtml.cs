@@ -49,21 +49,21 @@ namespace LaptopRentalManagement.Pages.Manage.Orders
 		{
 			await _orderService.ApproveAsync(orderId);
 			TempData["Success"] = $"Đã duyệt đơn #{orderId}.";
-			return RedirectToPage("/User/Lease-Order/Detail", new { id });
+			return RedirectToPage("/manage/orders/Detail", new { id });
 		}
 
 		public async Task<IActionResult> OnPostRejectAsync(int orderId, int id)
 		{
 			await _orderService.RejectAsync(orderId);
 			TempData["Success"] = $"Đã từ chối đơn #{orderId}.";
-			return RedirectToPage("/User/Lease-Order/Detail", new { id });
+			return RedirectToPage("/manage/orders/Detail", new { id });
 		}
 
 		public async Task<IActionResult> OnPostConfirmReturnAsync(int orderId, int id)
 		{
 			await _orderService.ConfirmReturn(orderId);
 			TempData["Success"] = $"Đơn #{orderId} đã được xác nhận là đã trả.";
-			return RedirectToPage("/User/Lease-Order/Detail", new { id });
+			return RedirectToPage("/manage/orders/Detail", new { id });
 		}
 
 		public async Task<IActionResult> OnPostDeliveringAsync(int orderId, int id)
@@ -74,7 +74,7 @@ namespace LaptopRentalManagement.Pages.Manage.Orders
 				NewStatus = "Delivering"
 			});
 			TempData["Success"] = $"Đơn #{orderId} đang giao hàng.";
-			return RedirectToPage("/User/Lease-Order/Detail", new { id });
+			return RedirectToPage("/manage/orders/Detail", new { id });
 		}
 
 		public async Task<IActionResult> OnPostDeliveredAsync(int orderId, int id)
@@ -85,7 +85,7 @@ namespace LaptopRentalManagement.Pages.Manage.Orders
 				NewStatus = "Renting"
 			});
 			TempData["Success"] = $"Đơn #{orderId} đã giao thành công.";
-			return RedirectToPage("/User/Lease-Order/Detail", new { id });
+			return RedirectToPage("/manage/orders/Detail", new { id });
 		}
 
 		[BindProperty]
@@ -105,7 +105,7 @@ namespace LaptopRentalManagement.Pages.Manage.Orders
 
 			TempData["Warning"] = $"Giao hàng đơn #{orderId} thất bại. Trạng thái quay về 'Delivering'.";
 
-			return RedirectToPage("/User/Lease-Order/Detail", new { id });
+			return RedirectToPage("/manage/orders/Detail", new { id });
 		}
 	}
 }

@@ -115,7 +115,7 @@ var summary = Model.ReviewSummary;
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-lg w-100 mb-2">
-                        <i class="fas fa-shopping-cart me-2"></i>Đặt thuê
+                        <i class="fas fa-shopping-cart me-2"></i>Rent
                     </button>
                 </form>
 
@@ -376,6 +376,7 @@ var summary = Model.ReviewSummary;
 </div>
 
 @section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const slotCheckboxes = document.querySelectorAll('input[name="SelectedSlots"]');
@@ -396,4 +397,27 @@ var summary = Model.ReviewSummary;
         updateSummary();
     });
 </script>
+    
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/rentalHub")
+            .build();
+
+        connection.start().then(() => {
+            console.log("SignalR Connected");
+        }).catch(err => console.error(err.toString()));
+
+        connection.on("ReceiveSlotUpdate", (laptopId, slotIds) => {
+            const currentLaptopId = @Model.Laptop?.LaptopId;
+            if (currentLaptopId !== laptopId) return;
+
+            slotIds.forEach(slotId => {
+                const checkbox = document.getElementById(`slot_${slotId}`);
+                if (checkbox) {
+                    checkbox.disabled = true;
+                    checkbox.closest(".form-check-label")?.classList.add("text-muted");
+                }
+            });
+        });
+    </script>
 }
