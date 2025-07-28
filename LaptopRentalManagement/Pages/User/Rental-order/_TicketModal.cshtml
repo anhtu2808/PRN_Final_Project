@@ -1,0 +1,28 @@
+﻿@model LaptopRentalManagement.BLL.DTOs.Request.CreateTicketRequest
+
+<div class="modal fade" id="ticketModal" tabindex="-1" aria-labelledby="ticketModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="CreateTicket">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ticketModalLabel">Gửi yêu cầu hỗ trợ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @* Hidden field để bind OrderId *@
+                    <input asp-for="OrderId" type="hidden" />
+
+                    <div class="mb-3">
+                        <label asp-for="Content" class="form-label">Nội dung hỗ trợ</label>
+                        <textarea asp-for="Content" class="form-control" rows="4" required></textarea>
+                        <span asp-validation-for="Content" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary">Gửi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

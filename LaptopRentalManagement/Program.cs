@@ -88,6 +88,7 @@ builder.Services.AddScoped<ISlotRespository, SlotRepository>();
 builder.Services.AddScoped<IOrderLogRepository, OrderLogRepository>();
 builder.Services.AddScoped<IOrderLogImgRepository, OrderLogImgRepository>();
 builder.Services.AddScoped<ISlotRespository, SlotRepository>();
+builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 
 // Register services
 builder.Services.AddScoped<ICategoryService, CategoryService>();
@@ -96,6 +97,7 @@ builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
+builder.Services.AddScoped<ITicketService, TicketService>();
 
 // Register Hub Service
 builder.Services.AddScoped<IHubService, HubService>();

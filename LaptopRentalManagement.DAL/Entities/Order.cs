@@ -32,4 +32,6 @@ public partial class Order
 
     public virtual ICollection<Slot> Slots { get; set; } = new List<Slot>();
     public virtual ICollection<OrderLog> OrderLogs { get; set; } = new List<OrderLog>();
+
+	public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 }
