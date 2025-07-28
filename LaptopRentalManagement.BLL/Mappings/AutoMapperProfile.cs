@@ -137,7 +137,10 @@ namespace LaptopRentalManagement.BLL.Mappings
                     opt => opt.MapFrom(src => src.Account))
                 // map Categories collection → List<CategoryResponse>
                 .ForMember(dest => dest.Categories,
-                    opt => opt.MapFrom(src => src.Categories));
+                    opt => opt.MapFrom(src => src.Categories))
+                // map ImageUrl to ImageURL
+                .ForMember(dest => dest.ImageURL,
+                    opt => opt.MapFrom(src => src.ImageUrl));
             CreateMap<EditLaptopRequest, Laptop>()
                 .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
             CreateMap<CreateLaptopRequest, Laptop>();

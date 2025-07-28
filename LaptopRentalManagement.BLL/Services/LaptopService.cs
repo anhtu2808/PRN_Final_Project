@@ -16,15 +16,17 @@ public class LaptopService : ILaptopService
     private readonly IMapper _mapper;
     private readonly IAccountRepository _accountRepository;
     private readonly ISlotRespository _slotRespository;
+    private readonly IFileUploadService _fileUploadService;
 
     public LaptopService(ILaptopRepository laptopRepository, IMapper mapper, IAccountRepository accountRepository,
-        ISlotRespository slotRespository, ICategoryRepository categoryRepository)
+        ISlotRespository slotRespository, ICategoryRepository categoryRepository, IFileUploadService fileUploadService)
     {
         _mapper = mapper;
         _laptopRepository = laptopRepository;
         _accountRepository = accountRepository;
         _slotRespository = slotRespository;
         _categoryRepository = categoryRepository;
+        _fileUploadService = fileUploadService;
     }
 
     public async Task<IList<LaptopResponse>> GetAllAsync(LaptopFilter filter)
@@ -56,10 +58,18 @@ public class LaptopService : ILaptopService
 
     public async Task<LaptopResponse> CreateAsync(CreateLaptopRequest request)
     {
-        // map phần cơ bản
+        // Handle image upload if provided
+        string? imageUrl = null;
+        if (request.ImageFile != null && request.ImageFile.Length > 0)
+        {
+            imageUrl = await _fileUploadService.UploadImageAsync(request.ImageFile, "laptops");
+        }
+
+        // Map the basic properties
         var laptop = _mapper.Map<Laptop>(request);
         laptop.BrandId = request.BrandId;
         laptop.AccountId = request.AccountId;
+        laptop.ImageUrl = imageUrl; // Set the uploaded image URL
 
         var categories = new List<Category>();
         if (request.CategoryIds != null)
@@ -69,8 +79,7 @@ public class LaptopService : ILaptopService
 
         laptop.Categories = categories;
 
-
-        // lưu laptop (repo phải Add + SaveChangesAsync)
+        // Save laptop (repository must Add + SaveChangesAsync)
         var created = await _laptopRepository.CreateAsync(laptop);
         return _mapper.Map<LaptopResponse>(created);
     }

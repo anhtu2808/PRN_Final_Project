@@ -72,6 +72,7 @@ builder.Services.AddScoped<ILaptopService, LaptopService>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IFileUploadService, LaptopRentalManagement.Services.FileUploadService>();
 
 // Register Hub Service
 builder.Services.AddScoped<IHubService, HubService>();

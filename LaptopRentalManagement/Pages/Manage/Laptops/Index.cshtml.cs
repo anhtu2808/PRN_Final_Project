@@ -121,6 +121,8 @@ namespace LaptopRentalManagement.Pages.Manage.Laptops
             var request = new CreateLaptopRequest
             {
                 Name = CreateForm.Name,
+                Description = CreateForm.Description,
+                ImageFile = CreateForm.ImageFile,
                 BrandId = CreateForm.BrandId,
                 AccountId = CreateForm.AccountId,
                 PricePerDay = CreateForm.PricePerDay,
