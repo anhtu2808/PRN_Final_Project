@@ -230,7 +230,7 @@ namespace LaptopRentalManagement.BLL.Services
                         //slot.Status = "Completed"; check có bị phạt hay không
                     }
                     DateOnly dateOnly = DateOnly.FromDateTime(date);
-                    stillRent = dateOnly <= slot.SlotDate ? true : false;
+                    stillRent = dateOnly < slot.SlotDate ? true : false;
 
                 }
                 order.Status = stillRent ? "Approved" : "Completed";

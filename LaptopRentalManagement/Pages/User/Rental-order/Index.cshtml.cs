@@ -5,6 +5,7 @@ using LaptopRentalManagement.DAL.Entities;
 using LaptopRentalManagement.Model.DTOs.Request;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Security.Claims;
 
 namespace LaptopRentalManagement.Pages.User.Rental_order
 {
@@ -18,15 +19,22 @@ namespace LaptopRentalManagement.Pages.User.Rental_order
 			_orderService = orderService;
 		}
 		public IList<OrderResponse> MyRentalOrder { get; set; } = new List<OrderResponse>();
-		public async Task OnGet()
+		public async Task<IActionResult> OnGet()
 		{
-			OrderFilter orderFilter = new()
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("AccountId");
+            if (!int.TryParse(userIdClaim, out var userId))
+            {
+                TempData["Error"] = "Please login to continue";
+                return RedirectToPage("/Account/Login");
+            }
+            OrderFilter orderFilter = new()
 			{
-				RenterId = 2
-			};
+				RenterId = int.Parse(userIdClaim),
+            };
 
 			MyRentalOrder = await _orderService.GetAllAsync(orderFilter);
-		}
+            return Page();
+        }
 
 	}
 }

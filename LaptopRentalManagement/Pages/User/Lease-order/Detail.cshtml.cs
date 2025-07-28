@@ -3,6 +3,7 @@ using LaptopRentalManagement.BLL.DTOs.Response;
 using LaptopRentalManagement.BLL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Security.Claims;
 
 namespace LaptopRentalManagement.Pages.User.Lease_order
 {
@@ -28,6 +29,12 @@ namespace LaptopRentalManagement.Pages.User.Lease_order
 
         public async Task<IActionResult> OnGetAsync(int orderId)
         {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("AccountId");
+            if (!int.TryParse(userIdClaim, out var userId))
+            {
+                TempData["Error"] = "Please login to continue";
+                return RedirectToPage("/Account/Login");
+            }
             Order = await _orderService.GetByIdAsync(orderId);
             Logs = await _orderLogService.GetByOrderIdAsync(orderId);
             Tickets = await _ticketService.GetAllByOrderIdAsync(orderId);

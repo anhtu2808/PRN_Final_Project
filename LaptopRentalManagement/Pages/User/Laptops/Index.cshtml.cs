@@ -5,6 +5,7 @@ using LaptopRentalManagement.DAL.Entities;
 using LaptopRentalManagement.Model.DTOs.Request;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Security.Claims;
 
 namespace LaptopRentalManagement.Pages.User.Laptops
 {
@@ -31,11 +32,18 @@ namespace LaptopRentalManagement.Pages.User.Laptops
 
         public IEnumerable<CategoryResponse> Categories { get; set; } = new List<CategoryResponse>();
 
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync()
         {
-            var accountId = 1;
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("AccountId");
+            if (!int.TryParse(userIdClaim, out var userId))
+            {
+                TempData["Error"] = "Please login to continue";
+                return RedirectToPage("/Account/Login");
+            }
+            var accountId = int.Parse(userIdClaim);
             Laptops = await _laptopService.GetAllAsync(new LaptopFilter { AccountId = accountId });
             Categories = await _categoryService.GetAllCategoriesAsync();
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()

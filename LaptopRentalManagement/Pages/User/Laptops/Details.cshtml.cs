@@ -3,6 +3,7 @@ using LaptopRentalManagement.BLL.DTOs.Response;
 using LaptopRentalManagement.BLL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Security.Claims;
 
 namespace LaptopRentalManagement.Pages.User.Laptops;
 
@@ -32,7 +33,13 @@ public class DetailsModel : PageModel
 
 	public async Task<IActionResult> OnGetAsync(int id)
 	{
-		Laptop = await _laptopService.GetByIdAsync(id);
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("AccountId");
+        if (!int.TryParse(userIdClaim, out var userId))
+        {
+            TempData["Error"] = "Please login to continue";
+            return RedirectToPage("/Account/Login");
+        }
+        Laptop = await _laptopService.GetByIdAsync(id);
 		if (Laptop == null)
 		{
 			return NotFound();

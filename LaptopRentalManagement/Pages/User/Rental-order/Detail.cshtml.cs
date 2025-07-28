@@ -3,6 +3,7 @@ using LaptopRentalManagement.BLL.DTOs.Response;
 using LaptopRentalManagement.BLL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Security.Claims;
 
 namespace LaptopRentalManagement.Pages.User.Rental_order
 {
@@ -31,7 +32,13 @@ namespace LaptopRentalManagement.Pages.User.Rental_order
 
 		public async Task<IActionResult> OnGetAsync(int orderId)
 		{
-			Order = await _orderService.GetByIdAsync(orderId);
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("AccountId");
+            if (!int.TryParse(userIdClaim, out var userId))
+            {
+                TempData["Error"] = "Please login to continue";
+                return RedirectToPage("/Account/Login");
+            }
+            Order = await _orderService.GetByIdAsync(orderId);
 			Logs = await _orderLogService.GetByOrderIdAsync(orderId);
 			Tickets = await _ticketService.GetAllByOrderIdAsync(orderId);
 			if (Order == null)
@@ -45,7 +52,7 @@ namespace LaptopRentalManagement.Pages.User.Rental_order
 		{
 			await _orderService.ConfirmReturn(orderId);
 			TempData["Success"] = $"Đơn #{orderId} đã được xác nhận là đã trả.";
-			return RedirectToPage("/User/Rental-Order/Index", new { orderId });
+			return RedirectToPage("/User/Rental-Order/Detail", new { orderId });
 		}
 
 		public async Task<IActionResult> OnPostCreateTicketAsync()
@@ -59,7 +66,7 @@ namespace LaptopRentalManagement.Pages.User.Rental_order
 
 			await _ticketService.CreateTicketAsync(TicketRequest);
 			TempData["Success"] = "Yêu cầu hỗ trợ đã được gửi thành công!";
-			return RedirectToPage("/User/Rental-Order/Index", new { TicketRequest.OrderId });
+			return RedirectToPage("/User/Rental-Order/Detail", new { TicketRequest.OrderId });
 		}
 
 	}

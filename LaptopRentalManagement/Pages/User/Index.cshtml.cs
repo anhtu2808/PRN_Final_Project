@@ -11,8 +11,15 @@ namespace LaptopRentalManagement.Pages.User
 {
 	public class IndexModel : PageModel
 	{
-		public void OnGet()
+		public async Task<IActionResult> OnGet()
 		{
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("AccountId");
+            if (!int.TryParse(userIdClaim, out var userId))
+            {
+                TempData["Error"] = "Please login to continue";
+                return RedirectToPage("/Account/Login");
+            }
+            return Page();
         }
 	}
 }
