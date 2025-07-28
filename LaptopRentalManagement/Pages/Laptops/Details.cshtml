@@ -72,6 +72,12 @@ var summary = Model.ReviewSummary;
                     @Model.Laptop?.PricePerDay.ToString("N0") ₫ <span class="price-label h6 text-muted">per day</span>
                 </div>
 
+                <div class="deposit-info mb-3">
+                    <span class="fw-bold">Tiền cọc:</span>
+                    <span class="h5 text-success">@Model.Laptop?.Deposit.ToString("N0") ₫</span>
+                </div>
+
+
                 <form method="post" asp-page="/Checkout/Index" class="booking-form bg-light p-4 rounded mb-4">
                     @Html.AntiForgeryToken()
 
@@ -106,6 +112,10 @@ var summary = Model.ReviewSummary;
                         <div class="d-flex justify-content-between">
                             <span>Giá mỗi ngày:</span>
                             <span>@Model.Laptop?.PricePerDay.ToString("N0")₫</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Tiền cọc (hoàn lại):</span>
+                            <span>@Model.Laptop?.Deposit.ToString("N0")₫</span>
                         </div>
                         <hr/>
                         <div class="d-flex justify-content-between fw-bold">
@@ -383,10 +393,15 @@ var summary = Model.ReviewSummary;
         const selectedCount = document.getElementById('selectedCount');
         const totalPrice = document.getElementById('totalPrice');
         const dailyRate = @(Model.Laptop?.PricePerDay ?? 0);
+        const deposit = @(Model.Laptop?.Deposit ?? 0); // Lấy giá trị tiền cọc
 
         function updateSummary() {
             const selected = Array.from(slotCheckboxes).filter(cb => cb.checked).length;
-            const total = selected * dailyRate;
+            const rentalCost = selected * dailyRate;
+
+            // Chỉ cộng tiền cọc nếu có ít nhất 1 ngày được chọn
+            const total = selected > 0 ? rentalCost + deposit : 0;
+
             selectedCount.textContent = `${selected} ngày`;
             totalPrice.textContent = `₫${total.toLocaleString()}`;
         }

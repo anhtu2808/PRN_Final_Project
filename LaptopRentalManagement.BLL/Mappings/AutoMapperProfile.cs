@@ -1,8 +1,6 @@
 using AutoMapper;
 using LaptopRentalManagement.BLL.DTOs.Request;
 using LaptopRentalManagement.BLL.DTOs.Response;
-using LaptopRentalManagement.BLL.DTOs.Request;
-using LaptopRentalManagement.BLL.DTOs.Response;
 using LaptopRentalManagement.DAL.Entities;
 using LaptopRentalManagement.Model.DTOs.Request;
 using LaptopRentalManagement.Model.DTOs.Response.Brand;
@@ -160,6 +158,10 @@ namespace LaptopRentalManagement.BLL.Mappings
 				.ForMember(dest => dest.Order, opt => opt.Ignore())
 				.ForMember(dest => dest.Owner, opt => opt.Ignore())
 				.ForMember(dest => dest.Renter, opt => opt.Ignore());
+			CreateMap<CreateTicketRequest, Ticket>();
+			CreateMap<UpdateTicketRequest, Ticket>()
+				.ForMember(dest => dest.TicketId, opt => opt.Ignore())
+				.ForMember(dest => dest.RespondedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
 		}
 	}
 }

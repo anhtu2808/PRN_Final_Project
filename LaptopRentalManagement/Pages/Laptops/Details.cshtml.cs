@@ -42,6 +42,8 @@ namespace LaptopRentalManagement.Pages.Laptops
                 return NotFound();
             }
             Slots = Laptop.Slots;
+            ReviewSummary = await _feedbackService.GetLaptopReviewsAsync(id);
+
 
             var filter = new LaptopFilter()
             {
@@ -59,11 +61,11 @@ namespace LaptopRentalManagement.Pages.Laptops
         // Phương thức này được gọi khi form trên trang Details được submit
         public async Task<IActionResult> OnPost(int id, List<int> selectedSlots)
         {
-            // Kiểm tra xem người dùng đã chọn ngày nào chưa
-            if (!selectedSlots.Any())
+            // Check if the user has selected any dates
+            if (selectedSlots == null || !selectedSlots.Any())
             {
-                TempData["Error"] = "Vui lòng chọn ít nhất một ngày thuê.";
-                return RedirectToPage(new { id = id }); // Tải lại trang Details nếu chưa chọn
+                TempData["Error"] = "Please select at least one rental day."; // Translated
+                return RedirectToPage(new { id = id }); // Reload the Details page if no selection
             }
 			await _hubContext.Clients.All.SendAsync("ReceiveSlotUpdate", id, selectedSlots);
 			await _hubContext.Clients.All.SendAsync("ReceiveSlotUpdate", new
