@@ -36,12 +36,11 @@ public class LaptopService : ILaptopService
     {
         var laptops = await _laptopRepository.GetByIdAsync(id);
         var ownerResponse = _mapper.Map<AccountResponse>(await _accountRepository.GetByIdAsync(laptops.AccountId));
-        var slotResponse = _mapper.Map<List<SlotResponse>>(await _slotRespository.GetByLaptopId(laptops.LaptopId));
+		var slotResponse = _mapper.Map<List<SlotResponse>>(await _slotRespository.GetAllAsync(new() { LaptopId = laptops.LaptopId}));
 
-        var response = _mapper.Map<LaptopResponse?>(laptops);
+		var response = _mapper.Map<LaptopResponse?>(laptops);
         response.Owner = ownerResponse;
         response.Slots = slotResponse;
-
         return response;
     }
 

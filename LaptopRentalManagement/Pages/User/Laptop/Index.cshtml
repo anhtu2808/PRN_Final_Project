@@ -6,170 +6,155 @@
 }
 
 <div class="container py-4">
-    <div class="text-end mb-3">
-        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#rentOutModal">
-            <i class="fas fa-laptop-house me-2"></i>Click for Rent
-        </button>
-    </div>
-    <h2 class="mb-4">Laptop Details: @(Model.Laptop?.Name ?? "Unknown")</h2>
+	<div class="text-end mb-3">
+		<button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#rentOutModal">
+			<i class="fas fa-laptop-house me-2"></i>Click for Rent
+		</button>
+	</div>
+	<h2 class="mb-4">Laptop Details: @(Model.Laptop?.Name ?? "Unknown")</h2>
 
-    <div class="row">
-        <div class="col-md-6">
-            <img src="@Model.Laptop.ImageURL" class="img-fluid rounded shadow-sm" alt="Laptop image" />
-        </div>
-        <div class="col-md-6">
-            <h4>@Model.Laptop.Name</h4>
-            <p><strong>Brand:</strong> @Model.Laptop.Brand.Name</p>
-            <p><strong>Price per day:</strong> @Model.Laptop.PricePerDay.ToString("N0") đ</p>
-            <p><strong>CPU:</strong> @Model.Laptop.Cpu</p>
-            <p><strong>RAM:</strong> @Model.Laptop.Ram GB</p>
-            <p><strong>Storage:</strong> @Model.Laptop.Storage GB</p>
-            <p><strong>Owner:</strong> @Model.Laptop.Owner.Name</p>
-        </div>
-    </div>
+	<div class="row">
+		<div class="col-md-6">
+			<img src="@Model.Laptop.ImageURL" class="img-fluid rounded shadow-sm" alt="Laptop image" />
+		</div>
+		<div class="col-md-6">
+			<h4>@Model.Laptop.Name</h4>
+			<p><strong>Brand:</strong> @Model.Laptop.Brand.Name</p>
+			<p><strong>Price per day:</strong> @Model.Laptop.PricePerDay.ToString("N0") đ</p>
+			<p><strong>CPU:</strong> @Model.Laptop.Cpu</p>
+			<p><strong>RAM:</strong> @Model.Laptop.Ram GB</p>
+			<p><strong>Storage:</strong> @Model.Laptop.Storage GB</p>
+			<p><strong>Owner:</strong> @Model.Laptop.Owner.Name</p>
+		</div>
+	</div>
 
-    <hr class="my-4" />
+	<hr class="my-4" />
 
-    <h4 class="mb-3">Rental History</h4>
-    @if (Model.Orders != null && Model.Orders.Any())
-    {
-        <table class="table table-bordered table-hover">
-            <thead class="table-light">
-                <tr>
-                    <th>#</th>
-                    <th>Renter</th>
-                    <th>Rental Dates</th>
-                    <th>Total Days</th>
-                    <th>Status</th>
-                    <th>Total Charge</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var order in Model.Orders.OrderByDescending(o => o.OrderId))
-                {
-                    <tr>
-                        <td>@order.OrderId</td>
-                        <td>@(order.Renter?.Name ?? "Not assigned")</td>
-                        <td>@string.Join(", ", order.Slots.Select(s => s.SlotDate.ToString("dd/MM/yyyy")))</td>
-                        <td>@order.Slots.Count</td>
-                        <td>@order.Status</td>
-                        <td>@order.TotalCharge.ToString("N0") đ</td>
-                        <td class="text-nowrap">
-                            @switch (order.Status)
-                            {
-                                case "Pending":
-                                    <form method="post" asp-page-handler="Approve" asp-route-orderId="@order.OrderId" asp-route-id="@Model.Laptop.LaptopId" class="d-inline">
-                                        <button type="submit" class="btn btn-sm btn-success">
-                                            <i class="fas fa-check me-1"></i>Approve
-                                        </button>
-                                    </form>
-                                    <form method="post" asp-page-handler="Reject" asp-route-orderId="@order.OrderId" asp-route-id="@Model.Laptop.LaptopId" class="d-inline ms-1">
-                                        <button type="submit" class="btn btn-sm btn-danger">
-                                            <i class="fas fa-times me-1"></i>Reject
-                                        </button>
-                                    </form>
-                                    break;
+	<h4 class="mb-3">Rental History</h4>
+	@if (Model.Orders != null && Model.Orders.Any())
+	{
+		<table class="table table-bordered table-hover">
+			<thead class="table-light">
+				<tr>
+					<th>#</th>
+					<th>Renter</th>
+					<th>Rental Dates</th>
+					<th>Total Days</th>
+					<th>Status</th>
+					<th>Total Charge</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var order in Model.Orders.OrderByDescending(o => o.OrderId))
+				{
+					<tr>
+						<td>@order.OrderId</td>
+						<td>@(order.Renter?.Name ?? "Not assigned")</td>
+						<td>@string.Join(", ", order.Slots.Select(s => s.SlotDate.ToString("dd/MM/yyyy")))</td>
+						<td>@order.Slots.Count</td>
+						<td>@order.Status</td>
+						<td>@order.TotalCharge.ToString("N0") đ</td>
+						<td class="text-nowrap">
+							@switch (order.Status)
+							{
+								case "Pending":
+									<form method="post" asp-page-handler="Approve" asp-route-orderId="@order.OrderId" asp-route-id="@Model.Laptop.LaptopId" class="d-inline">
+										<button type="submit" class="btn btn-sm btn-success">
+											<i class="fas fa-check me-1"></i>Approve
+										</button>
+									</form>
+									<form method="post" asp-page-handler="Reject" asp-route-orderId="@order.OrderId" asp-route-id="@Model.Laptop.LaptopId" class="d-inline ms-1">
+										<button type="submit" class="btn btn-sm btn-danger">
+											<i class="fas fa-times me-1"></i>Reject
+										</button>
+									</form>
+									break;
 
-                                case "Approved":
-                                    <form method="post" asp-page-handler="Delivering" asp-route-orderId="@order.OrderId" asp-route-id="@Model.Laptop.LaptopId" class="d-inline">
-                                        <button type="submit" class="btn btn-sm btn-warning">
-                                            <i class="fas fa-truck me-1"></i>Start Delivery
-                                        </button>
-                                    </form>
-                                    break;
+								case "Approved":
+									<form method="post" asp-page-handler="Delivering" asp-route-orderId="@order.OrderId" asp-route-id="@Model.Laptop.LaptopId" class="d-inline">
+										<button type="submit" class="btn btn-sm btn-warning">
+											<i class="fas fa-truck me-1"></i>Start Delivery
+										</button>
+									</form>
+									break;
 
-                                case "Delivering":
-                                    <form method="post" asp-page-handler="Delivered" asp-route-orderId="@order.OrderId" asp-route-id="@Model.Laptop.LaptopId" class="d-inline">
-                                        <button type="submit" class="btn btn-sm btn-success">
-                                            <i class="fas fa-box-check me-1"></i>Delivered
-                                        </button>
-                                    </form>
-                                    <form method="post" asp-page-handler="DeliveredFail" asp-route-orderId="@order.OrderId" asp-route-id="@Model.Laptop.LaptopId" class="d-inline ms-1">
-                                        <button type="submit" class="btn btn-sm btn-danger">
-                                            <i class="fas fa-times-circle me-1"></i>Delivery Failed
-                                        </button>
-                                    </form>
-                                    break;
+								case "Delivering":
+									<form method="post" asp-page-handler="Delivered" asp-route-orderId="@order.OrderId" asp-route-id="@Model.Laptop.LaptopId" class="d-inline">
+										<button type="submit" class="btn btn-sm btn-success">
+											<i class="fas fa-box-check me-1"></i>Delivered
+										</button>
+									</form>
+									<form method="post" asp-page-handler="DeliveredFail" asp-route-orderId="@order.OrderId" asp-route-id="@Model.Laptop.LaptopId" class="d-inline ms-1">
+										<button type="submit" class="btn btn-sm btn-danger">
+											<i class="fas fa-times-circle me-1"></i>Delivery Failed
+										</button>
+									</form>
+									break;
 
-                                default:
-                                    <span class="text-muted">No actions</span>
-                                    break;
-                            }
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <p class="text-muted">No rental orders found for this laptop.</p>
-    }
+								default:
+									<span class="text-muted">No actions</span>
+									break;
+							}
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	}
+	else
+	{
+		<p class="text-muted">No rental orders found for this laptop.</p>
+	}
 
-    <hr class="my-4" />
+	<hr class="my-4" />
 
-    <h4 class="mb-3">Rental Slots</h4>
-    <div class="card-body">
-        @if (Model.Laptop.Slots.Any())
-        {
-            <div class="d-flex overflow-auto gap-3 py-2">
-                @foreach (var slot in Model.Laptop.Slots.OrderBy(s => s.SlotDate))
-                {
-                    string cardClass;
-                    string icon;
-                    string statusText;
-                    string textColor;
+	<h4 class="mb-3">Rental Slots</h4>
 
-                    switch (slot.Status)
-                    {
-                        case "Available":
-                            cardClass = "bg-light border border-secondary";
-                            icon = "fas fa-circle-notch me-1 text-secondary";
-                            statusText = "Available";
-                            textColor = "text-secondary";
-                            break;
+	<form class="d-flex gap-2 mb-3">
+		<select id="monthSelect" class="form-select w-auto">
+			@for (int m = 1; m <= 12; m++)
+			{
+				<option value="@m" selected="@(m == DateTime.Now.Month ? "selected" : null)">
+					@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m)
+				</option>
+			}
+		</select>
+		<select id="yearSelect" class="form-select w-auto">
+			@for (int y = DateTime.Now.Year - 2; y <= DateTime.Now.Year + 2; y++)
+			{
+				<option value="@y" selected="@(y == DateTime.Now.Year ? "selected" : null)">@y</option>
+			}
+		</select>
+		<input type="hidden" id="laptopId" value="@Model.Laptop.LaptopId" />
+	</form>
 
-                        case "Unavailable":
-                            cardClass = "bg-warning-subtle border border-warning";
-                            icon = "fas fa-hourglass-half me-1 text-warning";
-                            statusText = "Pending Approval";
-                            textColor = "text-warning";
-                            break;
+	<div id="slots-container">
+		@await Html.PartialAsync("_RentalSlotsPartial", Model.RentalSlot)
+	</div>
 
-                        case "Booked":
-                            cardClass = "bg-success text-white border border-success";
-                            icon = "fas fa-check-circle me-1";
-                            statusText = "Booked";
-                            textColor = "text-white";
-                            break;
 
-                        default:
-                            cardClass = "bg-light border";
-                            icon = "fas fa-question-circle me-1 text-muted";
-                            statusText = "Unknown";
-                            textColor = "text-muted";
-                            break;
-                    }
-
-                    var dayOfWeek = slot.SlotDate.ToString("dddd", new System.Globalization.CultureInfo("en-US"));
-
-                    <div class="rounded p-4 text-center shadow-sm min-w-200px @cardClass">
-                        <div class="fs-6 fw-bold text-uppercase">@dayOfWeek</div>
-                        <div class="fs-5">@slot.SlotDate.ToString("dd/MM/yyyy")</div>
-                        <div class="mt-2 d-flex align-items-center justify-content-center">
-                            <i class="@icon fa-lg"></i>
-                            <span class="fw-semibold @textColor">@statusText</span>
-                        </div>
-                    </div>
-                }
-            </div>
-        }
-        else
-        {
-            <p class="text-muted">No rental slots recorded.</p>
-        }
-    </div>
 </div>
 
 @await Html.PartialAsync("_RentOutModal", Model.Laptop)
+
+@section Scripts {
+	<script>
+		async function updateSlots() {
+			const month = document.getElementById("monthSelect").value;
+			const year = document.getElementById("yearSelect").value;
+			const id = document.getElementById("laptopId").value;
+
+			const response = await fetch(`?handler=RentalSlots&id=${id}&month=${month}&year=${year}`);
+			const html = await response.text();
+			document.getElementById("slots-container").innerHTML = html;
+		}
+
+		function initSlotSelector() {
+			document.getElementById("monthSelect").addEventListener("change", updateSlots);
+			document.getElementById("yearSelect").addEventListener("change", updateSlots);
+		}
+
+		document.addEventListener("DOMContentLoaded", initSlotSelector);
+	</script>
+}

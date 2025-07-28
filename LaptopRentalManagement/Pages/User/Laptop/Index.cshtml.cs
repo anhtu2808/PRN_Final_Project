@@ -24,6 +24,9 @@ namespace LaptopRentalManagement.Pages.User.Rental_orders
         public LaptopResponse? Laptop { get; set; }
         public IList<OrderResponse> Orders { get; set; } = new List<OrderResponse>();
 
+        public IList<SlotResponse> Slots { get; set; } = new List<SlotResponse>();
+        public RentalSlotResponse RentalSlot { get; set; } = new();
+
         public async Task<IActionResult> OnGetAsync(int id)
         {
             Laptop = await _laptopService.GetByIdAsync(id);
@@ -32,8 +35,33 @@ namespace LaptopRentalManagement.Pages.User.Rental_orders
                 return NotFound();
             }
             Orders = await _orderService.GetAllAsync(new() { LaptopId = id });
+
+            RentalSlot = new RentalSlotResponse
+            {
+                Slots = await _slotService.GetAllAsync(new() { LaptopId = id, Month = DateTime.UtcNow.Month, Year = DateTime.UtcNow.Year }),
+                DaysInMonth = Enumerable.Range(1, DateTime.DaysInMonth(DateTime.UtcNow.Year, DateTime.UtcNow.Month))
+                                .Select(d => new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, d)).ToList()
+            };
+
             return Page();
         }
+
+        public async Task<PartialViewResult> OnGetRentalSlotsAsync(int id, int month, int year)
+        {
+            IList<SlotResponse> slots = await _slotService.GetAllAsync(new() { LaptopId = id, Month = month, Year = year });
+            var daysInMonth = Enumerable.Range(1, DateTime.DaysInMonth(year, month))
+                .Select(d => new DateTime(year, month, d))
+                .ToList();
+
+            var rentalSlot = new RentalSlotResponse
+            {
+                Slots = slots,
+                DaysInMonth = daysInMonth
+            };
+
+            return Partial("_RentalSlotsPartial", rentalSlot);
+        }
+
         [BindProperty]
         public CreateSlotRequest NewSlot { get; set; }
 
@@ -66,12 +94,12 @@ namespace LaptopRentalManagement.Pages.User.Rental_orders
             return RedirectToPage("/User/Laptop/Index", new { id });
         }
 
-		public async Task<IActionResult> OnPostConfirmReturnAsync(int orderId, int id)
-		{
-			await _orderService.ConfirmReturn(orderId);
-			TempData["Success"] = $"Đơn #{orderId} đã được xác nhận là đã trả.";
-			return RedirectToPage("/User/Laptop/Index", new { id });
-		}
+        public async Task<IActionResult> OnPostConfirmReturnAsync(int orderId, int id)
+        {
+            await _orderService.ConfirmReturn(orderId);
+            TempData["Success"] = $"Đơn #{orderId} đã được xác nhận là đã trả.";
+            return RedirectToPage("/User/Laptop/Index", new { id });
+        }
 
         public async Task<IActionResult> OnPostDeliveringAsync(int orderId, int id)
         {
