@@ -6,6 +6,7 @@ using LaptopRentalManagement.BLL.Interfaces;
 using LaptopRentalManagement.DAL.Entities;
 using LaptopRentalManagement.DAL.Interfaces;
 using LaptopRentalManagement.Model.DTOs.Request;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,8 +23,10 @@ namespace LaptopRentalManagement.BLL.Services
         private readonly IAccountRepository _accountRepository;
         private readonly IOrderLogRepository _orderLogRepository;
         private readonly IMapper _mapper;
+        private readonly IFileUploadService _fileUploadService;
+		private readonly IOrderLogImgRepository _orderLogImgRepository;
 
-        public OrderService(IOrderRepository orderRepository, ISlotRespository slotRepository, IMapper mapper, ILaptopRepository laptopRepository, IAccountRepository accountRepository, IOrderLogRepository orderLogRepository)
+		public OrderService(IOrderRepository orderRepository, ISlotRespository slotRepository, IMapper mapper, ILaptopRepository laptopRepository, IAccountRepository accountRepository, IOrderLogRepository orderLogRepository, IFileUploadService fileUploadService, IOrderLogImgRepository orderLogImgRepository)
         {
             _orderRepository = orderRepository;
             _slotRepository = slotRepository;
@@ -31,7 +34,9 @@ namespace LaptopRentalManagement.BLL.Services
             _accountRepository = accountRepository;
             _mapper = mapper;
             _orderLogRepository = orderLogRepository;
-        }
+            _fileUploadService = fileUploadService;
+			_orderLogImgRepository = orderLogImgRepository;
+		}
 
         public async Task<OrderResponse?> ApproveAsync(int orderId)
         {
@@ -105,37 +110,56 @@ namespace LaptopRentalManagement.BLL.Services
             return response;
         }
 
-        public async Task SetStatusAsync(int orderId, string newStatus)
+        public async Task SetStatusAsync(OrderLogRequest request)
         {
-            var order = await _orderRepository.GetByIdAsync(orderId);
+            var order = await _orderRepository.GetByIdAsync(request.OrderId);
+            IList<string> urls = new List<string>();
+            var lastStatus = "";
             if (order == null)
                 return;
             var content = "";
-            if (newStatus == "Delivering")
+            if (request.NewStatus == "Delivering")
             {
                 content = "Laptop is being delivered to you";
             }
-            else if (newStatus == "Renting")
+            else if (request.NewStatus == "Renting")
             {
                 content = "Laptop has been delivered successfully";
             }
             else
             {
-                content = "Laptop has been delivered failed";
-                newStatus = "Delivering";
+                content = "Laptop has been delivered failed.\nReason: " + request.Reason;
+                lastStatus = request.NewStatus;
+                foreach(IFormFile form in request.Forms)
+                {
+                    var url = await _fileUploadService.UploadImageAsync(form, "laptops");
+                    urls.Add(url);
+                }
+				request.NewStatus = "Delivering";
             }
 
             OrderLog log = new()
             {
                 OldStatus = order.Status,
-                NewStatus = newStatus,
+                NewStatus = request.NewStatus,
                 Content = content,
                 OrderId = order.OrderId
             };
 
-            await _orderLogRepository.CreateAsync(log);
-            order.Status = newStatus;
+            var orderLog = await _orderLogRepository.CreateAsync(log);
+            if (!String.IsNullOrWhiteSpace(lastStatus))
+            {
+                foreach (var url in urls) 
+                {
+                    await _orderLogImgRepository.CreateAsync(new()
+                    {
+                        OrderLogId = orderLog.Id,
+                        ImgUrl = url,
+                    });
+				}
+            }
 
+            order.Status = request.NewStatus;
             await _orderRepository.UpdateAsync(order);
         }
 
