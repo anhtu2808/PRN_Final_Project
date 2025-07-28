@@ -45,7 +45,7 @@ namespace LaptopRentalManagement.Pages.User.Laptops
             {
                 Name = form["Name"],
                 Description = form["Description"],
-                ImageURL = form["ImageURL"],
+                // ImageURL = form["ImageURL"],
                 BrandId = int.Parse(form["BrandId"]),
                 AccountId = int.Parse(form["AccountId"]),
                 PricePerDay = decimal.Parse(form["PricePerDay"]),

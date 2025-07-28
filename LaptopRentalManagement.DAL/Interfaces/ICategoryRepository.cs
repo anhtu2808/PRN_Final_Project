@@ -5,6 +5,7 @@ namespace LaptopRentalManagement.DAL.Interfaces;
 public interface ICategoryRepository
 {
     Task<IEnumerable<Category>> GetAllAsync();
+    Task<List<Category>> GetByIds(List<int> ids);
     Task<Category?> GetByIdAsync(int id);
     Task<Category?> GetByNameAsync(string name);
     Task<Category> CreateAsync(Category category);

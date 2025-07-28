@@ -68,7 +68,6 @@ public class DetailsModel : PageModel
         {
             LaptopId = laptopId,
             Name = name,
-            ImageURL = imageUrl,
             Cpu = cpu,
             Ram = ram,
             Storage = storage,

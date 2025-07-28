@@ -8,35 +8,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace LaptopRentalManagement.Pages.Manage.Laptops
 {
-    // Class để nhận dữ liệu từ Form Edit một cách tự động
-    public class EditLaptopInput
-    {
-        public int LaptopId { get; set; }
-        public string Name { get; set; }
-        public int BrandId { get; set; }
-        public int AccountId { get; set; }
-        public decimal PricePerDay { get; set; }
-        public string Cpu { get; set; }
-        public int Ram { get; set; }
-        public int Storage { get; set; }
-        public List<int> CategoryIds { get; set; } = new List<int>();
-    }
-
-    // --- THÊM CLASS NÀY VÀO ---
-    // Class để nhận dữ liệu từ Form Create một cách tự động
-    public class CreateLaptopInput
-    {
-        public string Name { get; set; }
-        public int BrandId { get; set; }
-        public int AccountId { get; set; }
-        public decimal PricePerDay { get; set; }
-        public string Cpu { get; set; }
-        public int Ram { get; set; }
-        public int Storage { get; set; }
-        public List<int> CategoryIds { get; set; } = new List<int>();
-    }
-
-
     public class IndexModel : PageModel
     {
         private readonly ILaptopService _laptopService;
@@ -48,10 +19,10 @@ namespace LaptopRentalManagement.Pages.Manage.Laptops
 
         [BindProperty(SupportsGet = true)] public LaptopFilter Filter { get; set; } = new();
 
-        [BindProperty] public EditLaptopInput EditForm { get; set; }
+        [BindProperty] public EditLaptopRequest EditForm { get; set; }
 
         // --- THÊM THUỘC TÍNH NÀY VÀO ---
-        [BindProperty] public CreateLaptopInput CreateForm { get; set; }
+        [BindProperty] public CreateLaptopRequest CreateForm { get; set; }
 
         public SelectList CategorySelect { get; set; }
         public SelectList BrandSelect { get; set; }

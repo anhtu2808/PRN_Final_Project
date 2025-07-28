@@ -16,7 +16,9 @@ public class LaptopService : ILaptopService
     private readonly IMapper _mapper;
     private readonly IAccountRepository _accountRepository;
     private readonly ISlotRespository _slotRespository;
-    public LaptopService(ILaptopRepository laptopRepository, IMapper mapper, IAccountRepository accountRepository, ISlotRespository slotRespository, ICategoryRepository categoryRepository)
+
+    public LaptopService(ILaptopRepository laptopRepository, IMapper mapper, IAccountRepository accountRepository,
+        ISlotRespository slotRespository, ICategoryRepository categoryRepository)
     {
         _mapper = mapper;
         _laptopRepository = laptopRepository;
@@ -59,17 +61,14 @@ public class LaptopService : ILaptopService
         laptop.BrandId = request.BrandId;
         laptop.AccountId = request.AccountId;
 
-        if (request.CategoryIds?.Any() == true)
+        var categories = new List<Category>();
+        if (request.CategoryIds != null)
         {
-            var cats = new List<Category>();
-            foreach (var id in request.CategoryIds)
-            {
-                var c = await _categoryRepository.GetByIdAsync(id);
-                if (c != null) cats.Add(c);
-            }
-
-            laptop.Categories = cats;
+            categories = await _categoryRepository.GetByIds(request.CategoryIds);
         }
+
+        laptop.Categories = categories;
+
 
         // lưu laptop (repo phải Add + SaveChangesAsync)
         var created = await _laptopRepository.CreateAsync(laptop);
@@ -86,13 +85,14 @@ public class LaptopService : ILaptopService
         }
 
         _mapper.Map(request, laptop);
+
+        var categories = new List<Category>();
         if (request.CategoryIds != null)
         {
-            var categories = await _categoryRepository.GetAllAsync();
-            var selectedCategories = categories.Where(c => request.CategoryIds.Contains(c.CategoryId)).ToList();
-            laptop.Categories = selectedCategories;
+            categories = await _categoryRepository.GetByIds(request.CategoryIds);
         }
 
+        laptop.Categories = categories;
         var updatedLaptop = await _laptopRepository.UpdateAsync(laptop);
         var response = _mapper.Map<LaptopResponse>(updatedLaptop);
         return response;

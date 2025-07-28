@@ -22,6 +22,15 @@ public class CategoryRepository : ICategoryRepository
             .ToListAsync();
     }
 
+    public async Task<List<Category>> GetByIds(List<int> ids)
+    {
+        return await _context.Categories
+            .Include(c => c.Laptops)
+            .Where(c => ids.Contains(c.CategoryId))
+            .OrderBy(c => c.Name)
+            .ToListAsync();
+    }
+
     public async Task<Category?> GetByIdAsync(int id)
     {
         return await _context.Categories
