@@ -15,7 +15,10 @@
       "launchBrowser": false,
       "applicationUrl": "http://localhost:5131",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "BUCKET_NAME": "metro-content-image-bucket",
+        "ACCESS_KEY": "AKIAULC2LUQRJF2M4Q6O",
+        "SECRET_KEY": "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"
       }
     },
     "https": {
@@ -24,7 +27,10 @@
       "launchBrowser": true,
       "applicationUrl": "https://localhost:7109;http://localhost:5131",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "BUCKET_NAME": "metro-content-image-bucket",
+        "ACCESS_KEY": "AKIAULC2LUQRJF2M4Q6O",
+        "SECRET_KEY": "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"
       }
     },
     "IIS Express": {

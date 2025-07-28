@@ -1,3 +1,6 @@
+using Amazon;
+using Amazon.Runtime;
+using Amazon.S3;
 using LaptopRentalManagement.BLL.Mappings;
 using LaptopRentalManagement.BLL.Interfaces;
 using LaptopRentalManagement.BLL.Services;
@@ -13,6 +16,23 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+
+
+
+var awsRegion = builder.Configuration["AWS:Region"]!;
+
+var bucketName = Environment.GetEnvironmentVariable("BUCKET_NAME")!;
+var accessKey  = Environment.GetEnvironmentVariable("ACCESS_KEY")!;
+var secretKey  = Environment.GetEnvironmentVariable("SECRET_KEY")!;
+
+
+var credentials = new BasicAWSCredentials(accessKey, secretKey);
+builder.Services.AddSingleton<IAmazonS3>(sp =>
+    new AmazonS3Client(
+        credentials,
+        RegionEndpoint.GetBySystemName(awsRegion)
+    )
+);
 
 // Add Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

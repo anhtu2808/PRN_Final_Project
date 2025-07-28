@@ -1,83 +1,79 @@
+using Amazon.S3;
+using Amazon.S3.Model;
+using Amazon.S3.Transfer;
 using LaptopRentalManagement.BLL.Interfaces;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 
-namespace LaptopRentalManagement.Services;
 
-public class FileUploadService : IFileUploadService
+namespace LaptopRentalManagement.Services
 {
-    private readonly IWebHostEnvironment _webHostEnvironment;
-    private readonly long _maxFileSize = 5 * 1024 * 1024; // 5MB
-    private readonly string[] _allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
-
-    public FileUploadService(IWebHostEnvironment webHostEnvironment)
+    public class FileUploadService : IFileUploadService
     {
-        _webHostEnvironment = webHostEnvironment;
-    }
+        private readonly IAmazonS3 _s3Client;
+        private readonly string _bucketName;
+        private readonly string[] _allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
+        private readonly long _maxFileSize = 5 * 1024 * 1024; //
 
-    public async Task<string?> UploadImageAsync(IFormFile imageFile, string folder = "laptops")
-    {
-        if (imageFile == null || imageFile.Length == 0)
-            return null;
-
-        // Validate file size
-        if (imageFile.Length > _maxFileSize)
-            throw new InvalidOperationException("File size exceeds the maximum allowed size of 5MB.");
-
-        // Validate file extension
-        var extension = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
-        if (!_allowedExtensions.Contains(extension))
-            throw new InvalidOperationException("Invalid file type. Only image files are allowed.");
-
-        try
+        public FileUploadService(IAmazonS3 s3Client)
         {
-            // Create unique filename to prevent conflicts
-            var uniqueFileName = Guid.NewGuid().ToString() + extension;
-            
-            // Create the upload directory if it doesn't exist
-            var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", folder);
-            Directory.CreateDirectory(uploadsFolder);
-            
-            // Full path for saving the file
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-            
-            // Save the file
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                await imageFile.CopyToAsync(fileStream);
-            }
-            
-            // Return the relative URL path
-            return $"/images/{folder}/{uniqueFileName}";
+            _s3Client = s3Client;
+            _bucketName = Environment.GetEnvironmentVariable("BUCKET_NAME")
+                          ?? throw new ArgumentException("Missing BUCKET_NAME env var");
         }
-        catch (Exception ex)
-        {
-            throw new InvalidOperationException($"Error uploading file: {ex.Message}", ex);
-        }
-    }
 
-    public async Task<bool> DeleteImageAsync(string imageUrl)
-    {
-        if (string.IsNullOrEmpty(imageUrl))
-            return false;
-
-        try
+        public async Task<string?> UploadImageAsync(IFormFile imageFile, string folder = "laptops")
         {
-            // Convert URL to physical path
-            var relativePath = imageUrl.TrimStart('/');
-            var physicalPath = Path.Combine(_webHostEnvironment.WebRootPath, relativePath);
-            
-            if (File.Exists(physicalPath))
+            if (imageFile == null || imageFile.Length == 0)
+                return null;
+
+            if (imageFile.Length > _maxFileSize)
+                throw new InvalidOperationException("File size exceeds 5MB.");
+
+            var ext = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
+            if (!_allowedExtensions.Contains(ext))
+                throw new InvalidOperationException("Invalid file type.");
+
+            var key = $"{folder}/{Guid.NewGuid()}{ext}";
+
+            using var ms = new MemoryStream();
+            await imageFile.CopyToAsync(ms);
+            ms.Position = 0;
+
+            var uploadRequest = new TransferUtilityUploadRequest
             {
-                File.Delete(physicalPath);
+                InputStream = ms,
+                BucketName = _bucketName,
+                Key = key,
+                ContentType = imageFile.ContentType
+            };
+
+            var util = new TransferUtility(_s3Client);
+            await util.UploadAsync(uploadRequest);
+
+            return $"https://{_bucketName}.s3.amazonaws.com/{key}";
+        }
+
+        public async Task<bool> DeleteImageAsync(string fileUrl)
+        {
+            if (string.IsNullOrEmpty(fileUrl))
+                return false;
+
+            try
+            {
+                var uri = new Uri(fileUrl);
+                var key = uri.AbsolutePath.TrimStart('/');
+
+                var deleteReq = new DeleteObjectRequest
+                {
+                    BucketName = _bucketName,
+                    Key = key
+                };
+                await _s3Client.DeleteObjectAsync(deleteReq);
                 return true;
             }
-            
-            return false;
-        }
-        catch
-        {
-            return false;
+            catch
+            {
+                return false;
+            }
         }
     }
 }
