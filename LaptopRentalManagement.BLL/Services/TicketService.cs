@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using LaptopRentalManagement.BLL.DTOs.Request;
+using LaptopRentalManagement.BLL.DTOs.Response;
 using LaptopRentalManagement.BLL.Interfaces;
 using LaptopRentalManagement.DAL.Entities;
 using LaptopRentalManagement.DAL.Interfaces;
@@ -15,12 +16,14 @@ namespace LaptopRentalManagement.BLL.Services
 	{
 		private readonly ITicketRepository _ticketRepository;
 		private readonly IOrderRepository _orderRepository;
+		private readonly IAccountRepository _accountRepository;
 		private readonly IMapper _mapper;
-		public TicketService(ITicketRepository ticketRepository, IMapper mapper, IOrderRepository orderRepository)
+		public TicketService(ITicketRepository ticketRepository, IMapper mapper, IOrderRepository orderRepository, IAccountRepository accountRepository)
 		{
 			_ticketRepository = ticketRepository;
 			_mapper = mapper;
 			_orderRepository = orderRepository;
+			_accountRepository = accountRepository;
 		}
 		public async Task CreateTicketAsync(CreateTicketRequest request)
 		{
@@ -35,6 +38,28 @@ namespace LaptopRentalManagement.BLL.Services
 			};
 			await _ticketRepository.CreateAsync(ticket);
 
+		}
+
+		public async Task<IList<TicketResponse>> GetAllByOrderIdAsync(int id)
+		{
+			var tickets = await _ticketRepository.GetAllByOrderIdAsync(id);
+			IList<TicketResponse> responses = new List<TicketResponse>();
+			foreach (Ticket ticket in tickets)
+			{
+				var response = _mapper.Map<TicketResponse>(ticket);
+				var renter = _mapper.Map<AccountResponse>(await _accountRepository.GetByIdAsync(ticket.RenterId));
+				var order = _mapper.Map<OrderResponse>(await _orderRepository.GetByIdAsync(id));
+				AccountResponse owner;
+				if (ticket.OwnerId.HasValue)
+				{
+					owner = _mapper.Map<AccountResponse>(await _accountRepository.GetByIdAsync(ticket.OwnerId.Value));
+					response.Owner = owner;
+				}
+				response.Renter = renter;
+				response.Order = order;
+				responses.Add(response);
+			}
+			return responses;
 		}
 	}
 }

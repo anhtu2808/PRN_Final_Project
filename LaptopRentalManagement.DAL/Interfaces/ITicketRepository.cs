@@ -10,5 +10,6 @@ namespace LaptopRentalManagement.DAL.Interfaces
     public interface ITicketRepository
     {
 		Task<Ticket> CreateAsync(Ticket ticket);
+		Task<IList<Ticket>> GetAllByOrderIdAsync(int id);
 	}
 }

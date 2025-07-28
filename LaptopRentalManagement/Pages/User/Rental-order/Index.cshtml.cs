@@ -25,6 +25,7 @@ namespace LaptopRentalManagement.Pages.User.Rental_order
 
 		public OrderResponse? Order { get; set; }
 		public IList<OrderLogResponse> Logs = new List<OrderLogResponse>();
+		public IList<TicketResponse> Tickets { get; set; } = new List<TicketResponse>();
 
 		[BindProperty]
 		public CreateTicketRequest TicketRequest { get; set; }
@@ -33,6 +34,7 @@ namespace LaptopRentalManagement.Pages.User.Rental_order
 		{
 			Order = await _orderService.GetByIdAsync(orderId);
 			Logs = await _orderLogService.GetByOrderIdAsync(orderId);
+			Tickets = await _ticketService.GetAllByOrderIdAsync(orderId);
 			if (Order == null)
 			{
 				return NotFound();

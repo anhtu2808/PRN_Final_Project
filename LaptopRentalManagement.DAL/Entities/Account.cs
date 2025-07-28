@@ -20,4 +20,8 @@ public partial class Account
     public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
 
     public virtual ICollection<Laptop> Laptops { get; set; } = new List<Laptop>();
+
+	public virtual ICollection<Ticket> OwnerTickets { get; set; } = new List<Ticket>();
+
+	public virtual ICollection<Ticket> RenterTickets { get; set; } = new List<Ticket>();
 }

@@ -199,6 +199,47 @@
 						}
 					</div>
 				</div>
+				<!-- Tickets -->
+				<div class="card mb-4">
+					<div class="card-body">
+						<h5 class="card-title mb-3">Tickets</h5>
+
+						@if (Model.Tickets != null && Model.Tickets.Any())
+						{
+							<ul class="list-group list-group-flush">
+								@foreach (var t in Model.Tickets.OrderByDescending(x => x.CreatedAt))
+								{
+									<li class="list-group-item">
+										<div class="d-flex justify-content-between align-items-start">
+											<div>
+												<span class="fw-semibold">Ticket #@t.TicketId</span>
+												<span class="badge bg-info">
+													@t.Status
+												</span>
+											</div>
+											<small class="text-muted">@t.CreatedAt.ToString("HH:mm dd-MM-yyyy")</small>
+										</div>
+										<p class="mt-2 mb-1">@t.Content</p>
+
+										@if (t.RespondedAt.HasValue)
+										{
+											<div class="border-start ps-3">
+												<small class="text-muted">
+													Phản hồi lúc @t.RespondedAt.Value.ToString("HH:mm dd-MM-yyyy")
+												</small>
+												<p class="mb-1">@t.Response</p>
+											</div>
+										}
+									</li>
+								}
+							</ul>
+						}
+						else
+						{
+							<p class="text-muted mb-0">Chưa có yêu cầu hỗ trợ nào.</p>
+						}
+					</div>
+				</div>
 			</div>
 		</div>
 	}

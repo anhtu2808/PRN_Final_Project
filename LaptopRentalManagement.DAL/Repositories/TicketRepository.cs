@@ -1,6 +1,7 @@
 ﻿using LaptopRentalManagement.DAL.Context;
 using LaptopRentalManagement.DAL.Entities;
 using LaptopRentalManagement.DAL.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,13 @@ namespace LaptopRentalManagement.DAL.Repositories
 			_context.Tickets.Add(ticket);
 			await _context.SaveChangesAsync();
 			return ticket;
+		}
+
+		public async Task<IList<Ticket>> GetAllByOrderIdAsync(int id)
+		{
+			return await _context.Tickets
+				.Where(t => t.OrderId == id)
+				.ToListAsync();
 		}
 	}
 }
