@@ -1,0 +1,27 @@
+@page
+@model LaptopRentalManagement.Pages.Account.LogoutModel
+@{
+    ViewData["Title"] = "Logout";
+    Layout = "~/Pages/Shared/_CustomerLayout.cshtml";
+}
+
+<div class="container mt-5 text-center">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <i class="fas fa-sign-out-alt fa-3x text-muted mb-3"></i>
+                    <h4>Logging out...</h4>
+                    <p class="text-muted">Please wait while we log you out securely.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Auto redirect after showing message briefly
+    setTimeout(function() {
+        window.location.href = '/';
+    }, 1500);
+</script> 

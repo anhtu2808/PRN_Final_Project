@@ -115,6 +115,10 @@ namespace LaptopRentalManagement.BLL.Services
             {
                 content = "Laptop is being delivered to you";
             }
+            else if (newStatus == "Pending")
+            {
+                content ="Your rental request is pending approval";
+            }
             else if (newStatus == "Renting")
             {
                 content = "Laptop has been delivered successfully";

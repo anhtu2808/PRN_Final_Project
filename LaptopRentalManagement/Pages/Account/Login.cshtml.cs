@@ -21,6 +21,7 @@ namespace LaptopRentalManagement.Pages.Account
         public InputModel Input { get; set; } = new();
 
         public string? ErrorMessage { get; set; }
+    public string? SuccessMessage { get; set; }
         public string? ReturnUrl { get; set; }
 
         public class InputModel
@@ -40,6 +41,12 @@ namespace LaptopRentalManagement.Pages.Account
             if (User.Identity?.IsAuthenticated == true)
             {
                 Response.Redirect("/");
+            }
+
+            // Get success message from registration
+            if (TempData.ContainsKey("SuccessMessage"))
+            {
+                SuccessMessage = TempData["SuccessMessage"]?.ToString();
             }
         }
 
@@ -91,10 +98,10 @@ namespace LaptopRentalManagement.Pages.Account
                     // Role-based redirection
                     return account.Role switch
                     {
-                        "Admin" => RedirectToPage("/Admin/Dashboard"),
-                        "Staff" => RedirectToPage("/Staff/Dashboard"),
+                        "Admin" => RedirectToPage("/Manage"),
+                        "Staff" => RedirectToPage("/Manage/Orders"),
                         "Customer" => string.IsNullOrEmpty(returnUrl) || returnUrl == "/"
-                            ? RedirectToPage("/Customer/Dashboard")
+                            ? RedirectToPage("/Index")
                             : LocalRedirect(returnUrl),
                         _ => RedirectToPage("/Account/AccessDenied")
                     };
