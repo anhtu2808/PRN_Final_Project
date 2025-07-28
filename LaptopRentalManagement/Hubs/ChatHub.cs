@@ -5,7 +5,7 @@ using System.Security.Claims;
 
 namespace LaptopRentalManagement.Hubs;
 
-[Authorize]
+    [Authorize]
 public class ChatHub : Hub
 {
     private readonly IChatService _chatService;
@@ -33,13 +33,13 @@ public class ChatHub : Hub
         
         // Notify others in the room that user joined
         await Clients.Group($"ChatRoom_{chatRoomId}").SendAsync("UserJoinedRoom", new
-        {
+            { 
             UserId = userId.Value,
             UserName = Context.User?.Identity?.Name,
             UserRole = userRole,
             ChatRoomId = chatRoomId
-        });
-    }
+            });
+        }
 
     public async Task LeaveChatRoom(int chatRoomId)
     {
@@ -52,13 +52,13 @@ public class ChatHub : Hub
         
         // Notify others in the room that user left
         await Clients.Group($"ChatRoom_{chatRoomId}").SendAsync("UserLeftRoom", new
-        {
+            { 
             UserId = userId.Value,
             UserName = Context.User?.Identity?.Name,
             UserRole = userRole,
             ChatRoomId = chatRoomId
-        });
-    }
+            });
+        }
 
     public async Task SendMessage(int chatRoomId, string content, string messageType = "Text")
     {
@@ -103,7 +103,7 @@ public class ChatHub : Hub
                 Details = ex.Message
             });
         }
-    }
+        }
 
     public async Task StartTyping(int chatRoomId)
     {
@@ -114,7 +114,7 @@ public class ChatHub : Hub
 
         await Clients.GroupExcept($"ChatRoom_{chatRoomId}", Context.ConnectionId)
             .SendAsync("UserStartedTyping", new
-            {
+            { 
                 UserId = userId.Value,
                 UserName = userName,
                 ChatRoomId = chatRoomId
@@ -133,7 +133,7 @@ public class ChatHub : Hub
                 UserId = userId.Value,
                 ChatRoomId = chatRoomId
             });
-    }
+        }
 
     public async Task JoinStaffDashboard()
     {
@@ -146,7 +146,7 @@ public class ChatHub : Hub
     }
 
     public async Task LeaveStaffDashboard()
-    {
+        {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, "StaffDashboard");
     }
 
@@ -192,7 +192,7 @@ public class ChatHub : Hub
     private string? GetCurrentUserRole()
     {
         return Context.User?.FindFirst(ClaimTypes.Role)?.Value;
-    }
+        }
 
     public static string? GetConnectionId(int userId)
     {

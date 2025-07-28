@@ -1,502 +1,435 @@
-@page
-@model ChatIndexModel
+@page "/chat/{chatRoomId:int?}"
+@model LaptopRentalManagement.Pages.Chat.IndexModel
 @{
-    ViewData["Title"] = "Customer Support Chat";
-    Layout = User.IsInRole("Customer") ? "_CustomerLayout" : "_AdminLayout";
+    ViewData["Title"] = "Chat";
+    // Layout được xác định linh hoạt dựa trên vai trò người dùng
+    Layout = Model.CurrentUserRole == "Customer" ? "~/Pages/Shared/_CustomerLayout.cshtml" : "~/Pages/Shared/_AdminLayout.cshtml";
 }
 
-<div class="chat-container">
-    <div class="row h-100">
-        <!-- Chat Rooms List -->
-        <div class="col-md-4 chat-sidebar">
-            <div class="card h-100">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">
-                        @if (User.IsInRole("Customer"))
+@section Styles {
+    <link rel="stylesheet" href="~/css/chat.css" asp-append-version="true" />
+}
+
+@if (Model.CurrentUserRole == null)
+{
+    <div class="container mt-4">
+        <div class="alert alert-warning text-center">
+            <h4><i class="fas fa-exclamation-triangle me-2"></i>Access Denied</h4>
+            <p>You must be logged in to use the chat feature.</p>
+            <a href="/Account/Login" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt me-2"></i>Login Now
+            </a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="chat-container d-flex">
+        <div class="chat-sidebar d-flex flex-column">
+            <div class="chat-sidebar-header">
+                <h5>
+                    @if (Model.CurrentUserRole == "Customer")
+                    {
+                        <text><i class="fas fa-comments me-2"></i>My Conversations</text>
+                    }
+                    else if (Model.CurrentUserRole == "Admin")
+                    {
+                        <text><i class="fas fa-users me-2"></i>Customer Chats</text>
+                    }
+                    else
+                    {
+                        <text><i class="fas fa-headset me-2"></i>My Assigned Chats</text>
+                    }
+                </h5>
+                
+                @if (Model.CurrentUserRole == "Customer")
+                {
+                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#createChatModal">
+                        <i class="fas fa-plus"></i> New Chat
+                    </button>
+                }
+            </div>
+
+            @if (Model.ChatSummary != null)
+            {
+                <div class="chat-summary">
+                    <h6><i class="fas fa-chart-line me-2"></i>Overview</h6>
+                    <div class="summary-stats">
+                        <div class="stat-item">
+                            <span class="stat-value">@Model.ChatSummary.TotalChatRooms</span>
+                            <span class="stat-label">Total</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">@Model.ChatSummary.OpenChatRooms</span>
+                            <span class="stat-label">Open</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">@Model.ChatSummary.TotalUnreadMessages</span>
+                            <span class="stat-label">Unread</span>
+                        </div>
+                    </div>
+                </div>
+            }
+            
+            <div class="chat-search">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-0"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control bg-light border-0" placeholder="Search conversations..." id="chatSearchInput">
+                </div>
+            </div>
+
+
+            <div class="chat-rooms-list flex-grow-1">
+                @if (Model.ChatRooms.Any())
+                {
+                    @foreach (var room in Model.ChatRooms)
+                    {
+                        <div class="chat-room-item @(Model.CurrentChatRoomId == room.ChatRoomId ? "active" : "")" 
+                             onclick="window.location.href='/chat/@room.ChatRoomId'">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1 text-truncate">@room.Subject</h6>
+                                <small class="text-muted flex-shrink-0 ms-2">@room.CreatedAt.ToString("MMM dd")</small>
+                            </div>
+                            <div class="d-flex w-100 justify-content-between align-items-center mt-1">
+                                <span class="badge bg-@(room.Status == "Open" ? "success" : room.Status == "Closed" ? "secondary" : "warning")">
+                                    @room.Status
+                                </span>
+                                @if (room.UnreadMessagesCount > 0)
+                                {
+                                    <span class="badge bg-danger rounded-pill ms-2">@room.UnreadMessagesCount</span>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="empty-state text-center p-4">
+                        <i class="fas fa-comment-slash fa-3x text-muted"></i>
+                        <p class="text-muted mt-3">No conversations found.</p>
+                        @if (Model.CurrentUserRole == "Customer")
                         {
-                            <text>Support Tickets</text>
+                            <button type="button" class="btn btn-outline-primary mt-2" data-bs-toggle="modal" data-bs-target="#createChatModal">
+                                Start your first conversation
+                            </button>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="chat-main flex-grow-1 d-flex flex-column">
+            @if (Model.CurrentChatRoom != null)
+            {
+                <div class="chat-header d-flex align-items-center">
+                    <div class="chat-info me-auto">
+                        <h5 class="mb-0">@Model.CurrentChatRoom.ChatRoom.Subject</h5>
+                        <small class="text-muted">
+                            @if (Model.CurrentUserRole == "Customer")
+                            {
+                                <span>Conversation with Support Team</span>
+                            }
+                            else
+                            {
+                                <span>Customer: @Model.CurrentChatRoom.ChatRoom.CustomerName</span>
+                            }
+                        </small>
+                    </div>
+                    <div class="chat-actions d-flex align-items-center">
+                        <span class="badge bg-@(Model.CurrentChatRoom.ChatRoom.Status == "Open" ? "success" : Model.CurrentChatRoom.ChatRoom.Status == "Closed" ? "secondary" : "warning") me-3">
+                            @Model.CurrentChatRoom.ChatRoom.Status
+                        </span>
+                        
+                        <div class="btn-group">
+                            @if (Model.CurrentUserRole == "Admin" || Model.CurrentUserRole == "Staff")
+                            {
+                                <form method="post" asp-page-handler="UpdateStatus" style="display: inline;">
+                                    <input type="hidden" name="chatRoomId" value="@Model.CurrentChatRoom.ChatRoom.ChatRoomId" />
+                                    <input type="hidden" name="status" value="@(Model.CurrentChatRoom.ChatRoom.Status == "Open" ? "Closed" : "Open")" />
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary" title="@(Model.CurrentChatRoom.ChatRoom.Status == "Open" ? "Close Chat" : "Reopen Chat")">
+                                        <i class="fas fa-@(Model.CurrentChatRoom.ChatRoom.Status == "Open" ? "lock" : "unlock")"></i>
+                                    </button>
+                                </form>
+                            }
+
+                            @if (Model.CurrentUserRole == "Admin" && Model.CurrentChatRoom.ChatRoom.Status == "Pending")
+                            {
+                                <button type="button" class="btn btn-sm btn-outline-primary" title="Assign Staff" data-bs-toggle="modal" data-bs-target="#assignStaffModal">
+                                    <i class="fas fa-user-plus"></i>
+                                </button>
+                            }
+                            
+                             <form method="post" asp-page-handler="MarkAsRead" style="display: inline;">
+                                <input type="hidden" name="chatRoomId" value="@Model.CurrentChatRoom.ChatRoom.ChatRoomId" />
+                                <button type="submit" class="btn btn-sm btn-outline-primary" title="Mark All As Read">
+                                    <i class="fas fa-check-double"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-messages flex-grow-1" id="chatMessages">
+                    @if (Model.CurrentChatRoom.Messages.Any())
+                    {
+                        @foreach (var message in Model.CurrentChatRoom.Messages.OrderBy(m => m.SentAt))
+                        {
+                            var messageClass = message.SenderId == Model.CurrentUserId ? "message-sent" : "message-received";
+                            <div class="message @messageClass">
+                                <div class="message-content">
+                                    <div class="message-header">
+                                        <span class="sender-name">@message.SenderName</span>
+                                        <span class="message-time">@message.SentAt.ToString("HH:mm")</span>
+                                    </div>
+                                    <div class="message-text">@message.Content</div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="empty-messages">
+                            <i class="fas fa-comment fa-2x text-muted"></i>
+                            <p class="text-muted mt-2">No messages yet. Start the conversation!</p>
+                        </div>
+                    }
+                </div>
+
+                @if (Model.CurrentChatRoom.ChatRoom.Status == "Open" || Model.CurrentUserRole == "Admin" || Model.CurrentUserRole == "Staff")
+                {
+                    <div class="chat-input">
+                        <div class="input-group">
+                            <input type="text" id="messageInput" class="form-control" placeholder="Type a message..." maxlength="500" autocomplete="off">
+                            <button type="button" id="sendMessageBtn" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Send
+                            </button>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="chat-closed-notice">
+                        <i class="fas fa-lock me-2"></i>
+                        This conversation is closed. You cannot send new messages.
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="chat-welcome d-flex flex-column align-items-center justify-content-center h-100 text-center">
+                    <i class="fas fa-comments fa-4x text-primary mb-4"></i>
+                    <h4>Welcome to Support Chat</h4>
+                    <p class="text-muted">
+                        @if(Model.CurrentUserRole == "Customer")
+                        {
+                            <text>Select a conversation or start a new one.</text>
                         }
                         else
                         {
-                            <text>Chat Rooms</text>
+                            <text>Select a conversation from the list to view it.</text>
                         }
-                    </h5>
-                    @if (User.IsInRole("Customer"))
+                    </p>
+                    @if (Model.CurrentUserRole == "Customer")
                     {
-                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#newChatModal">
-                            <i class="fas fa-plus"></i> New Chat
+                        <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#createChatModal">
+                            <i class="fas fa-plus me-2"></i>Start New Conversation
                         </button>
                     }
                 </div>
-                <div class="card-body p-0">
-                    <div id="chatRoomsList" class="list-group list-group-flush">
-                        <!-- Chat rooms will be loaded here -->
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Chat Messages Area -->
-        <div class="col-md-8 chat-main">
-            <div class="card h-100" id="chatArea">
-                <div class="card-header d-none" id="chatHeader">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="mb-0" id="chatTitle">Select a chat to start messaging</h6>
-                            <small class="text-muted" id="chatParticipants"></small>
-                        </div>
-                        <div>
-                            <span class="badge" id="chatStatus">Open</span>
-                            @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
-                            {
-                                <div class="dropdown d-inline">
-                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                        Actions
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="#" onclick="updateChatStatus('InProgress')">Mark In Progress</a></li>
-                                        <li><a class="dropdown-item" href="#" onclick="updateChatStatus('Resolved')">Mark Resolved</a></li>
-                                        <li><a class="dropdown-item" href="#" onclick="updateChatStatus('Closed')">Close Chat</a></li>
-                                    </ul>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body d-flex flex-column justify-content-center align-items-center" id="noChatSelected">
-                    <i class="fas fa-comments fa-3x text-muted mb-3"></i>
-                    <h5 class="text-muted">Select a chat to start messaging</h5>
-                    <p class="text-muted">Choose a conversation from the sidebar to begin</p>
-                </div>
-                <div class="card-body p-0 d-none" id="chatMessages">
-                    <div class="messages-container" id="messagesContainer">
-                        <!-- Messages will be loaded here -->
-                    </div>
-                </div>
-                <div class="card-footer d-none" id="chatFooter">
-                    <div class="typing-indicator d-none" id="typingIndicator">
-                        <small class="text-muted"><span id="typingUser"></span> is typing...</small>
-                    </div>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="messageInput" placeholder="Type your message..." maxlength="2000">
-                        <button class="btn btn-primary" type="button" id="sendButton">
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
+            }
         </div>
     </div>
-</div>
 
-<!-- New Chat Modal (Customer only) -->
-@if (User.IsInRole("Customer"))
-{
-    <div class="modal fade" id="newChatModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Start New Support Chat</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="newChatForm">
-                        <div class="mb-3">
-                            <label for="chatSubject" class="form-label">Subject</label>
-                            <input type="text" class="form-control" id="chatSubject" required maxlength="200">
-                            <div class="form-text">Briefly describe what you need help with</div>
+    @if (Model.CurrentUserRole == "Customer")
+    {
+        <div class="modal fade" id="createChatModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <form method="post" asp-page-handler="CreateChatRoom">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="createChatModalLabel">Start a New Conversation</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label asp-for="CreateChatRoomForm.Subject" class="form-label">Subject</label>
+                                <input asp-for="CreateChatRoomForm.Subject" class="form-control" placeholder="e.g., Laptop rental question" required />
+                                <span asp-validation-for="CreateChatRoomForm.Subject" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label for="initialMessage" class="form-label">Message</label>
+                                <textarea name="initialMessage" class="form-control" rows="4" placeholder="Please describe your issue or question in detail..."></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Start Conversation</button>
                         </div>
                     </form>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="createChatButton">Start Chat</button>
+            </div>
+        </div>
+    }
+
+    @if (Model.CurrentUserRole == "Admin" && Model.CurrentChatRoom != null)
+    {
+        <div class="modal fade" id="assignStaffModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <form method="post" asp-page-handler="AssignStaff">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Assign Staff Member</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" asp-for="AssignStaffForm.ChatRoomId" value="@Model.CurrentChatRoom.ChatRoom.ChatRoomId" />
+                            <div class="mb-3">
+                                @* <label asp-for="AssignStaffForm.StaffId" class="form-label">Select Staff</label> *@
+                                @* <select asp-for="AssignStaffForm.StaffId" asp-items="@Model." class="form-select" required> *@
+                                @*     <option value="">Choose a staff member...</option> *@
+                                @* </select> *@
+                                @* <span asp-validation-for="AssignStaffForm.StaffId" class="text-danger"></span> *@
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Assign Staff</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
-    </div>
-}
+    }
 
-@section Scripts {
-    <script src="~/lib/microsoft-signalr/signalr.min.js"></script>
-    <script>
-        let chatConnection;
-        let currentChatRoomId = null;
-        let currentUserId = @Html.Raw(Json.Serialize(User.FindFirst("AccountId")?.Value ?? "0"));
-        let currentUserRole = '@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value';
-        let typingTimer;
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+        <script src="~/lib/signalr/dist/browser/signalr.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                // --- Constants and Variables ---
+                const currentUserId = @Html.Raw(Json.Serialize(Model.CurrentUserId));
+                const currentChatRoomId = @Html.Raw(Json.Serialize(Model.CurrentChatRoomId));
+                const messageInput = document.getElementById('messageInput');
+                const sendMessageBtn = document.getElementById('sendMessageBtn');
+                const chatMessagesContainer = document.getElementById('chatMessages');
 
-        // Initialize SignalR connection
-        async function initializeChat() {
-            try {
-                chatConnection = new signalR.HubConnectionBuilder()
-                    .withUrl("/chathub")
+                // --- Utility Functions ---
+                function scrollToBottom() {
+                    if (chatMessagesContainer) {
+                        chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+                    }
+                }
+                
+                function addMessageToChat(message) {
+                    if (!chatMessagesContainer) return;
+                    
+                    // Remove the 'empty messages' placeholder if it exists
+                    const emptyState = chatMessagesContainer.querySelector('.empty-messages');
+                    if(emptyState) emptyState.remove();
+
+                    const messageDiv = document.createElement('div');
+                    const isSentByCurrentUser = message.senderId === currentUserId;
+                    
+                    messageDiv.className = `message ${isSentByCurrentUser ? 'message-sent' : 'message-received'}`;
+                    
+                    const messageTime = new Date(message.sentAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                    
+                    messageDiv.innerHTML = `
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="sender-name">${escapeHtml(message.senderName)}</span>
+                                <span class="message-time">${messageTime}</span>
+                            </div>
+                            <div class="message-text">${escapeHtml(message.content)}</div>
+                        </div>
+                    `;
+                    
+                    chatMessagesContainer.appendChild(messageDiv);
+                    scrollToBottom();
+                }
+
+                function escapeHtml(unsafe) {
+                    return unsafe
+                         .replace(/&/g, "&amp;")
+                         .replace(/</g, "&lt;")
+                         .replace(/>/g, "&gt;")
+                         .replace(/"/g, "&quot;")
+                         .replace(/'/g, "&#039;");
+                }
+
+                // --- SignalR Connection ---
+                const connection = new signalR.HubConnectionBuilder()
+                    .withUrl("/chatHub")
+                    .withAutomaticReconnect()
                     .build();
 
-                // Set up event handlers
-                chatConnection.on("ReceiveMessage", onMessageReceived);
-                chatConnection.on("UserJoinedRoom", onUserJoined);
-                chatConnection.on("UserLeftRoom", onUserLeft);
-                chatConnection.on("UserStartedTyping", onUserStartedTyping);
-                chatConnection.on("UserStoppedTyping", onUserStoppedTyping);
-                chatConnection.on("Error", onError);
-
-                await chatConnection.start();
-                console.log("SignalR connected");
-
-                // Load chat rooms
-                await loadChatRooms();
-
-            } catch (err) {
-                console.error("SignalR connection failed: ", err);
-            }
-        }
-
-        // Load chat rooms
-        async function loadChatRooms() {
-            try {
-                const response = await fetch('/api/chat/rooms');
-                if (response.ok) {
-                    const chatRooms = await response.json();
-                    displayChatRooms(chatRooms);
-                } else {
-                    console.error('Failed to load chat rooms');
-                }
-            } catch (error) {
-                console.error('Error loading chat rooms:', error);
-            }
-        }
-
-        // Display chat rooms in sidebar
-        function displayChatRooms(chatRooms) {
-            const container = document.getElementById('chatRoomsList');
-            container.innerHTML = '';
-
-            if (chatRooms.length === 0) {
-                container.innerHTML = `
-                    <div class="p-3 text-center text-muted">
-                        <i class="fas fa-inbox fa-2x mb-2"></i>
-                        <p>No chat rooms yet</p>
-                    </div>
-                `;
-                return;
-            }
-
-            chatRooms.forEach(room => {
-                const roomElement = createChatRoomElement(room);
-                container.appendChild(roomElement);
-            });
-        }
-
-        // Create chat room element
-        function createChatRoomElement(room) {
-            const div = document.createElement('div');
-            div.className = 'list-group-item list-group-item-action chat-room-item';
-            div.dataset.chatRoomId = room.chatRoomId;
-            div.onclick = () => selectChatRoom(room.chatRoomId);
-
-            const statusClass = {
-                'Open': 'bg-success',
-                'InProgress': 'bg-warning',
-                'Resolved': 'bg-info',
-                'Closed': 'bg-secondary'
-            }[room.status] || 'bg-secondary';
-
-            div.innerHTML = `
-                <div class="d-flex justify-content-between align-items-start">
-                    <div class="flex-grow-1">
-                        <h6 class="mb-1">${escapeHtml(room.subject)}</h6>
-                        <small class="text-muted">
-                            ${currentUserRole === 'Customer' ? 
-                                (room.staffName ? `Staff: ${room.staffName}` : 'Unassigned') :
-                                `Customer: ${room.customerName}`
-                            }
-                        </small>
-                        ${room.lastMessage ? `<p class="mb-1 small text-truncate">${escapeHtml(room.lastMessage)}</p>` : ''}
-                    </div>
-                    <div class="text-end">
-                        <span class="badge ${statusClass} mb-1">${room.status}</span>
-                        ${room.unreadMessagesCount > 0 ? `<div><span class="badge bg-danger">${room.unreadMessagesCount}</span></div>` : ''}
-                        <small class="text-muted d-block">${formatDateTime(room.lastMessageAt || room.createdAt)}</small>
-                    </div>
-                </div>
-            `;
-
-            return div;
-        }
-
-        // Select and load a chat room
-        async function selectChatRoom(chatRoomId) {
-            try {
-                // Leave current room if any
-                if (currentChatRoomId && chatConnection) {
-                    await chatConnection.invoke("LeaveChatRoom", currentChatRoomId);
-                }
-
-                // Load chat room details
-                const response = await fetch(`/api/chat/rooms/${chatRoomId}`);
-                if (response.ok) {
-                    const chatRoomData = await response.json();
-                    displayChatRoom(chatRoomData);
-                    currentChatRoomId = chatRoomId;
-
-                    // Join new room
-                    if (chatConnection) {
-                        await chatConnection.invoke("JoinChatRoom", chatRoomId);
+                connection.on("ReceiveMessage", function (message) {
+                    // Only add message if it belongs to the current open room
+                    if (message.chatRoomId === currentChatRoomId) {
+                        addMessageToChat(message);
                     }
-
-                    // Update active room in sidebar
-                    document.querySelectorAll('.chat-room-item').forEach(item => {
-                        item.classList.remove('active');
-                    });
-                    document.querySelector(`[data-chat-room-id="${chatRoomId}"]`).classList.add('active');
-
-                } else {
-                    console.error('Failed to load chat room');
-                }
-            } catch (error) {
-                console.error('Error selecting chat room:', error);
-            }
-        }
-
-        // Display chat room and messages
-        function displayChatRoom(chatRoomData) {
-            const { chatRoom, messages } = chatRoomData;
-
-            // Show chat area
-            document.getElementById('noChatSelected').classList.add('d-none');
-            document.getElementById('chatHeader').classList.remove('d-none');
-            document.getElementById('chatMessages').classList.remove('d-none');
-            document.getElementById('chatFooter').classList.remove('d-none');
-
-            // Update header
-            document.getElementById('chatTitle').textContent = chatRoom.subject;
-            document.getElementById('chatParticipants').textContent = 
-                currentUserRole === 'Customer' 
-                    ? (chatRoom.staffName ? `Staff: ${chatRoom.staffName}` : 'Waiting for staff assignment')
-                    : `Customer: ${chatRoom.customerName}`;
-            
-            const statusBadge = document.getElementById('chatStatus');
-            statusBadge.textContent = chatRoom.status;
-            statusBadge.className = `badge ${getStatusClass(chatRoom.status)}`;
-
-            // Display messages
-            displayMessages(messages);
-
-            // Scroll to bottom
-            scrollToBottom();
-        }
-
-        // Display messages
-        function displayMessages(messages) {
-            const container = document.getElementById('messagesContainer');
-            container.innerHTML = '';
-
-            messages.reverse().forEach(message => {
-                const messageElement = createMessageElement(message);
-                container.appendChild(messageElement);
-            });
-        }
-
-        // Create message element
-        function createMessageElement(message) {
-            const div = document.createElement('div');
-            div.className = `message ${message.isOwnMessage ? 'message-sent' : 'message-received'}`;
-            
-            div.innerHTML = `
-                <div class="message-content">
-                    <div class="message-header">
-                        <strong>${escapeHtml(message.senderName)}</strong>
-                        <small class="text-muted">${message.senderRole}</small>
-                        <small class="text-muted ms-auto">${formatDateTime(message.sentAt)}</small>
-                    </div>
-                    <div class="message-body">
-                        ${escapeHtml(message.content)}
-                    </div>
-                </div>
-            `;
-
-            return div;
-        }
-
-        // Send message
-        async function sendMessage() {
-            const input = document.getElementById('messageInput');
-            const content = input.value.trim();
-
-            if (!content || !currentChatRoomId) return;
-
-            try {
-                await chatConnection.invoke("SendMessage", currentChatRoomId, content);
-                input.value = '';
-            } catch (error) {
-                console.error('Error sending message:', error);
-            }
-        }
-
-        // Create new chat (Customer only)
-        async function createNewChat() {
-            const subject = document.getElementById('chatSubject').value.trim();
-            if (!subject) return;
-
-            try {
-                const response = await fetch('/api/chat/rooms', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        customerId: parseInt(currentUserId),
-                        subject: subject
-                    })
+                    // TODO: Add a notification for messages in other rooms
                 });
 
-                if (response.ok) {
-                    const newChatRoom = await response.json();
-                    document.getElementById('chatSubject').value = '';
-                    
-                    // Close modal
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('newChatModal'));
-                    modal.hide();
-                    
-                    // Reload chat rooms and select the new one
-                    await loadChatRooms();
-                    setTimeout(() => selectChatRoom(newChatRoom.chatRoomId), 500);
-                } else {
-                    alert('Failed to create chat room');
-                }
-            } catch (error) {
-                console.error('Error creating chat:', error);
-                alert('Error creating chat room');
-            }
-        }
-
-        // Update chat status (Staff/Admin only)
-        async function updateChatStatus(status) {
-            if (!currentChatRoomId) return;
-
-            try {
-                const response = await fetch(`/api/chat/rooms/${currentChatRoomId}/status`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ status: status })
+                connection.start().then(function () {
+                    console.log("SignalR Connected.");
+                    // Join the current chat room if one is selected
+                    if (currentChatRoomId) {
+                        connection.invoke("JoinChatRoom", currentChatRoomId).catch(err => console.error(err.toString()));
+                    }
+                }).catch(function (err) {
+                    return console.error(err.toString());
                 });
 
-                if (response.ok) {
-                    // Update status display
-                    const statusBadge = document.getElementById('chatStatus');
-                    statusBadge.textContent = status;
-                    statusBadge.className = `badge ${getStatusClass(status)}`;
-                    
-                    // Reload chat rooms to update sidebar
-                    await loadChatRooms();
-                } else {
-                    alert('Failed to update status');
+                // --- Event Listeners ---
+                function sendMessage() {
+                    const messageText = messageInput.value.trim();
+                    if (messageText && currentChatRoomId) {
+                        connection.invoke("SendMessage", currentChatRoomId, messageText)
+                            .then(() => {
+                                messageInput.value = '';
+                                messageInput.focus();
+                            })
+                            .catch(err => {
+                                console.error('Error sending message:', err);
+                                alert('Failed to send message. Please check your connection and try again.');
+                            });
+                    }
                 }
-            } catch (error) {
-                console.error('Error updating status:', error);
-            }
-        }
 
-        // SignalR event handlers
-        function onMessageReceived(message) {
-            if (message.chatRoomId === currentChatRoomId) {
-                const container = document.getElementById('messagesContainer');
-                const messageElement = createMessageElement(message);
-                container.appendChild(messageElement);
-                scrollToBottom();
-            }
-
-            // Update chat rooms list
-            loadChatRooms();
-        }
-
-        function onUserJoined(data) {
-            console.log(`${data.UserName} joined the chat`);
-        }
-
-        function onUserLeft(data) {
-            console.log(`${data.UserName} left the chat`);
-        }
-
-        function onUserStartedTyping(data) {
-            if (data.ChatRoomId === currentChatRoomId && data.UserId !== parseInt(currentUserId)) {
-                document.getElementById('typingUser').textContent = data.UserName;
-                document.getElementById('typingIndicator').classList.remove('d-none');
-            }
-        }
-
-        function onUserStoppedTyping(data) {
-            if (data.ChatRoomId === currentChatRoomId) {
-                document.getElementById('typingIndicator').classList.add('d-none');
-            }
-        }
-
-        function onError(error) {
-            console.error('Chat error:', error);
-            alert('An error occurred: ' + error.Message);
-        }
-
-        // Utility functions
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function formatDateTime(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleString();
-        }
-
-        function getStatusClass(status) {
-            const classes = {
-                'Open': 'bg-success',
-                'InProgress': 'bg-warning text-dark',
-                'Resolved': 'bg-info',
-                'Closed': 'bg-secondary'
-            };
-            return classes[status] || 'bg-secondary';
-        }
-
-        function scrollToBottom() {
-            const container = document.getElementById('messagesContainer');
-            container.scrollTop = container.scrollHeight;
-        }
-
-        // Typing indicators
-        function handleTyping() {
-            if (currentChatRoomId && chatConnection) {
-                chatConnection.invoke("StartTyping", currentChatRoomId);
+                if (sendMessageBtn) {
+                    sendMessageBtn.addEventListener('click', sendMessage);
+                }
                 
-                clearTimeout(typingTimer);
-                typingTimer = setTimeout(() => {
-                    chatConnection.invoke("StopTyping", currentChatRoomId);
-                }, 2000);
-            }
-        }
-
-        // Event listeners
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeChat();
-
-            // Send message on button click or Enter key
-            document.getElementById('sendButton').addEventListener('click', sendMessage);
-            document.getElementById('messageInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    sendMessage();
-                } else {
-                    handleTyping();
+                if (messageInput) {
+                    messageInput.addEventListener('keypress', function (e) {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault(); // Prevents new line on enter
+                            sendMessage();
+                        }
+                    });
                 }
-            });
+                
+                // Search functionality
+                const searchInput = document.getElementById('chatSearchInput');
+                if(searchInput) {
+                    searchInput.addEventListener('keyup', function() {
+                        const filter = searchInput.value.toLowerCase();
+                        const rooms = document.querySelectorAll('.chat-room-item');
+                        rooms.forEach(room => {
+                            const subject = room.querySelector('h6').textContent.toLowerCase();
+                            if (subject.includes(filter)) {
+                                room.style.display = "";
+                            } else {
+                                room.style.display = "none";
+                            }
+                        });
+                    });
+                }
 
-            // Create chat button
-            const createChatButton = document.getElementById('createChatButton');
-            if (createChatButton) {
-                createChatButton.addEventListener('click', createNewChat);
-            }
-        });
-    </script>
-} 
+                // --- Initial Execution ---
+                scrollToBottom();
+            });
+        </script>
+    }
+}

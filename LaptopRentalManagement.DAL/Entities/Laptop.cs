@@ -10,6 +10,8 @@ public partial class Laptop
 
     public decimal PricePerDay { get; set; }
 
+    public decimal Deposit { get; set; }
+
     public int BrandId { get; set; }
 
     public string Cpu { get; set; } = null!;

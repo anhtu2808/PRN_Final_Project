@@ -14,6 +14,7 @@ public class LaptopResponse
         "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400&h=300&fit=crop";
 
     public decimal PricePerDay { get; set; }
+    public decimal Deposit { get; set; }
     public string Cpu { get; set; } = null!;
     public int Ram { get; set; }
     public int Storage { get; set; }
