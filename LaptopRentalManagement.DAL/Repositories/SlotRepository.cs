@@ -59,7 +59,7 @@ namespace LaptopRentalManagement.DAL.Repositories
         public async Task<List<Slot>> GetByIdsAsync(List<int> slotIds)
         {
             return await _context.Slots
-                .Where(s => slotIds.Contains(s.SlotId))
+                .Where(s => EF.Constant(slotIds).Contains(s.SlotId))
                 .ToListAsync();
         }
 
