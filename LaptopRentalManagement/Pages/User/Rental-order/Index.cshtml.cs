@@ -53,7 +53,6 @@ namespace LaptopRentalManagement.Pages.User.Rental_order
 		{
 			if (!ModelState.IsValid)
 			{
-				// load lại order + logs nếu có validation lỗi
 				Order = await _orderService.GetByIdAsync(TicketRequest.OrderId);
 				Logs = await _orderLogService.GetByOrderIdAsync(TicketRequest.OrderId);
 				return Page();
