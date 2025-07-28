@@ -1,8 +1,8 @@
 ﻿@page
-@model LaptopRentalManagement.Pages.Account.IndexModel
-
+@model LaptopRentalManagement.Pages.Manage.Customers.AccountListModel
 @{
-    ViewData["Title"] = "Account Management";
+    ViewData["Title"] = "Account List";
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
 }
 
 <style>
@@ -147,7 +147,7 @@
     <div class="account-list-card shadow">
         <div class="account-header">
             <h1><i class="bi bi-people"></i> Account Management</h1>
-            <a asp-page="Create" class="btn btn-primary"><i class="bi bi-person-plus"></i> Create New Account</a>
+            <a asp-page="./CreateAccount" class="btn btn-primary"><i class="bi bi-person-plus"></i> Create New Account</a>
         </div>
 
         @if (Model.Account != null && Model.Account.Any())
@@ -173,7 +173,7 @@
                             <td>@Html.DisplayFor(modelItem => item.Name)</td>
                             <td>@Html.DisplayFor(modelItem => item.CreatedAt)</td>
                             <td style="text-align:center;">
-                                <a asp-page="./Edit" asp-route-id="@item.AccountId" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil-square"></i> Edit</a>
+                                <a asp-page="./UpdateAccount" asp-route-id="@item.AccountId" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil-square"></i> Edit</a>
                                 <a href="javascript:void(0);" class="btn btn-sm btn-outline-danger"
                                    onclick="confirmDelete('@item.AccountId')">
                                     <i class="bi bi-trash"></i> Delete

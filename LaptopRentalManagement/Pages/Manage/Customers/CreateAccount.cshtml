@@ -1,7 +1,8 @@
 ﻿@page
-@model LaptopRentalManagement.Pages.Account.CreateModel
+@model LaptopRentalManagement.Pages.Manage.Customers.CreateAccountModel
 @{
     ViewData["Title"] = "Create Account";
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
 }
 
 <style>
@@ -134,7 +135,7 @@
                 </div>
             </form>
             <div class="mt-4 text-center">
-                <a asp-page="Index" class="btn btn-link text-decoration-none">
+                <a asp-page="./AccountList" class="btn btn-link text-decoration-none">
                     <i class="bi bi-arrow-left"></i> Back to Account List
                 </a>
             </div>
