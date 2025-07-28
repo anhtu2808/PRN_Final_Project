@@ -19,6 +19,53 @@ Layout = "~/Pages/Shared/_AdminLayout.cshtml";
             </div>
         </div>
     </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Filter Options</h5>
+        </div>
+        <div class="card-body">
+            <form method="get" asp-page="./Index">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label asp-for="Filter.Name" class="form-label">Laptop Name</label>
+                        <input asp-for="Filter.Name" class="form-control" placeholder="Search by name...">
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Filter.BrandId" class="form-label">Brand</label>
+                        <select asp-for="Filter.BrandId" class="form-select" asp-items="Model.BrandSelect">
+                            <option value="">All Brands</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Filter.Status" class="form-label">Status</label>
+                        <select asp-for="Filter.Status" class="form-select" asp-items="Model.StatusSelect">
+                            <option value="">All Statuses</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Filter.MinPrice" class="form-label">Min Price</label>
+                        <input type="number" step="1000" asp-for="Filter.MinPrice" class="form-control" placeholder="e.g., 100000">
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Filter.MaxPrice" class="form-label">Max Price</label>
+                        <input type="number" step="1000" asp-for="Filter.MaxPrice" class="form-control" placeholder="e.g., 500000">
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12 d-flex justify-content-end gap-2">
+                        <a asp-page="./Index" class="btn btn-secondary">
+                            <i class="fas fa-eraser me-1"></i> Clear Filter
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search me-1"></i> Apply Filter
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -36,6 +83,8 @@ Layout = "~/Pages/Shared/_AdminLayout.cshtml";
                                 <th>Image</th>
                                 <th>Name</th>
                                 <th>Brand</th>
+                                <th>Categories</th>
+                                <th>Price/Day</th>
                                 <th>Owner</th>
                                 <th>Status</th>
                                 <th>Actions</th>
@@ -60,6 +109,18 @@ Layout = "~/Pages/Shared/_AdminLayout.cshtml";
                                 </td>
                                 <td>@l.Name</td>
                                 <td>@l.Brand?.Name</td>
+                                <td>
+                                    @if (l.Categories != null && l.Categories.Any())
+                                    {
+                                    foreach (var cat in l.Categories)
+                                    {
+                                    <span class="badge bg-info fw-normal me-1">@cat.Name</span>
+                                    }
+                                    }
+                                </td>
+                                <td>
+                                    <span class="fw-bold">@string.Format("{0:N0} VNĐ", l.PricePerDay)</span>
+                                </td>
                                 <td>@l.Owner?.Name</td>
                                 <td><span class="badge bg-secondary">@l.Status</span></td>
                                 <td>
@@ -81,7 +142,7 @@ Layout = "~/Pages/Shared/_AdminLayout.cshtml";
                     }
                     else
                     {
-                    <p class="text-center">No laptops found.</p>
+                    <p class="text-center">No laptops found matching your criteria.</p>
                     }
                 </div>
             </div>
@@ -95,12 +156,10 @@ Layout = "~/Pages/Shared/_AdminLayout.cshtml";
         <div class="modal-content">
             <form id="createLaptopForm" method="post" asp-page-handler="Create" enctype="multipart/form-data">
                 @Html.AntiForgeryToken()
-
                 <div class="modal-header">
                     <h5 class="modal-title">Add New Laptop</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-
                 <div class="modal-body">
                     <div class="row g-3">
                         <div class="col-md-6">
@@ -108,27 +167,21 @@ Layout = "~/Pages/Shared/_AdminLayout.cshtml";
                             <input asp-for="CreateForm.Name" class="form-control" required />
                         </div>
                         <div class="col-md-6">
-                            <label asp-for="CreateForm.PricePerDay" class="form-label"></label>
+                            <label asp-for="CreateForm.PricePerDay" class="form-label">Price Per Day</label>
                             <input type="number" step="0.01" asp-for="CreateForm.PricePerDay" class="form-control" required />
                         </div>
                         <div class="col-12">
                             <label asp-for="CreateForm.Description" class="form-label">Description</label>
                             <textarea asp-for="CreateForm.Description" class="form-control" rows="3"></textarea>
                         </div>
-
-                        @* Image Preview and Upload Section for Create Modal *@
                         <div class="col-12">
                             <label class="form-label">Laptop Image</label>
                             <div class="text-center mb-2">
                                 <img id="createImagePreview" src="#" alt="Image Preview" class="img-thumbnail" style="width: 150px; height: 150px; object-fit: cover; display: none;" />
-                                <div id="createImagePlaceholder" class="bg-light d-flex align-items-center justify-content-center rounded" style="width: 150px; height: 150px; margin: 0 auto;">
-                                    <i class="fas fa-camera text-muted fs-1"></i>
-                                </div>
                             </div>
                             <input asp-for="CreateForm.ImageFile" id="createImageInput" type="file" class="form-control" accept="image/*" />
                             <div class="form-text">Supported formats: JPG, PNG, etc. Max size: 5MB.</div>
                         </div>
-
                         <div class="col-md-6">
                             <label asp-for="CreateForm.BrandId" class="form-label">Brand</label>
                             <select asp-for="CreateForm.BrandId" class="form-select" asp-items="Model.BrandSelect" required>
@@ -204,11 +257,10 @@ Layout = "~/Pages/Shared/_AdminLayout.cshtml";
                             <input asp-for="EditForm.Name" id="editName" class="form-control" required />
                         </div>
                         <div class="col-md-6">
-                            <label asp-for="EditForm.PricePerDay" class="form-label"></label>
+                            <label asp-for="EditForm.PricePerDay" class="form-label">Price Per Day</label>
                             <input type="number" step="0.01" asp-for="EditForm.PricePerDay" id="editPrice" class="form-control" required />
                         </div>
 
-                        @* Image Preview and Upload Section for Edit Modal *@
                         <div class="col-12">
                             <label class="form-label">Laptop Image</label>
                             <div class="d-flex align-items-end gap-3">
@@ -360,7 +412,7 @@ Layout = "~/Pages/Shared/_AdminLayout.cshtml";
                         imgPreview.src = data.imageUrl;
                     } else {
                         // Set a default placeholder if no image exists
-                        imgPreview.src = "/images/default-laptop.png"; // Thay bằng đường dẫn ảnh placeholder của bạn
+                        imgPreview.src = ""; // Or a path to a default image like /images/placeholder.png
                     }
 
                     // Reset checkboxes before setting new values
@@ -376,6 +428,7 @@ Layout = "~/Pages/Shared/_AdminLayout.cshtml";
                     spinner.style.display = 'none';
                     formContent.style.display = 'flex';
                 } catch (error) {
+                    console.error("Error in edit modal:", error); // Added for debugging
                     spinner.innerHTML = '<p class="text-danger">An unexpected error occurred.</p>';
                 }
             });

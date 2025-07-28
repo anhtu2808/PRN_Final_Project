@@ -27,6 +27,10 @@ namespace LaptopRentalManagement.Pages.Manage.Laptops
         public SelectList BrandSelect { get; set; }
         public SelectList AccountSelect { get; set; }
         public SelectList StatusSelect { get; set; }
+        public int CurrentPage { get; set; } = 1;
+        public int PageSize { get; set; } = 9;
+
+        public int TotalPages { get; set; }
 
         public IndexModel(
             ILaptopService laptopService,
@@ -57,7 +61,9 @@ namespace LaptopRentalManagement.Pages.Manage.Laptops
                 new { Value = "Rented", Text = "Rented" }
             }, "Value", "Text");
 
-            Laptops = await _laptopService.GetAllAsync(Filter);
+            var allLaptops = await _laptopService.GetAllAsync(Filter);
+            TotalPages = (int)Math.Ceiling(allLaptops.Count / (double)PageSize);
+            Laptops = allLaptops.Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToList();
         }
 
         public async Task<JsonResult> OnGetGetLaptopAsync(int id)
@@ -96,7 +102,7 @@ namespace LaptopRentalManagement.Pages.Manage.Laptops
                 Ram = EditForm.Ram,
                 Storage = EditForm.Storage,
                 CategoryIds = EditForm.CategoryIds,
-                ImageFile = EditForm.ImageFile 
+                ImageFile = EditForm.ImageFile
             };
 
             await _laptopService.UpdateAsync(request);

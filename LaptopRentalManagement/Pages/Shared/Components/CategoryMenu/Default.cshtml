@@ -4,7 +4,7 @@
     @foreach (var category in Model)
     {
         <li>
-            <a class="dropdown-item" href="/laptops?categoryId=@category.CategoryId">
+            <a class="dropdown-item" href="/laptops?categoryIds=@category.CategoryId">
                 <i class="@category.IconClass me-2"></i>@category.Name
             </a>
         </li>
