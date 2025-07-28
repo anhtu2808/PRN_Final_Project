@@ -22,6 +22,8 @@ public partial class Order
 
     public DateTime UpdatedAt { get; set; }
 
+    public string? ZaloPayTransactionId { get; set; }
+
     public virtual Laptop Laptop { get; set; } = null!;
 
     public virtual Account Owner { get; set; } = null!;

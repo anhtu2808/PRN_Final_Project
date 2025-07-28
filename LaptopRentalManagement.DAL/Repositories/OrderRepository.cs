@@ -23,7 +23,7 @@ namespace LaptopRentalManagement.DAL.Repositories
 		{
 			order.CreatedAt = DateTime.UtcNow;
 			order.UpdatedAt = DateTime.UtcNow;
-			order.Status = "Pending";
+			order.Status = "Unpaid";
 			_context.Orders.Add(order);
 			await _context.SaveChangesAsync();
 			return order;
@@ -86,6 +86,26 @@ namespace LaptopRentalManagement.DAL.Repositories
             _context.Orders.Update(order);
             await _context.SaveChangesAsync();
             return order;
+        }
+
+        // ZaloPay methods
+        public async Task<Order?> GetByZaloPayTransactionIdAsync(string transactionId)
+        {
+            return await _context.Orders
+                .Include(o => o.Laptop)
+                .Include(o => o.Owner)
+                .Include(o => o.Renter)
+                .FirstOrDefaultAsync(o => o.ZaloPayTransactionId == transactionId);
+        }
+
+        public async Task UpdateZaloPayTransactionIdAsync(int orderId, string transactionId)
+        {
+            var order = await _context.Orders.FindAsync(orderId);
+            if (order != null)
+            {
+                order.ZaloPayTransactionId = transactionId;
+                await _context.SaveChangesAsync();
+            }
         }
 	}
 }

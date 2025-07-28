@@ -101,6 +101,10 @@ builder.Services.AddScoped<IChatRoomRepository, ChatRoomRepository>();
 builder.Services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
 builder.Services.AddScoped<IChatService, ChatService>();
 
+// Register ZaloPay services
+builder.Services.AddScoped<IZaloPayService, ZaloPayService>();
+builder.Services.AddHttpClient();
+
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<ISlotService, SlotService>();
 builder.Services.AddScoped<IOrderLogService, OrderLogService>();

@@ -132,6 +132,7 @@ public partial class LaptopRentalDbContext : DbContext
             entity.Property(e => e.Status).HasMaxLength(20).HasDefaultValue("Pending");
             entity.Property(e => e.TotalCharge).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.ZaloPayTransactionId).HasMaxLength(100);
 
             entity.HasOne(d => d.Laptop).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.LaptopId)

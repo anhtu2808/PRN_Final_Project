@@ -212,5 +212,78 @@ namespace LaptopRentalManagement.BLL.Services
             }
             return response;
         }
+
+        // ZaloPay payment methods
+        public async Task<OrderResponse> CreateOrderForPaymentAsync(CreateOrderRequest request)
+        {
+            // Create order with "Unpaid" status
+            var order = new Order
+            {
+                LaptopId = request.LaptopId,
+                RenterId = request.RenterId,
+                TotalCharge = request.TotalCharge,
+                Status = "Unpaid",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            // Calculate start and end dates from slots
+            var slots = await _slotRepository.GetByIdsAsync(request.SlotIds.ToList());
+            if (slots.Any())
+            {
+                order.StartDate = slots.Min(s => s.SlotDate);
+                order.EndDate = slots.Max(s => s.SlotDate);
+            }
+
+            // Get laptop owner ID
+            var laptop = await _laptopRepository.GetByIdAsync(request.LaptopId);
+            if (laptop != null)
+            {
+                order.OwnerId = laptop.AccountId;
+            }
+
+            var createdOrder = await _orderRepository.CreateAsync(order);
+
+            // Update slots with the new order - for now we'll skip this
+            // This would need to be implemented in SlotRepository if needed
+            // foreach (var slotId in request.SlotIds)
+            // {
+            //     await _slotRepository.UpdateOrderIdAsync(slotId, createdOrder.OrderId);
+            // }
+            foreach (int index in request.SlotIds)             
+            {
+                Slot? slot = await _slotRepository.GetById(index);
+                if (slot != null)
+                {
+                    slot.Status = "Unavailable";
+                    slot.OrderId = order.OrderId;
+                    await _slotRepository.Update(slot);
+                }
+            }
+
+            return await buildOrderResponse(createdOrder);
+        }
+
+        public async Task<bool> UpdateOrderPaymentStatusAsync(string zaloPayTransactionId, string status)
+        {
+            var order = await _orderRepository.GetByZaloPayTransactionIdAsync(zaloPayTransactionId);
+            if (order == null) return false;
+
+            order.Status = status;
+            order.UpdatedAt = DateTime.UtcNow;
+
+            await _orderRepository.UpdateAsync(order);
+            return true;
+        }
+
+        public async Task<Order?> GetOrderByZaloPayTransactionIdAsync(string transactionId)
+        {
+            return await _orderRepository.GetByZaloPayTransactionIdAsync(transactionId);
+        }
+
+        public async Task<Order?> GetOrderEntityByIdAsync(int orderId)
+        {
+            return await _orderRepository.GetByIdAsync(orderId);
+        }
     }
 }

@@ -2,24 +2,71 @@
 @model LaptopRentalManagement.Pages.PaymentCallbackModel
 
 @{
-    ViewData["Title"] = "Kết quả thanh toán";
+    ViewData["Title"] = "Payment Result";
+    Layout = "_CustomerLayout" ;
 }
 
-@if (Model.IsSuccess)
-{
-    <div class="alert alert-success">
-        <h1>Thanh toán hoàn tất</h1>
-        <p>@Model.Message</p>
-        <p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!</p>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            @if (Model.IsSuccess)
+            {
+                <div class="card border-success">
+                    <div class="card-header bg-success text-white text-center">
+                        <i class="fas fa-check-circle fa-3x mb-3"></i>
+                        <h2>Payment Successful!</h2>
+                    </div>
+                    <div class="card-body text-center">
+                        <p class="lead">@Model.Message</p>
+                        @if (Model.OrderId.HasValue)
+                        {
+                            <p>Order ID: <strong>#@Model.OrderId</strong></p>
+                        }
+                        <p class="text-muted">Thank you for using our service! You will receive a confirmation email shortly.</p>
+                        
+                        <div class="mt-4">
+                            <a asp-page="/User/Rental-order/Index" class="btn btn-primary me-3">
+                                <i class="fas fa-list"></i> View My Orders
+                            </a>
+                            <a asp-page="/Index" class="btn btn-outline-secondary">
+                                <i class="fas fa-home"></i> Back to Home
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="card border-danger">
+                    <div class="card-header bg-danger text-white text-center">
+                        <i class="fas fa-times-circle fa-3x mb-3"></i>
+                        <h2>Payment Failed</h2>
+                    </div>
+                    <div class="card-body text-center">
+                        <p class="lead">@Model.Message</p>
+                        @if (Model.OrderId.HasValue)
+                        {
+                            <p>Order ID: <strong>#@Model.OrderId</strong></p>
+                        }
+                        <p class="text-muted">Please try again or contact our support team if you continue to experience issues.</p>
+                        
+                        <div class="mt-4">
+                            @if (Model.OrderId.HasValue)
+                            {
+                                <a asp-page="/Checkout" asp-route-id="@Model.OrderId" class="btn btn-primary me-3">
+                                    <i class="fas fa-redo"></i> Try Again
+                                </a>
+                            }
+                            <a asp-page="/Chat" class="btn btn-warning me-3">
+                                <i class="fas fa-comments"></i> Contact Support
+                            </a>
+                            <a asp-page="/Index" class="btn btn-outline-secondary">
+                                <i class="fas fa-home"></i> Back to Home
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
     </div>
-}
-else
-{
-    <div class="alert alert-danger">
-        <h1>Thanh toán không thành công</h1>
-        <p>@Model.Message</p>
-        <p>Vui lòng thử lại hoặc liên hệ hỗ trợ.</p>
-    </div>
-}
-
-<a asp-page="/Index">Quay về trang chủ</a>
+</div>
