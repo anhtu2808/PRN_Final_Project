@@ -1,5 +1,5 @@
 ﻿@page
-@model LaptopRentalManagement.Pages.Account.CustomerRegisterModel
+@model LaptopRentalManagement.Pages.Account.RegisterModel
 @{
     ViewData["Title"] = "Register";
     Layout = "~/Pages/Shared/_CustomerLayout.cshtml";
@@ -46,7 +46,6 @@
                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
             </div>
 
-            <!-- ✅ Nút màu xanh dương -->
             <button type="submit" class="btn btn-primary w-100">Register</button>
         </form>
 
