@@ -1,157 +1,358 @@
 @page "{id:int}"
-@using LaptopRentalManagement.BLL.DTOs.Response
-@model DetailsModel
+@model LaptopRentalManagement.Pages.User.Laptops.DetailsModel
 @{
-    ViewData["Title"] = "Laptop Details";
-    Layout = "~/Pages/Shared/_CustomerLayout.cshtml";
+	ViewData["Title"] = "Laptop Rental Details";
+	Layout = "~/Pages/Shared/_CustomerLayout.cshtml";
 }
 
 <div class="container py-4">
-    <div class="row">
-        <!-- Sidebar -->
-        <div class="col-md-3 mb-4">
-            @await Html.PartialAsync("_AccountSidebar", User.Identity?.Name)
-        </div>
+	<div class="text-end mb-3">
+		<button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#rentOutModal">
+			<i class="fas fa-laptop-house me-2"></i>Click for Rent
+		</button>
+		<div class="mt-4">
+			<a href="/user/laptops" class="btn btn-secondary me-2">Back to My Laptops</a>
+			<button class="btn btn-outline-primary" data-bs-toggle="modal"
+					data-bs-target="#editLaptopModal">
+				Edit Laptop
+			</button>
+			<a href="/laptops/details/@Model.Laptop.LaptopId"
+			   class="btn btn-outline-primary">Preview</a>
+		</div>
+	</div>
+	<h2 class="mb-4">Laptop Details: @(Model.Laptop?.Name ?? "Unknown")</h2>
 
-        <!-- Main Content -->
-        <div class="col-md-9">
-            @if (Model.Laptop == null)
-            {
-                <div class="alert alert-danger">Laptop not found.</div>
-            }
-            else
-            {
-                var laptop = Model.Laptop;
-                var imageUrl = string.IsNullOrWhiteSpace(laptop.ImageURL)
-                    ? "https://techterms.com/img/xl/laptop_586.png"
-                    : laptop.ImageURL;
+	<div class="row">
+		<div class="col-md-6">
+			<img src="@Model.Laptop.ImageURL" class="img-fluid rounded shadow-sm" alt="Laptop image" />
+		</div>
+		<div class="col-md-6">
+			<h4>@Model.Laptop.Name</h4>
+			<p><strong>Brand:</strong> @Model.Laptop.Brand.Name</p>
+			<p><strong>Price per day:</strong> @Model.Laptop.PricePerDay.ToString("N0") đ</p>
+			<p><strong>CPU:</strong> @Model.Laptop.Cpu</p>
+			<p><strong>RAM:</strong> @Model.Laptop.Ram GB</p>
+			<p><strong>Storage:</strong> @Model.Laptop.Storage GB</p>
+			<p><strong>Owner:</strong> @Model.Laptop.Owner.Name</p>
+		</div>
+	</div>
 
-                <div class="card shadow-sm">
-                    <div class="row g-0">
-                        <div class="col-md-5">
-                            <img src="@imageUrl" class="img-fluid rounded-start w-100 h-100 object-fit-cover"
-                                 alt="@laptop?.Name">
-                        </div>
-                        <div class="col-md-7">
-                            <div class="card-body">
-                                <h3 class="card-title">@laptop?.Name</h3>
-                                <p class="card-text text-muted">@laptop?.Brand?.Name</p>
-                                <p class="card-text">
-                                    <strong>Description:</strong> @laptop?.Description<br/>
-                                    <strong>CPU:</strong> @laptop?.Cpu <br/>
-                                    <strong>RAM:</strong> @laptop.Ram GB <br/>
-                                    <strong>Storage:</strong> @laptop.Storage GB <br/>
-                                    <strong>Category:</strong> @(laptop.Categories?.FirstOrDefault()?.Name ?? "No category")
-                                </p>
-                                <p class="text-success h5">@($"{laptop.PricePerDay:N0}₫ / day")</p>
-                                <p class="card-text">
-                                    <strong>Status:</strong> <span class="text-primary">@laptop.Status</span>
-                                </p>
+	<hr class="my-4" />
 
-                                <div class="mt-4">
-                                    <a href="/user/laptops" class="btn btn-secondary me-2">Back to My Laptops</a>
-                                    <button class="btn btn-outline-primary" data-bs-toggle="modal"
-                                            data-bs-target="#editLaptopModal">Edit Laptop
-                                    </button>
-                                    <a href="/laptops/details/@laptop.LaptopId"
-                                       class="btn btn-outline-primary">Preview</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
-    </div>
+	<h4 class="mb-3">Rental History</h4>
+	@if (Model.Orders != null && Model.Orders.Any())
+	{
+		<table class="table table-bordered table-hover">
+			<thead class="table-light">
+				<tr>
+					<th>#</th>
+					<th>Renter</th>
+					<th>Rental Dates</th>
+					<th>Total Days</th>
+					<th>Status</th>
+					<th>Total Charge</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var order in Model.Orders.OrderByDescending(o => o.OrderId))
+				{
+					<tr>
+						<td>@order.OrderId</td>
+						<td>@(order.Renter?.Name ?? "Not assigned")</td>
+						<td>@string.Join(", ", order.Slots.Select(s => s.SlotDate.ToString("dd/MM/yyyy")))</td>
+						<td>@order.Slots.Count</td>
+						<td>@order.Status</td>
+						<td>@order.TotalCharge.ToString("N0") đ</td>
+						@*<td class="text-nowrap">
+				@switch (order.Status)
+				{
+				case "Pending":
+				<form method="post" asp-page-handler="Approve" asp-route-orderId="@order.OrderId" asp-route-id="@Model.Laptop.LaptopId" class="d-inline">
+				<button type="submit" class="btn btn-sm btn-success">
+				<i class="fas fa-check me-1"></i>Approve
+				</button>
+				</form>
+				<form method="post" asp-page-handler="Reject" asp-route-orderId="@order.OrderId" asp-route-id="@Model.Laptop.LaptopId" class="d-inline ms-1">
+				<button type="submit" class="btn btn-sm btn-danger">
+				<i class="fas fa-times me-1"></i>Reject
+				</button>
+				</form>
+				break;
+
+				case "Approved":
+				<form method="post" asp-page-handler="Delivering" asp-route-orderId="@order.OrderId" asp-route-id="@Model.Laptop.LaptopId" class="d-inline">
+				<button type="submit" class="btn btn-sm btn-warning">
+				<i class="fas fa-truck me-1"></i>Start Delivery
+				</button>
+				</form>
+				break;
+
+				case "Delivering":
+				<form method="post" asp-page-handler="Delivered" asp-route-orderId="@order.OrderId" asp-route-id="@Model.Laptop.LaptopId" class="d-inline">
+				<button type="submit" class="btn btn-sm btn-success">
+				<i class="fas fa-box-check me-1"></i>Delivered
+				</button>
+				</form>
+				<button type="button" class="btn btn-sm btn-danger"
+				data-bs-toggle="modal"
+				data-bs-target="#deliveryFailModal"
+				onclick="openDeliveryFailModal(@order.OrderId)">
+				<i class="fas fa-times-circle me-1"></i>Delivery Failed
+				</button>
+				break;
+
+				default:
+				<span class="text-muted">No actions</span>
+				break;
+				}
+				</td>*@
+						<td class="text-nowrap">
+							<a href="/user/lease-order/detail/@order.OrderId" class="btn btn-sm btn-outline-primary">
+								<i class="fas fa-info-circle me-1"></i>View Details
+							</a>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	}
+	else
+	{
+		<p class="text-muted">No rental orders found for this laptop.</p>
+	}
+
+	<hr class="my-4" />
+
+	<h4 class="mb-3">Rental Slots</h4>
+
+	<form class="d-flex gap-2 mb-3">
+		<select id="monthSelect" class="form-select w-auto">
+			@for (int m = 1; m <= 12; m++)
+			{
+				<option value="@m" selected="@(m == DateTime.Now.Month ? "selected" : null)">
+					@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m)
+				</option>
+			}
+		</select>
+		<select id="yearSelect" class="form-select w-auto">
+			@for (int y = DateTime.Now.Year - 2; y <= DateTime.Now.Year + 2; y++)
+			{
+				<option value="@y" selected="@(y == DateTime.Now.Year ? "selected" : null)">@y</option>
+			}
+		</select>
+		<input type="hidden" id="laptopId" value="@Model.Laptop.LaptopId" />
+	</form>
+
+	<div id="slots-container">
+		@await Html.PartialAsync("_RentalSlotsPartial", Model.RentalSlot)
+	</div>
+
+
+	<div class="modal fade" id="editLaptopModal" tabindex="-1" aria-labelledby="editLaptopModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<form method="post" asp-page-handler="Edit">
+					<div class="modal-header">
+						<h5 class="modal-title" id="editLaptopModalLabel">Edit Laptop</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<input type="hidden" name="LaptopId" value="@Model.Laptop.LaptopId" />
+
+						<div class="mb-3">
+							<label class="form-label">Name</label>
+							<input type="text" class="form-control" name="Name" value="@Model.Laptop.Name" required />
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Description</label>
+							<textarea class="form-control" name="Description" rows="3">@Model.Laptop.Description</textarea>
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Image URL</label>
+							<input type="text" class="form-control" name="ImageURL" value="@Model.Laptop.ImageURL" />
+						</div>
+
+
+
+						@* <div class="mb-3"> *@
+						@*     <label class="form-label">Brand</label> *@
+						@*     <select name="BrandId" class="form-select"> *@
+						@*         @* @foreach (var brand in Model.Brands) *@
+						@*         { *@
+						@*             <option value="@brand.BrandId" selected="@(Model.Laptop.Brand?.BrandId == brand.BrandId)"> *@
+						@*                 @brand.Name *@
+						@*             </option> *@
+						@*         } *@
+						@*     </select> *@
+						@* </div> *@
+
+
+						<div class="mb-3">
+							<label class="form-label d-block">Categories</label>
+							@foreach (var category in Model.Categories)
+							{
+								var isChecked = Model.Laptop.Categories?.Any(c => c.CategoryId == category.CategoryId) ?? false;
+
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="checkbox" name="CategoryIds"
+										   value="@category.CategoryId"
+									@(isChecked ? "checked" : "") id="cat_@category.CategoryId" />
+									<label class="form-check-label" for="cat_@category.CategoryId">
+										@category.Name
+									</label>
+								</div>
+							}
+						</div>
+
+
+
+						<div class="mb-3">
+							<label class="form-label">CPU</label>
+							<input type="text" class="form-control" name="Cpu" value="@Model.Laptop.Cpu" />
+						</div>
+
+						<div class="mb-3">
+							<label class="form-label">RAM (GB)</label>
+							<input type="number" class="form-control" name="Ram" value="@Model.Laptop.Ram" />
+						</div>
+
+						<div class="mb-3">
+							<label class="form-label">Storage (GB)</label>
+							<input type="number" class="form-control" name="Storage" value="@Model.Laptop.Storage" />
+						</div>
+
+						<div class="mb-3">
+							<label class="form-label">Price Per Day</label>
+							<input type="number" step="0.01" class="form-control" name="PricePerDay"
+								   value="@Model.Laptop.PricePerDay.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
+
+						</div>
+					</div>
+
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-primary">Save changes</button>
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+
 </div>
 
-<!-- Modal for Editing Laptop -->
-<div class="modal fade" id="editLaptopModal" tabindex="-1" aria-labelledby="editLaptopModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <form method="post" asp-page-handler="Edit">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editLaptopModalLabel">Edit Laptop</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" name="LaptopId" value="@Model.Laptop.LaptopId"/>
+@await Html.PartialAsync("_RentOutModal", Model.Laptop)
 
-                    <div class="mb-3">
-                        <label class="form-label">Name</label>
-                        <input type="text" class="form-control" name="Name" value="@Model.Laptop.Name" required/>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Description</label>
-                        <textarea class="form-control" name="Description" rows="3">@Model.Laptop.Description</textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Image URL</label>
-                        <input type="text" class="form-control" name="ImageURL" value="@Model.Laptop.ImageURL"/>
-                    </div>
+@section Scripts {
+	<script>
+		async function updateSlots() {
+			const month = document.getElementById("monthSelect").value;
+			const year = document.getElementById("yearSelect").value;
+			const id = document.getElementById("laptopId").value;
 
+			const response = await fetch(`?handler=RentalSlots&id=${id}&month=${month}&year=${year}`);
+			const html = await response.text();
+			document.getElementById("slots-container").innerHTML = html;
+		}
 
+		function initSlotSelector() {
+			document.getElementById("monthSelect").addEventListener("change", updateSlots);
+			document.getElementById("yearSelect").addEventListener("change", updateSlots);
+		}
 
-                    @* <div class="mb-3"> *@
-                    @*     <label class="form-label">Brand</label> *@
-                    @*     <select name="BrandId" class="form-select"> *@
-                    @*         @* @foreach (var brand in Model.Brands) *@
-                    @*         { *@
-                    @*             <option value="@brand.BrandId" selected="@(Model.Laptop.Brand?.BrandId == brand.BrandId)"> *@
-                    @*                 @brand.Name *@
-                    @*             </option> *@
-                    @*         } *@
-                    @*     </select> *@
-                    @* </div> *@
+		document.addEventListener("DOMContentLoaded", initSlotSelector);
 
+		let selectedFiles = [];
 
-                    <div class="mb-3">
-                        <label class="form-label d-block">Categories</label>
-                        @foreach (var category in Model.Categories)
-                        {
-                            var isChecked = Model.Laptop.Categories?.Any(c => c.CategoryId == category.CategoryId) ?? false;
+		function openDeliveryFailModal(orderId) {
+			document.getElementById("failOrderId").value = orderId;
+			resetImagePreview();
+		}
 
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="CategoryIds"
-                                       value="@category.CategoryId"
-                                       @(isChecked ? "checked" : "") id="cat_@category.CategoryId"/>
-                                <label class="form-check-label" for="cat_@category.CategoryId">
-                                    @category.Name
-                                </label>
-                            </div>
-                        }
-                    </div>
+		function resetImagePreview() {
+			selectedFiles = [];
+			document.getElementById("imageInput").value = '';
+			document.getElementById("imagePreviewContainer").innerHTML = '';
+		}
 
+		document.addEventListener('DOMContentLoaded', () => {
+			const input = document.getElementById('imageInput');
+			const container = document.getElementById('imagePreviewContainer');
+			let selectedFiles = [];
 
+			// Cập nhật input.files từ selectedFiles
+			function syncInputFiles() {
+				const dt = new DataTransfer();
+				selectedFiles.forEach(f => dt.items.add(f));
+				input.files = dt.files;
+			}
 
-                    <div class="mb-3">
-                        <label class="form-label">CPU</label>
-                        <input type="text" class="form-control" name="Cpu" value="@Model.Laptop.Cpu"/>
-                    </div>
+			// Xóa toàn bộ preview
+			function clearPreviews() {
+				container.innerHTML = '';
+				selectedFiles = [];
+				syncInputFiles();
+			}
 
-                    <div class="mb-3">
-                        <label class="form-label">RAM (GB)</label>
-                        <input type="number" class="form-control" name="Ram" value="@Model.Laptop.Ram"/>
-                    </div>
+			// Mở modal thì reset preview
+			window.openDeliveryFailModal = orderId => {
+				document.getElementById("failOrderId").value = orderId;
+				clearPreviews();
+			};
 
-                    <div class="mb-3">
-                        <label class="form-label">Storage (GB)</label>
-                        <input type="number" class="form-control" name="Storage" value="@Model.Laptop.Storage"/>
-                    </div>
+			input.addEventListener('change', () => {
+				const newFiles = Array.from(input.files);
+				if (selectedFiles.length + newFiles.length > 3) {
+					alert("Chỉ được chọn tối đa 3 ảnh.");
+					return;
+				}
+				newFiles.forEach(file => {
+					if (!file.type.startsWith('image/')) return;
+					selectedFiles.push(file);
 
-                    <div class="mb-3">
-                        <label class="form-label">Price Per Day</label>
-                        <input type="number" step="0.01" class="form-control" name="PricePerDay"
-                               value="@Model.Laptop.PricePerDay.ToString(System.Globalization.CultureInfo.InvariantCulture)"/>
+					// tạo preview
+					const wrapper = document.createElement('div');
+					wrapper.style.position = 'relative';
 
-                    </div>
-                </div>
+					const img = document.createElement('img');
+					img.src = URL.createObjectURL(file);
+					img.style.height = '80px';
+					img.style.borderRadius = '6px';
+					img.style.objectFit = 'cover';
+					img.style.border = '1px solid #ccc';
+					img.style.padding = '2px';
+					wrapper.appendChild(img);
 
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Save changes</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+					const removeBtn = document.createElement('button');
+					removeBtn.type = 'button';
+					removeBtn.textContent = '✕';
+					Object.assign(removeBtn.style, {
+						position: 'absolute',
+						top: '0', right: '0',
+						background: 'rgba(0,0,0,0.5)',
+						color: 'white',
+						border: 'none',
+						borderRadius: '50%',
+						width: '20px',
+						height: '20px',
+						cursor: 'pointer'
+					});
+					removeBtn.onclick = () => {
+						const idx = selectedFiles.indexOf(file);
+						if (idx > -1) selectedFiles.splice(idx, 1);
+						wrapper.remove();
+						syncInputFiles();
+					};
+					wrapper.appendChild(removeBtn);
+
+					container.appendChild(wrapper);
+				});
+
+				// Cuối cùng, sync lại input.files
+				syncInputFiles();
+			});
+		});
+
+	</script>
+}

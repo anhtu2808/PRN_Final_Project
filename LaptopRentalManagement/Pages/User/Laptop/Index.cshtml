@@ -10,6 +10,15 @@
 		<button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#rentOutModal">
 			<i class="fas fa-laptop-house me-2"></i>Click for Rent
 		</button>
+		<div class="mt-4">
+			<a href="/user/laptops" class="btn btn-secondary me-2">Back to My Laptops</a>
+			<button class="btn btn-outline-primary" data-bs-toggle="modal"
+					data-bs-target="#editLaptopModal">
+				Edit Laptop
+			</button>
+			<a href="/laptops/details/@Model.Laptop.LaptopId"
+			   class="btn btn-outline-primary">Preview</a>
+		</div>
 	</div>
 	<h2 class="mb-4">Laptop Details: @(Model.Laptop?.Name ?? "Unknown")</h2>
 
@@ -99,7 +108,7 @@
 							 }
 				</td>*@
 						<td class="text-nowrap">
-							<a href="/user/lease-order/@order.OrderId" class="btn btn-sm btn-outline-primary">
+							<a href="/user/lease-order/detail/@order.OrderId" class="btn btn-sm btn-outline-primary">
 								<i class="fas fa-info-circle me-1"></i>View Details
 							</a>
 						</td>
@@ -137,6 +146,97 @@
 
 	<div id="slots-container">
 		@await Html.PartialAsync("_RentalSlotsPartial", Model.RentalSlot)
+	</div>
+
+
+	<div class="modal fade" id="editLaptopModal" tabindex="-1" aria-labelledby="editLaptopModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<form method="post" asp-page-handler="Edit">
+					<div class="modal-header">
+						<h5 class="modal-title" id="editLaptopModalLabel">Edit Laptop</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<input type="hidden" name="LaptopId" value="@Model.Laptop.LaptopId" />
+
+						<div class="mb-3">
+							<label class="form-label">Name</label>
+							<input type="text" class="form-control" name="Name" value="@Model.Laptop.Name" required />
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Description</label>
+							<textarea class="form-control" name="Description" rows="3">@Model.Laptop.Description</textarea>
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Image URL</label>
+							<input type="text" class="form-control" name="ImageURL" value="@Model.Laptop.ImageURL" />
+						</div>
+
+
+
+						@* <div class="mb-3"> *@
+						@*     <label class="form-label">Brand</label> *@
+						@*     <select name="BrandId" class="form-select"> *@
+						@*         @* @foreach (var brand in Model.Brands) *@
+						@*         { *@
+						@*             <option value="@brand.BrandId" selected="@(Model.Laptop.Brand?.BrandId == brand.BrandId)"> *@
+						@*                 @brand.Name *@
+						@*             </option> *@
+						@*         } *@
+						@*     </select> *@
+						@* </div> *@
+
+
+						<div class="mb-3">
+							<label class="form-label d-block">Categories</label>
+							@foreach (var category in Model.Categories)
+							{
+								var isChecked = Model.Laptop.Categories?.Any(c => c.CategoryId == category.CategoryId) ?? false;
+
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="checkbox" name="CategoryIds"
+										   value="@category.CategoryId"
+									@(isChecked ? "checked" : "") id="cat_@category.CategoryId" />
+									<label class="form-check-label" for="cat_@category.CategoryId">
+										@category.Name
+									</label>
+								</div>
+							}
+						</div>
+
+
+
+						<div class="mb-3">
+							<label class="form-label">CPU</label>
+							<input type="text" class="form-control" name="Cpu" value="@Model.Laptop.Cpu" />
+						</div>
+
+						<div class="mb-3">
+							<label class="form-label">RAM (GB)</label>
+							<input type="number" class="form-control" name="Ram" value="@Model.Laptop.Ram" />
+						</div>
+
+						<div class="mb-3">
+							<label class="form-label">Storage (GB)</label>
+							<input type="number" class="form-control" name="Storage" value="@Model.Laptop.Storage" />
+						</div>
+
+						<div class="mb-3">
+							<label class="form-label">Price Per Day</label>
+							<input type="number" step="0.01" class="form-control" name="PricePerDay"
+								   value="@Model.Laptop.PricePerDay.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
+
+						</div>
+					</div>
+
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-primary">Save changes</button>
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+					</div>
+				</form>
+			</div>
+		</div>
 	</div>
 
 

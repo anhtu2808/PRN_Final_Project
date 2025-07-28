@@ -13,15 +13,20 @@ namespace LaptopRentalManagement.Pages.User.Rental_orders
         private readonly IOrderService _orderService;
         private readonly ILaptopService _laptopService;
         private readonly ISlotService _slotService;
+		private readonly ICategoryService _categoryService;
 
-        public IndexModel(IOrderService orderService, ILaptopService laptopService, ISlotService slotService)
+		public IndexModel(IOrderService orderService, ILaptopService laptopService, ISlotService slotService, ICategoryService categoryService)
         {
             _orderService = orderService;
             _laptopService = laptopService;
             _slotService = slotService;
+            _categoryService = categoryService;
         }
 
-        public LaptopResponse? Laptop { get; set; }
+		public List<BrandResponse> Brands { get; set; } = new();
+		public IEnumerable<CategoryResponse> Categories { get; set; } = new List<CategoryResponse>();
+
+		public LaptopResponse? Laptop { get; set; }
         public IList<OrderResponse> Orders { get; set; } = new List<OrderResponse>();
 
         public IList<SlotResponse> Slots { get; set; } = new List<SlotResponse>();
@@ -80,67 +85,45 @@ namespace LaptopRentalManagement.Pages.User.Rental_orders
             return RedirectToPage();
         }
 
-        public async Task<IActionResult> OnPostApproveAsync(int orderId, int id)
-        {
-            await _orderService.ApproveAsync(orderId);
-            TempData["Success"] = $"Đã duyệt đơn #{orderId}.";
-            return RedirectToPage("/User/Laptop/Index", new { id });
-        }
-
-        public async Task<IActionResult> OnPostRejectAsync(int orderId, int id)
-        {
-            await _orderService.RejectAsync(orderId);
-            TempData["Success"] = $"Đã từ chối đơn #{orderId}.";
-            return RedirectToPage("/User/Laptop/Index", new { id });
-        }
-
-        public async Task<IActionResult> OnPostConfirmReturnAsync(int orderId, int id)
-        {
-            await _orderService.ConfirmReturn(orderId);
-            TempData["Success"] = $"Đơn #{orderId} đã được xác nhận là đã trả.";
-            return RedirectToPage("/User/Laptop/Index", new { id });
-        }
-
-        public async Task<IActionResult> OnPostDeliveringAsync(int orderId, int id)
-        {
-			await _orderService.SetStatusAsync(new()
-            {
-                OrderId = orderId,
-                NewStatus = "Delivering"
-			});
-			TempData["Success"] = $"Đơn #{orderId} đang giao hàng.";
-            return RedirectToPage("/User/Laptop/Index", new { id });
-        }
-
-        public async Task<IActionResult> OnPostDeliveredAsync(int orderId, int id)
-        {
-			await _orderService.SetStatusAsync(new()
-			{
-				OrderId = orderId,
-				NewStatus = "Renting"
-			});
-			TempData["Success"] = $"Đơn #{orderId} đã giao thành công.";
-            return RedirectToPage("/User/Laptop/Index", new { id });
-        }
-
-		[BindProperty]
-		public List<IFormFile> Images { get; set; } = new();
-
-		public async Task<IActionResult> OnPostDeliveredFailAsync(int orderId, int id, string reason)
+		public async Task<IActionResult> OnPostEditAsync()
 		{
-			var request = new OrderLogRequest
+			var form = Request.Form;
+
+			// Lấy CategoryIds an toàn (sẽ là mảng nhiều giá trị nếu select multiple)
+			var rawCategories = form["CategoryIds"];
+			List<int> categoryIds = new();
+			foreach (var cat in rawCategories)
 			{
-				OrderId = orderId,
-				NewStatus = "DeliveringFail",
-				Reason = reason,
-				Forms = Images
+				if (int.TryParse(cat, out var id))
+					categoryIds.Add(id);
+			}
+
+			// Parse các field còn lại
+			int laptopId = int.Parse(form["LaptopId"]);
+			string name = form["Name"];
+			string imageUrl = form["ImageURL"];
+
+			string cpu = form["Cpu"];
+			int.TryParse(form["Ram"], out int ram);
+			int.TryParse(form["Storage"], out int storage);
+			decimal.TryParse(form["PricePerDay"], out decimal pricePerDay);
+			string description = form["Description"];
+
+			// Gọi service update
+			var updateRequest = new EditLaptopRequest
+			{
+				LaptopId = laptopId,
+				Name = name,
+				Cpu = cpu,
+				Ram = ram,
+				Storage = storage,
+				PricePerDay = pricePerDay,
+				Description = description,
+				CategoryIds = categoryIds
 			};
 
-			await _orderService.SetStatusAsync(request);
-
-			TempData["Warning"] = $"Giao hàng đơn #{orderId} thất bại. Trạng thái quay về 'Delivering'.";
-
-			return RedirectToPage("/User/Laptop/Index", new { id });
+			await _laptopService.UpdateAsync(updateRequest);
+			return RedirectToPage(); // hoặc RedirectToPage("Index");
 		}
 
 	}

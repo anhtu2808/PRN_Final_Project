@@ -1,4 +1,5 @@
 using LaptopRentalManagement.BLL.Interfaces;
+using LaptopRentalManagement.DAL.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
@@ -53,12 +54,20 @@ public class PaymentCallbackModel : PageModel
             }
             if (status == "1") // Success
             {
-                await _orderService.SetStatusAsync(OrderId, "Pending");
-            }
+				await _orderService.SetStatusAsync(new()
+				{
+					OrderId = OrderId,
+					NewStatus = "Pending"
+				});
+			}
             else
             {
-                await _orderService.SetStatusAsync(OrderId, "Cancelled");
-            }
+				await _orderService.SetStatusAsync(new()
+				{
+					OrderId = OrderId,
+					NewStatus = "Cancelled"
+				});
+			}
 
             return Page();
         }
@@ -120,12 +129,20 @@ public class PaymentCallbackModel : PageModel
                     // Update order status based on ZaloPay callback
                     if (status == "1") // Success
                     {
-                        await _orderService.SetStatusAsync(orderId, "Pending");
-                    }
+						await _orderService.SetStatusAsync(new()
+						{
+							OrderId = orderId,
+							NewStatus = "Pending"
+						});
+					}
                     else
                     {
-                        await _orderService.SetStatusAsync(orderId, "Cancelled");
-                    }
+						await _orderService.SetStatusAsync(new()
+						{
+							OrderId = orderId,
+							NewStatus = "Cancelled"
+						});
+					}
 
                     return new JsonResult(new { return_code = 1, return_message = "Success" });
                 }
