@@ -137,122 +137,138 @@
 			<!-- RIGHT: Order Logs -->
 			<div class="col-lg-5">
 				<div class="card mb-4">
-					<div class="card-body">
-						<h5 class="card-title mb-3">Order Logs</h5>
+					<div class="card-body scroll-box">
+							<h5 class="card-title mb-3">Order Logs</h5>
 
-						@if (Model.Logs != null && Model.Logs.Any())
-						{
-							<ul class="list-group list-group-flush">
-								@foreach (var log in Model.Logs.OrderByDescending(l => l.CreatedAt))
-								{
-									var modalId = $"logImgModal_{log.Id}";
-									<li class="list-group-item">
-										<div class="d-flex justify-content-between align-items-start mb-1">
-											<span class="fw-semibold">@log.Content</span>
-											<small class="text-muted">@log.CreatedAt.ToString("HH:mm dd-MM-yyyy")</small>
-										</div>
-
-										@if (!string.IsNullOrWhiteSpace(log.OldStatus) || !string.IsNullOrWhiteSpace(log.NewStatus))
-										{
-											<div class="mt-1">
-												<span class="badge bg-secondary">@log.OldStatus</span>
-												<i class="fas fa-arrow-right mx-1 text-muted"></i>
-												<span class="badge bg-success">@log.NewStatus</span>
+							@if (Model.Logs != null && Model.Logs.Any())
+							{
+								<ul class="list-group list-group-flush">
+									@foreach (var log in Model.Logs.OrderByDescending(l => l.CreatedAt))
+									{
+										var modalId = $"logImgModal_{log.Id}";
+										<li class="list-group-item">
+											<div class="d-flex justify-content-between align-items-start mb-1">
+												<span class="fw-semibold">@log.Content</span>
+												<small class="text-muted">@log.CreatedAt.ToString("HH:mm dd-MM-yyyy")</small>
 											</div>
-										}
 
-										@if (log.LogImg != null && log.LogImg.Any())
-										{
-											<div class="mt-2">
-												<a href="#" class="text-decoration-underline text-primary small" data-bs-toggle="modal" data-bs-target="#@modalId">
-													📷 Click to open images
-												</a>
+											@if (!string.IsNullOrWhiteSpace(log.OldStatus) || !string.IsNullOrWhiteSpace(log.NewStatus))
+											{
+												<div class="mt-1">
+													<span class="badge bg-secondary">@log.OldStatus</span>
+													<i class="fas fa-arrow-right mx-1 text-muted"></i>
+													<span class="badge bg-success">@log.NewStatus</span>
+												</div>
+											}
 
-												<!-- Modal hiển thị ảnh -->
-												<div class="modal fade" id="@modalId" tabindex="-1" aria-hidden="true">
-													<div class="modal-dialog modal-dialog-centered modal-xl">
-														<div class="modal-content">
-															<div class="modal-header">
-																<h5 class="modal-title">Images for log #@log.Id</h5>
-																<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-															</div>
-															<div class="modal-body">
-																<div class="d-flex flex-wrap gap-3 justify-content-start">
-																	@foreach (var imgUrl in log.LogImg)
-																	{
-																		<img src="@imgUrl" class="img-thumbnail" style="max-height: 200px;" />
-																	}
+											@if (log.LogImg != null && log.LogImg.Any())
+											{
+												<div class="mt-2">
+													<a href="#" class="text-decoration-underline text-primary small" data-bs-toggle="modal" data-bs-target="#@modalId">
+														📷 Click to open images
+													</a>
+
+													<!-- Modal hiển thị ảnh -->
+													<div class="modal fade" id="@modalId" tabindex="-1" aria-hidden="true">
+														<div class="modal-dialog modal-dialog-centered modal-xl">
+															<div class="modal-content">
+																<div class="modal-header">
+																	<h5 class="modal-title">Images for log #@log.Id</h5>
+																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+																</div>
+																<div class="modal-body">
+																	<div class="d-flex flex-wrap gap-3 justify-content-start">
+																		@foreach (var imgUrl in log.LogImg)
+																		{
+																			<img src="@imgUrl" class="img-thumbnail" style="max-height: 200px;" />
+																		}
+																	</div>
 																</div>
 															</div>
 														</div>
 													</div>
 												</div>
-											</div>
-										}
-									</li>
-								}
-							</ul>
-						}
-						else
-						{
-							<p class="text-muted">No logs available for this order.</p>
-						}
+											}
+										</li>
+									}
+								</ul>
+							}
+							else
+							{
+								<p class="text-muted">No logs available for this order.</p>
+							}
+						</div>
 					</div>
-				</div>
-				<!-- Tickets -->
-				<div class="card mb-4">
-					<div class="card-body">
-						<h5 class="card-title mb-3">Tickets</h5>
+					<!-- Tickets -->
+					<div class="card mb-4">
+						<div class="card-body scroll-box">
+							<h5 class="card-title mb-3">Tickets</h5>
 
-						@if (Model.Tickets != null && Model.Tickets.Any())
-						{
-							<ul class="list-group list-group-flush">
-								@foreach (var t in Model.Tickets.OrderByDescending(x => x.CreatedAt))
-								{
-									<li class="list-group-item">
-										<div class="d-flex justify-content-between align-items-start">
-											<div>
-												<span class="fw-semibold">Ticket #@t.TicketId</span>
-												<span class="badge bg-info">
-													@t.Status
-												</span>
+							@if (Model.Tickets != null && Model.Tickets.Any())
+							{
+								<ul class="list-group list-group-flush">
+									@foreach (var t in Model.Tickets.OrderByDescending(x => x.CreatedAt))
+									{
+										<li class="list-group-item">
+											<div class="d-flex justify-content-between align-items-start">
+												<div>
+													<span class="fw-semibold">Ticket #@t.TicketId</span>
+													<span class="badge bg-info">
+														@t.Status
+													</span>
+												</div>
+												<small class="text-muted">@t.CreatedAt.ToString("HH:mm dd-MM-yyyy")</small>
 											</div>
-											<small class="text-muted">@t.CreatedAt.ToString("HH:mm dd-MM-yyyy")</small>
-										</div>
-										<p class="mt-2 mb-1">@t.Content</p>
+											<p class="mt-2 mb-1">@t.Content</p>
 
-										@if (t.RespondedAt.HasValue)
-										{
-											<div class="border-start ps-3">
-												<small class="text-muted">
-													Phản hồi lúc @t.RespondedAt.Value.ToString("HH:mm dd-MM-yyyy")
-												</small>
-												<p class="mb-1">@t.Response</p>
-											</div>
-										}
-									</li>
-								}
-							</ul>
-						}
-						else
-						{
-							<p class="text-muted mb-0">Chưa có yêu cầu hỗ trợ nào.</p>
-						}
+											@if (t.RespondedAt.HasValue)
+											{
+												<div class="border-start ps-3">
+													<small class="text-muted">
+														Phản hồi lúc @t.RespondedAt.Value.ToString("HH:mm dd-MM-yyyy")
+													</small>
+													<p class="mb-1">@t.Response</p>
+												</div>
+											}
+										</li>
+									}
+								</ul>
+							}
+							else
+							{
+								<p class="text-muted mb-0">Chưa có yêu cầu hỗ trợ nào.</p>
+							}
+						</div>
 					</div>
-				</div>
 			</div>
 		</div>
 	}
 </div>
 
 @await Html.PartialAsync(
-			"~/Pages/User/Rental-Order/_TicketModal.cshtml",
-			new LaptopRentalManagement.BLL.DTOs.Request.CreateTicketRequest
-		{
-			OrderId = Model.Order.OrderId
-		}
-				)
+				"~/Pages/User/Rental-Order/_TicketModal.cshtml",
+				new LaptopRentalManagement.BLL.DTOs.Request.CreateTicketRequest
+			{
+				OrderId = Model.Order.OrderId
+			}
+					)
 
 @section Styles {
 	<link rel="stylesheet" href="~/css/order-progress.css" />
+	<style>
+		.scroll-box {
+			max-height: 450px;
+			overflow-y: auto;
+		}
+
+			/* Tùy chọn: thanh cuộn mượt và đẹp hơn */
+			.scroll-box::-webkit-scrollbar {
+				width: 8px;
+			}
+
+			.scroll-box::-webkit-scrollbar-thumb {
+				background-color: rgba(0, 0, 0, 0.2);
+				border-radius: 4px;
+			}
+	</style>
 }

@@ -1,8 +1,8 @@
 ﻿@page "{orderId:int}"
-@model LaptopRentalManagement.Pages.User.Lease_order.DetailModel
+@model LaptopRentalManagement.Pages.Manage.Orders.DetailModel
 @{
-	ViewData["Title"] = "Lease Order Details";
-	Layout = "~/Pages/Shared/_CustomerLayout.cshtml";
+	ViewData["Title"] = "Order Details";
+	Layout = "~/Pages/Shared/_AdminLayout.cshtml";
 
 	var status = Model.Order?.Status ?? "Unknown";
 
@@ -29,8 +29,7 @@
 	<!-- Breadcrumb -->
 	<nav aria-label="breadcrumb" class="mb-4">
 		<ol class="breadcrumb">
-			<li class="breadcrumb-item"><a href="/">Home</a></li>
-			<li class="breadcrumb-item"><a href="/user/lease-order">My Lease Orders</a></li>
+			<li class="breadcrumb-item"><a href="/manage/orders/OrderList">Orders</a></li>
 			<li class="breadcrumb-item active" aria-current="page">Order #@Model.Order?.OrderId</li>
 		</ol>
 	</nav>
@@ -46,51 +45,50 @@
 			<div class="d-flex justify-content-between align-items-center mb-4">
 				<h5 class="fw-bold mb-0">Order Progress</h5>
 
-
-				<div class="d-flex gap-2">
-					@switch (Model.Order.Status)
-					{
-						case "Pending":
-							<form method="post" asp-page-handler="Approve" asp-route-orderId="@Model.Order.OrderId" asp-route-id="@Model.Order.Laptop.LaptopId" class="d-inline">
-								<button type="submit" class="btn btn-sm btn-success">
-									<i class="fas fa-check me-1"></i>Approve
+				<div class="dropdown">
+					<button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="orderActionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+						<i class="fas fa-cogs me-1"></i> Actions
+					</button>
+					<ul class="dropdown-menu" aria-labelledby="orderActionsDropdown">
+						<li>
+							<form method="post" asp-page-handler="Approve" asp-route-orderId="@Model.Order.OrderId" asp-route-id="@Model.Order.Laptop.LaptopId">
+								<button type="submit" class="dropdown-item">
+									<i class="fas fa-check me-1 text-success"></i> Approve
 								</button>
 							</form>
-							<form method="post" asp-page-handler="Reject" asp-route-orderId="@Model.Order.OrderId" asp-route-id="@Model.Order.Laptop.LaptopId" class="d-inline ms-1">
-								<button type="submit" class="btn btn-sm btn-danger">
-									<i class="fas fa-times me-1"></i>Reject
+						</li>
+						<li>
+							<form method="post" asp-page-handler="Reject" asp-route-orderId="@Model.Order.OrderId" asp-route-id="@Model.Order.Laptop.LaptopId">
+								<button type="submit" class="dropdown-item">
+									<i class="fas fa-times me-1 text-danger"></i> Reject
 								</button>
 							</form>
-							break;
-
-						case "Approved":
-							<form method="post" asp-page-handler="Delivering" asp-route-orderId="@Model.Order.OrderId" asp-route-id="@Model.Order.Laptop.LaptopId" class="d-inline">
-								<button type="submit" class="btn btn-sm btn-warning">
-									<i class="fas fa-truck me-1"></i>Start Delivery
+						</li>
+						<li>
+							<form method="post" asp-page-handler="Delivering" asp-route-orderId="@Model.Order.OrderId" asp-route-id="@Model.Order.Laptop.LaptopId">
+								<button type="submit" class="dropdown-item">
+									<i class="fas fa-truck me-1 text-warning"></i> Start Delivery
 								</button>
 							</form>
-							break;
-
-						case "Delivering":
-							<form method="post" asp-page-handler="Delivered" asp-route-orderId="@Model.Order.OrderId" asp-route-id="@Model.Order.Laptop.LaptopId" class="d-inline">
-								<button type="submit" class="btn btn-sm btn-success">
-									<i class="fas fa-box-check me-1"></i>Delivered
+						</li>
+						<li>
+							<form method="post" asp-page-handler="Delivered" asp-route-orderId="@Model.Order.OrderId" asp-route-id="@Model.Order.Laptop.LaptopId">
+								<button type="submit" class="dropdown-item">
+									<i class="fas fa-box-check me-1 text-success"></i> Delivered
 								</button>
 							</form>
-							<button type="button" class="btn btn-sm btn-danger"
+						</li>
+						<li>
+							<button type="button"
+									class="dropdown-item text-danger"
 									data-bs-toggle="modal"
 									data-bs-target="#deliveryFailModal"
 									onclick="openDeliveryFailModal(@Model.Order.OrderId)">
-								<i class="fas fa-times-circle me-1"></i>Delivery Failed
+								<i class="fas fa-times-circle me-1"></i> Delivery Failed
 							</button>
-							break;
-
-						default:
-							<span class="text-muted">No actions</span>
-							break;
-					}
+						</li>
+					</ul>
 				</div>
-
 			</div>
 			<div class="stepper">
 				<!-- Step 1: Pending -->
@@ -270,53 +268,16 @@
 				</div>
 			</div>
 		</div>
-
-		<div class="modal fade" id="deliveryFailModal" tabindex="-1" aria-labelledby="deliveryFailModalLabel" aria-hidden="true">
-			<div class="modal-dialog">
-				<form method="post" enctype="multipart/form-data" asp-page-handler="DeliveredFail" class="modal-content">
-					<input type="hidden" id="failOrderId" name="orderId" />
-					<input type="hidden" name="id" value="@Model.Order.Laptop.LaptopId" />
-
-					<div class="modal-header">
-						<h5 class="modal-title" id="deliveryFailModalLabel">Reason for Delivery Failure</h5>
-						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-					</div>
-
-					<div class="modal-body">
-						<div class="mb-3">
-							<label for="reason" class="form-label">Reason</label>
-							<textarea name="reason" class="form-control" required></textarea>
-						</div>
-						<div class="mb-3">
-							<label for="imageInput" class="form-label">Evidence Images</label>
-							<input asp-for="Images"
-								   id="imageInput"
-								   type="file"
-								   class="form-control"
-								   accept="image/*"
-								   multiple />
-							<div class="form-text">Tối đa 3 ảnh.</div>
-							<div class="mt-3 d-flex flex-wrap gap-2" id="imagePreviewContainer"></div>
-						</div>
-					</div>
-
-					<div class="modal-footer">
-						<button type="submit" class="btn btn-danger">Submit</button>
-						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-					</div>
-				</form>
-			</div>
-		</div>
 	}
 </div>
 
 @await Html.PartialAsync(
-						"~/Pages/User/Rental-Order/_TicketModal.cshtml",
-						new LaptopRentalManagement.BLL.DTOs.Request.CreateTicketRequest
-					{
-						OrderId = Model.Order.OrderId
-					}
-							)
+					"~/Pages/User/Rental-Order/_TicketModal.cshtml",
+					new LaptopRentalManagement.BLL.DTOs.Request.CreateTicketRequest
+				{
+					OrderId = Model.Order.OrderId
+				}
+						)
 
 @section Styles {
 	<link rel="stylesheet" href="~/css/order-progress.css" />
@@ -336,99 +297,4 @@
 				border-radius: 4px;
 			}
 	</style>
-}
-
-@section Scripts {
-	<script>
-		let selectedFiles = [];
-
-		function openDeliveryFailModal(orderId) {
-			document.getElementById("failOrderId").value = orderId;
-			resetImagePreview();
-		}
-
-		function resetImagePreview() {
-			selectedFiles = [];
-			document.getElementById("imageInput").value = '';
-			document.getElementById("imagePreviewContainer").innerHTML = '';
-		}
-
-		document.addEventListener('DOMContentLoaded', () => {
-			const input = document.getElementById('imageInput');
-			const container = document.getElementById('imagePreviewContainer');
-			let selectedFiles = [];
-
-			// Cập nhật input.files từ selectedFiles
-			function syncInputFiles() {
-				const dt = new DataTransfer();
-				selectedFiles.forEach(f => dt.items.add(f));
-				input.files = dt.files;
-			}
-
-			// Xóa toàn bộ preview
-			function clearPreviews() {
-				container.innerHTML = '';
-				selectedFiles = [];
-				syncInputFiles();
-			}
-
-			// Mở modal thì reset preview
-			window.openDeliveryFailModal = orderId => {
-				document.getElementById("failOrderId").value = orderId;
-				clearPreviews();
-			};
-
-			input.addEventListener('change', () => {
-				const newFiles = Array.from(input.files);
-				if (selectedFiles.length + newFiles.length > 3) {
-					alert("Chỉ được chọn tối đa 3 ảnh.");
-					return;
-				}
-				newFiles.forEach(file => {
-					if (!file.type.startsWith('image/')) return;
-					selectedFiles.push(file);
-
-					// tạo preview
-					const wrapper = document.createElement('div');
-					wrapper.style.position = 'relative';
-
-					const img = document.createElement('img');
-					img.src = URL.createObjectURL(file);
-					img.style.height = '80px';
-					img.style.borderRadius = '6px';
-					img.style.objectFit = 'cover';
-					img.style.border = '1px solid #ccc';
-					img.style.padding = '2px';
-					wrapper.appendChild(img);
-
-					const removeBtn = document.createElement('button');
-					removeBtn.type = 'button';
-					removeBtn.textContent = '✕';
-					Object.assign(removeBtn.style, {
-						position: 'absolute',
-						top: '0', right: '0',
-						background: 'rgba(0,0,0,0.5)',
-						color: 'white',
-						border: 'none',
-						borderRadius: '50%',
-						width: '20px',
-						height: '20px',
-						cursor: 'pointer'
-					});
-					removeBtn.onclick = () => {
-						const idx = selectedFiles.indexOf(file);
-						if (idx > -1) selectedFiles.splice(idx, 1);
-						wrapper.remove();
-						syncInputFiles();
-					};
-					wrapper.appendChild(removeBtn);
-
-					container.appendChild(wrapper);
-				});
-
-				// Cuối cùng, sync lại input.files
-				syncInputFiles();
-			});
-		});
-	</script>
 }
