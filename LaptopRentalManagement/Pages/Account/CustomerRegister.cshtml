@@ -1,0 +1,97 @@
+@page
+@model LaptopRentalManagement.Pages.Account.RegisterModel
+@{
+    ViewData["Title"] = "Register";
+    Layout = "~/Pages/Shared/_CustomerLayout.cshtml";
+}
+
+<style>
+    .form-box {
+        background-color: #ffffff;
+        padding: 2rem;
+        border: 1px solid #dee2e6;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    .password-strength {
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+    }
+</style>
+
+<h2 class="text-center mt-4">Create Account</h2>
+
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="form-box w-100" style="max-width: 500px;">
+        <form method="post" novalidate>
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+            {
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle me-2"></i>
+                    @Model.SuccessMessage
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    @Model.ErrorMessage
+                </div>
+            }
+
+            <div class="mb-3">
+                <label asp-for="Input.Name" class="form-label">Full Name</label>
+                <input asp-for="Input.Name" class="form-control" placeholder="Enter your full name" required />
+                <span asp-validation-for="Input.Name" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Input.Email" class="form-label">Email Address</label>
+                <input asp-for="Input.Email" type="email" class="form-control" placeholder="Enter your email address" required />
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Input.Password" class="form-label">Password</label>
+                <input asp-for="Input.Password" type="password" class="form-control" placeholder="Create a strong password" required />
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+                <div class="password-strength text-muted">
+                    <small>Password should be at least 6 characters long</small>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Input.ConfirmPassword" class="form-label">Confirm Password</label>
+                <input asp-for="Input.ConfirmPassword" type="password" class="form-control" placeholder="Confirm your password" required />
+                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="agreeTerms" required>
+                <label class="form-check-label" for="agreeTerms">
+                    I agree to the <a href="/terms" target="_blank">Terms of Service</a> and <a href="/privacy" target="_blank">Privacy Policy</a>
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="fas fa-user-plus me-2"></i>
+                Create Account
+            </button>
+        </form>
+
+        <div class="text-center mt-4">
+            <p>Already have an account?</p>
+            <a asp-page="/Account/Login" class="btn btn-outline-primary">
+                <i class="fas fa-sign-in-alt me-2"></i>
+                Login
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+} 

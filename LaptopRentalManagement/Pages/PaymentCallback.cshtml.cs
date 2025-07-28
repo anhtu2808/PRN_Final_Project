@@ -18,7 +18,7 @@ public class PaymentCallbackModel : PageModel
 
     public bool IsSuccess { get; set; }
     public string Message { get; set; } = string.Empty;
-    public int? OrderId { get; set; }
+    public int OrderId { get; set; }
 
     // Handle browser redirect from ZaloPay (GET)
     public async Task<IActionResult> OnGetAsync()
@@ -42,7 +42,7 @@ public class PaymentCallbackModel : PageModel
             if (status == "1")
             {
                 IsSuccess = true;
-                Message = OrderId.HasValue
+                Message = OrderId > 0
                     ? $"Payment completed! Your order #{OrderId} is being processed."
                     : "Payment completed! Please wait for confirmation.";
             }
@@ -50,6 +50,14 @@ public class PaymentCallbackModel : PageModel
             {
                 IsSuccess = false;
                 Message = "Payment was cancelled or failed.";
+            }
+            if (status == "1") // Success
+            {
+                await _orderService.SetStatusAsync(OrderId, "Pending");
+            }
+            else
+            {
+                await _orderService.SetStatusAsync(OrderId, "Cancelled");
             }
 
             return Page();

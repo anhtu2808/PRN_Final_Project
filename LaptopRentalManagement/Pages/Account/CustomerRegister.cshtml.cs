@@ -26,9 +26,17 @@ namespace LaptopRentalManagement.Pages.Account
 
         public class InputModel
         {
-
+            [Required(ErrorMessage = "Please enter your full name")]
+            [StringLength(100, ErrorMessage = "Name cannot exceed 100 characters")]
             public string Name { get; set; } = string.Empty;
+
+            [Required(ErrorMessage = "Please enter your email address")]
+            [EmailAddress(ErrorMessage = "Please enter a valid email address")]
             public string Email { get; set; } = string.Empty;
+
+            [Required(ErrorMessage = "Please enter a password")]
+            [DataType(DataType.Password)]
+            [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters long")]
             public string Password { get; set; } = string.Empty;
 
             [Required(ErrorMessage = "Please confirm your password")]
@@ -68,30 +76,9 @@ namespace LaptopRentalManagement.Pages.Account
 
                 if (result != null)
                 {
-                    // Registration successful - automatically sign in the user
-                    var claims = new List<Claim>
-                    {
-                        new Claim(ClaimTypes.NameIdentifier, result.AccountId.ToString()),
-                        new Claim(ClaimTypes.Name, result.Name ?? result.Email),
-                        new Claim(ClaimTypes.Email, result.Email),
-                        new Claim(ClaimTypes.Role, result.Role),
-                        new Claim("AccountId", result.AccountId.ToString())
-                    };
-
-                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                    var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-
-                    var authProperties = new AuthenticationProperties
-                    {
-                        IsPersistent = false,
-                        ExpiresUtc = DateTimeOffset.UtcNow.AddHours(1),
-                        AllowRefresh = true
-                    };
-
-                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal, authProperties);
-
-                    // Redirect to customer dashboard or welcome page
-                    return RedirectToPage("/Index");
+                    // Registration successful - redirect to login with success message
+                    TempData["SuccessMessage"] = "Account created successfully! Please log in with your credentials.";
+                    return RedirectToPage("/Account/Login");
                 }
                 else
                 {

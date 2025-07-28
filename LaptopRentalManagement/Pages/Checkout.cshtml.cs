@@ -79,13 +79,11 @@ namespace LaptopRentalManagement.Pages
             {
                 // Get current user ID
                 var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("AccountId");
-                //  if (!int.TryParse(userIdClaim, out var userId))
-                // {
-                //     TempData["Error"] = "Please login to continue";
-                //     return RedirectToPage("/Account/Login");
-                // }
-                var userId = 2;
-
+                 if (!int.TryParse(userIdClaim, out var userId))
+                {
+                    TempData["Error"] = "Please login to continue";
+                    return RedirectToPage("/Account/Login");
+                }
 
                 var laptop = await _laptopService.GetByIdAsync(LaptopId);
                 if (laptop == null)
