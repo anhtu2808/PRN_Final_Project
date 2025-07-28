@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace LaptopRentalManagement.Pages.Manage.Customers
 {
-    [Authorize(Policy = "AdminOnly")]
+    //[Authorize(Policy = "AdminOnly")]
     public class CreateAccountModel : PageModel
     {
 
