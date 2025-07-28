@@ -1,0 +1,83 @@
+﻿@model LaptopRentalManagement.BLL.DTOs.Response.RentalSlotResponse
+
+@{
+    var slotMap = Model.Slots
+        .ToDictionary(s => s.SlotDate, s => s);
+}
+
+<div class="calendar-grid mb-2 text-center fw-bold">
+	<div>Sun</div>
+	<div>Mon</div>
+	<div>Tue</div>
+	<div>Wed</div>
+	<div>Thu</div>
+	<div>Fri</div>
+	<div>Sat</div>
+</div>
+
+<!-- Calendar body -->
+<div class="calendar-grid">
+	@{
+		var days = Model?.DaysInMonth ?? new List<DateTime>();
+		var firstDay = days.FirstOrDefault();
+		var leadingEmpty = firstDay != default
+		? (int)firstDay.DayOfWeek
+		: 0;
+
+		// Render ô trống đầu tháng
+		for (int i = 0; i < leadingEmpty; i++)
+		{
+			<div></div>
+		}
+
+		foreach (var date in days)
+		{
+			string cardClass, icon, statusText, textColor;
+			if (slotMap.TryGetValue(DateOnly.FromDateTime(date), out var slot))
+			{
+				switch (slot.Status)
+				{
+					case "Available":
+						cardClass = "bg-info text-white border border-info";
+						icon = "fas fa-circle-notch text-white";
+						statusText = "Available";
+						textColor = "text-white";
+						break;
+					case "Unavailable":
+						cardClass = "bg-warning-subtle border border-warning";
+						icon = "fas fa-hourglass-half text-warning";
+						statusText = "Pending";
+						textColor = "text-warning";
+						break;
+					case "Booked":
+						cardClass = "bg-success text-white border border-success";
+						icon = "fas fa-check-circle";
+						statusText = "Booked";
+						textColor = "text-white";
+						break;
+					default:
+						cardClass = "bg-light border";
+						icon = "fas fa-question-circle text-muted";
+						statusText = "Unknown";
+						textColor = "text-muted";
+						break;
+				}
+			}
+			else
+			{
+				cardClass = "bg-light border border-light-subtle";
+				icon = "fas fa-minus-circle text-muted";
+				statusText = "No Slot";
+				textColor = "text-muted";
+			}
+
+			<div class="calendar-slot @cardClass">
+				<div class="day-label">@date.Day</div>
+				<div class="d-flex justify-content-center align-items-center gap-1 small">
+					<i class="@icon"></i>
+					<span class="@textColor fw-semibold">@statusText</span>
+				</div>
+			</div>
+		}
+	}
+</div>

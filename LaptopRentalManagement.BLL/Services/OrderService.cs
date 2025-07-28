@@ -89,7 +89,7 @@ namespace LaptopRentalManagement.BLL.Services
             order.OwnerId = owner.AccountId;
             order = await _orderRepository.CreateAsync(order);
 
-            foreach (int index in request.SlotIds)
+            foreach (int index in request.SlotIds)             
             {
                 Slot? slot = await _slotRepository.GetById(index);
                 if (slot != null)

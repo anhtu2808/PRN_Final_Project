@@ -4,6 +4,7 @@ using LaptopRentalManagement.BLL.DTOs.Response;
 using LaptopRentalManagement.BLL.Interfaces;
 using LaptopRentalManagement.DAL.Entities;
 using LaptopRentalManagement.DAL.Interfaces;
+using LaptopRentalManagement.Model.DTOs.Request;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +30,11 @@ namespace LaptopRentalManagement.BLL.Services
                 slot.SlotDate = DateOnly.FromDateTime(i);
                 await _slotRepository.CreateAsync(slot);
             }
+        }
+
+        public async Task<IList<SlotResponse>> GetAllAsync(SlotFilter slotFilter)
+        {
+            return _mapper.Map<IList<SlotResponse>>(await _slotRepository.GetAllAsync(slotFilter));
         }
     }
 }

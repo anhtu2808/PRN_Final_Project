@@ -1,6 +1,7 @@
 ﻿using LaptopRentalManagement.DAL.Context;
 using LaptopRentalManagement.DAL.Entities;
 using LaptopRentalManagement.DAL.Interfaces;
+using LaptopRentalManagement.Model.DTOs.Request;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -63,5 +64,27 @@ namespace LaptopRentalManagement.DAL.Repositories
 				await _context.SaveChangesAsync();
 			}
 		}
-	}
+
+        public async Task<IList<Slot>> GetAllAsync(SlotFilter slotFilter)
+        {
+            var query = _context.Set<Slot>().AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(slotFilter.Status))
+                query = query.Where(o => o.Status == slotFilter.Status);
+
+            if (slotFilter.LaptopId.HasValue)
+                query = query.Where(o => o.LaptopId == slotFilter.LaptopId.Value);
+
+            if (slotFilter.Month.HasValue)
+                query = query.Where(o => o.SlotDate.Month == slotFilter.Month.Value);
+
+            if (slotFilter.Year.HasValue)
+                query = query.Where(o => o.SlotDate.Year == slotFilter.Year.Value);
+
+            return await query
+                .Include(o => o.Laptop)
+                .Include(o => o.Order)
+                .ToListAsync();
+        }
+    }
 }
