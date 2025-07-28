@@ -1,11 +1,13 @@
 using System.Runtime.CompilerServices;
 using LaptopRentalManagement.BLL.DTOs.Response;
 using LaptopRentalManagement.BLL.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace LaptopRentalManagement.Pages.Manage.Customers
 {
+    [Authorize(Policy = "AdminOnly")]
     public class AccountListModel : PageModel
     {
         private readonly IAccountService _accountService;
