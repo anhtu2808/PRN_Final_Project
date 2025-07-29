@@ -45,15 +45,16 @@ public class PaymentCallbackModel : PageModel
                 return RedirectToPage("/Index");
             }
 
-            // Update order status based on payment result
-            if (status == "1") // Success
-            {
-                await _orderService.UpdateStatusAsync(orderId, "Pending");
-            }
-            else
-            {
-                await _orderService.UpdateStatusAsync(orderId, "Cancelled");
-            }
+                // Update order status based on payment result
+                if (status == "1") // Success
+                {
+                    await _orderService.UpdateStatusAsync(orderId, "Pending");
+                }
+                else
+                {
+                    // Payment failed, reject the order to free slots
+                    await _orderService.RejectAsync(orderId);
+                }
 
             // Redirect to payment result page
             return RedirectToPage("/Payment/Index", new { orderId = orderId });
@@ -120,7 +121,8 @@ public class PaymentCallbackModel : PageModel
                     }
                     else
                     {
-                        await _orderService.UpdateStatusAsync(int.Parse(orderId), "Cancelled");
+                        // Payment failed, reject the order
+                        await _orderService.RejectAsync(int.Parse(orderId));
                     }
 
                     return new JsonResult(new { return_code = 1, return_message = "Success" });
