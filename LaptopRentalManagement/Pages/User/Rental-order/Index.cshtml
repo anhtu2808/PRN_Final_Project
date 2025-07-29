@@ -19,7 +19,33 @@
 		{
 			<!-- Order Status -->
 			<div class="col-md-9">
-				<h3 class="mb-4">Your Rental Order</h3>
+                                <h3 class="mb-4">Your Rental Order</h3>
+                                <ul class="nav nav-tabs mb-3">
+                                    <li class="nav-item">
+                                        <a class="nav-link @(string.IsNullOrEmpty(Model.Status) ? "active" : "")" href="/user/rental-order">All</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link @(Model.Status == "Unpaid" ? "active" : "")" href="/user/rental-order?status=Unpaid">Unpaid</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link @(Model.Status == "Pending" ? "active" : "")" href="/user/rental-order?status=Pending">Pending</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link @(Model.Status == "Approved" ? "active" : "")" href="/user/rental-order?status=Approved">Approved</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link @(Model.Status == "Delivering" ? "active" : "")" href="/user/rental-order?status=Delivering">Delivering</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link @(Model.Status == "Renting" ? "active" : "")" href="/user/rental-order?status=Renting">Renting</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link @(Model.Status == "Completed" ? "active" : "")" href="/user/rental-order?status=Completed">Completed</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link @(Model.Status == "Cancelled" ? "active" : "")" href="/user/rental-order?status=Cancelled">Cancelled</a>
+                                    </li>
+                                </ul>
 
 				<!-- Button trigger modal -->
 				<div class="tab-pane fade show active" id="buy-tab-pane" role="tabpanel">

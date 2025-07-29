@@ -18,9 +18,13 @@ namespace LaptopRentalManagement.Pages.User.Rental_order
 		{
 			_orderService = orderService;
 		}
-		public IList<OrderResponse> MyRentalOrder { get; set; } = new List<OrderResponse>();
-		public async Task<IActionResult> OnGet()
-		{
+                public IList<OrderResponse> MyRentalOrder { get; set; } = new List<OrderResponse>();
+
+                [BindProperty(SupportsGet = true)]
+                public string? Status { get; set; }
+
+                public async Task<IActionResult> OnGet()
+                {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("AccountId");
             if (!int.TryParse(userIdClaim, out var userId))
             {
@@ -28,8 +32,9 @@ namespace LaptopRentalManagement.Pages.User.Rental_order
                 return RedirectToPage("/Account/Login");
             }
             OrderFilter orderFilter = new()
-			{
-				RenterId = int.Parse(userIdClaim),
+                        {
+                                RenterId = int.Parse(userIdClaim),
+                                Status = Status,
             };
 
 			MyRentalOrder = await _orderService.GetAllAsync(orderFilter);
