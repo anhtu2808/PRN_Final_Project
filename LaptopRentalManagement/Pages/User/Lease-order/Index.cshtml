@@ -21,7 +21,11 @@
 		{
 			<!-- Order Status -->
 			<div class="col-md-9">
-				<h3 class="mb-4">Your Lease Order</h3>
+                                <h3 class="mb-4">Your Lease Order</h3>
+                                <div class="alert alert-info" role="alert">
+                                    Total Earnings (Completed Orders):
+                                    <strong>@Model.TotalRevenue.ToString("N0")₫</strong>
+                                </div>
 
 				<!-- Button trigger modal -->
 				<div class="tab-pane fade show active" id="buy-tab-pane" role="tabpanel">

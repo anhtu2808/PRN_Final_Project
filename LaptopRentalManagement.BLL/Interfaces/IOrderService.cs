@@ -27,5 +27,7 @@ namespace LaptopRentalManagement.BLL.Interfaces
         Task<bool> UpdateOrderPaymentStatusAsync(string zaloPayTransactionId, string status);
         Task<Order?> GetOrderByZaloPayTransactionIdAsync(string transactionId);
         Task<Order?> GetOrderEntityByIdAsync(int orderId);
+
+        Task<decimal> GetCompletedRevenueAsync(int ownerId);
     }
 }

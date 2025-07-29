@@ -326,5 +326,10 @@ namespace LaptopRentalManagement.BLL.Services
         {
             return await _orderRepository.GetByIdAsync(orderId);
         }
+
+        public async Task<decimal> GetCompletedRevenueAsync(int ownerId)
+        {
+            return await _orderRepository.GetCompletedRevenueAsync(ownerId);
+        }
     }
 }
