@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using LaptopRentalManagement.BLL.DTOs.Request;
 using LaptopRentalManagement.BLL.DTOs.Response;
 using LaptopRentalManagement.BLL.Interfaces;
@@ -5,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis.Scripting;
 
 namespace LaptopRentalManagement.Pages.User
 {
@@ -17,27 +20,50 @@ namespace LaptopRentalManagement.Pages.User
         {
             _accountService = accountService;
         }
-        [BindProperty]
-        public AccountDetailResponse Account { get; set; } = default!;
-
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public class AccountUpdateModel
         {
-            if (id == null)
+            public int AccountId { get; set; }
+
+            [Required]
+            public string Name { get; set; } = string.Empty;
+
+            [Required]
+            [EmailAddress]
+            public string Email { get; set; } = string.Empty;
+
+            public string Role { get; set; } = "Customer";
+
+            public string? NewPassword { get; set; }
+        }
+
+        [BindProperty]
+        public AccountUpdateModel Account { get; set; } = default!;
+
+        public async Task<IActionResult> OnGetAsync()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst("AccountId");
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int id))
             {
                 return NotFound();
             }
 
-            var account = await _accountService.GetById(id.Value);
+            var account = await _accountService.GetById(id);
             if (account == null)
             {
                 return NotFound();
             }
-            Account = account;
+
+            Account = new AccountUpdateModel
+            {
+                AccountId = account.AccountId,
+                Name = account.Name,
+                Email = account.Email,
+                Role = account.Role
+            };
+
             return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
@@ -45,13 +71,21 @@ namespace LaptopRentalManagement.Pages.User
                 return Page();
             }
 
+            var existingAccount = await _accountService.GetById(Account.AccountId);
+            if (existingAccount == null)
+            {
+                return NotFound();
+            }
+
+            string? passwordHash = null;
+
             var updateRequest = new AccountUpdateRequest
             {
                 AccountId = Account.AccountId,
                 Email = Account.Email,
-                Role = Account.Role,
                 Name = Account.Name,
-                PasswordHash = Account.PasswordHash
+                Role = "Customer",
+                PasswordHash = passwordHash
             };
 
             await _accountService.Update(updateRequest);
