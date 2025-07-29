@@ -112,7 +112,7 @@ namespace LaptopRentalManagement.DAL.Repositories
         {
             return await _context.Orders
                 .Where(o => o.OwnerId == ownerId && o.Status == "Completed")
-                .SumAsync(o => o.TotalCharge * 0.8m);
+                .SumAsync(o => o.RentalFee * 0.8m);
         }
         }
 }

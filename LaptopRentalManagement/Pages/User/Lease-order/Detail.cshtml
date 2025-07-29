@@ -133,7 +133,9 @@
 						<h5 class="card-title">@Model.Order.Laptop.Name</h5>
 						<p class="text-muted">Brand: @Model.Order.Laptop.Brand.Name</p>
 						<p><strong>Price/day:</strong> @Model.Order.Laptop.PricePerDay.ToString("N0")₫</p>
-						<p><strong>Total:</strong> <span class="text-primary fw-bold">@Model.Order.TotalCharge.ToString("N0")₫</span></p>
+                                                <p><strong>Rental Fee:</strong> <span class="text-primary fw-bold">@Model.Order.RentalFee.ToString("N0")₫</span></p>
+                                                <p><strong>Deposit:</strong> <span class="text-warning fw-bold">@Model.Order.DepositAmount.ToString("N0")₫</span></p>
+                                                <p><strong>Total:</strong> <span class="text-primary fw-bold">@Model.Order.TotalCharge.ToString("N0")₫</span></p>
 						<p>
 							<strong>Owner:</strong><br />
 							@Model.Order.Owner.Name<br />

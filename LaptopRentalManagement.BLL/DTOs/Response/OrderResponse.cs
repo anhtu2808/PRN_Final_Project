@@ -11,9 +11,10 @@ namespace LaptopRentalManagement.BLL.DTOs.Response
 		public int OrderId { get; set; }
 		public string Status { get; set; } = null!;
 
-		public decimal TotalCharge { get; set; }
-		public decimal DepositAmount { get; set; }
-		public DateOnly StartDate { get; set; }
+        public decimal TotalCharge { get; set; }
+        public decimal DepositAmount { get; set; }
+        public decimal RentalFee { get; set; }
+        public DateOnly StartDate { get; set; }
 
 		public DateOnly EndDate { get; set; }
 
