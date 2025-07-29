@@ -31,11 +31,6 @@
         <hr />
         <ul class="nav flex-column">
             <li class="nav-item mb-2">
-                <a class="nav-link @(Context.Request.Path.Value?.Equals("/account") == true ? "text-primary fw-bold" : "text-dark")" href="/account">
-                    <i class="fas fa-user me-2"></i>My Account
-                </a>
-            </li>
-            <li class="nav-item mb-2">
                 <a class="nav-link @(Context.Request.Path.Value?.Contains("/user/rental-order") == true ? "text-primary fw-bold" : "text-dark")" href="/user/rental-order">
                     <i class="fas fa-clipboard-list me-2"></i>Rental History
                 </a>
