@@ -131,6 +131,7 @@ public partial class LaptopRentalDbContext : DbContext
             entity.HasIndex(e => e.StartDate, "ix_Order_StartDate");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.Status).HasMaxLength(20).HasDefaultValue("Pending");
+            entity.Property(e => e.RentalFee).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.TotalCharge).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.ZaloPayTransactionId).HasMaxLength(100);
