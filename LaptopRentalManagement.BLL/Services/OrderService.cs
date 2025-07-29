@@ -24,9 +24,10 @@ namespace LaptopRentalManagement.BLL.Services
         private readonly IOrderLogRepository _orderLogRepository;
         private readonly IMapper _mapper;
         private readonly IFileUploadService _fileUploadService;
-		private readonly IOrderLogImgRepository _orderLogImgRepository;
+        private readonly IOrderLogImgRepository _orderLogImgRepository;
+        private readonly IZaloPayService _zaloPayService;
 
-		public OrderService(IOrderRepository orderRepository, ISlotRespository slotRepository, IMapper mapper, ILaptopRepository laptopRepository, IAccountRepository accountRepository, IOrderLogRepository orderLogRepository, IFileUploadService fileUploadService, IOrderLogImgRepository orderLogImgRepository)
+        public OrderService(IOrderRepository orderRepository, ISlotRespository slotRepository, IMapper mapper, ILaptopRepository laptopRepository, IAccountRepository accountRepository, IOrderLogRepository orderLogRepository, IFileUploadService fileUploadService, IOrderLogImgRepository orderLogImgRepository, IZaloPayService zaloPayService)
         {
             _orderRepository = orderRepository;
             _slotRepository = slotRepository;
@@ -35,8 +36,9 @@ namespace LaptopRentalManagement.BLL.Services
             _mapper = mapper;
             _orderLogRepository = orderLogRepository;
             _fileUploadService = fileUploadService;
-			_orderLogImgRepository = orderLogImgRepository;
-		}
+            _orderLogImgRepository = orderLogImgRepository;
+            _zaloPayService = zaloPayService;
+        }
 
         public async Task<OrderResponse?> ApproveAsync(int orderId)
         {
@@ -74,12 +76,19 @@ namespace LaptopRentalManagement.BLL.Services
             Order? order = await _orderRepository.GetByIdAsync(orderId);
             if (order != null)
             {
+                if (!string.IsNullOrEmpty(order.ZaloPayTransactionId) && order.Status != "Unpaid")
+                {
+                    // Attempt refund via ZaloPay
+                    await _zaloPayService.RefundAsync(order.ZaloPayTransactionId, (long)order.TotalCharge, $"Refund for order #{order.OrderId}");
+                }
+
                 IList<Slot> slots = await _slotRepository.GetByOrderId(orderId);
                 foreach (Slot slot in slots)
                 {
                     slot.Status = "Available";
                     await _slotRepository.Update(slot);
                 }
+
                 await _orderRepository.DeleteAsync(order.OrderId);
                 response = _mapper.Map<OrderResponse>(order);
             }

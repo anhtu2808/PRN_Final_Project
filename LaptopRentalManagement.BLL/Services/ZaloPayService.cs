@@ -2,6 +2,7 @@ using LaptopRentalManagement.BLL.Interfaces;
 using LaptopRentalManagement.DAL.Entities;
 using LaptopRentalManagement.Model.DTOs.Request;
 using LaptopRentalManagement.Model.DTOs.Response.Order;
+using LaptopRentalManagement.Model.DTOs.Response.Refund;
 using LaptopRentalManagement.Model.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -18,6 +19,7 @@ public class ZaloPayService : IZaloPayService
     private readonly string _key1;
     private readonly string _key2;
     private readonly string _createOrderUrl;
+    private readonly string _refundUrl;
 
     public ZaloPayService(IConfiguration configuration, HttpClient httpClient)
     {
@@ -27,6 +29,7 @@ public class ZaloPayService : IZaloPayService
         _key1 = _configuration["ZaloPay:Key1"]!;
         _key2 = _configuration["ZaloPay:Key2"]!;
         _createOrderUrl = _configuration["ZaloPay:CreateOrderUrl"]!;
+        _refundUrl = _configuration["ZaloPay:RefundUrl"] ?? string.Empty;
     }
 
     public async Task<ZaloPayCreateOrderResponse> GetPymentUrl(long amount, Order order, string redirectUrl)
@@ -121,6 +124,73 @@ public class ZaloPayService : IZaloPayService
             {
                 ReturnCode = -1,
                 ReturnMessage = $"Error calling ZaloPay API: {ex.Message}"
+            };
+        }
+    }
+
+    public async Task<ZaloPayRefundResponse> RefundAsync(string zpTransId, long amount, string description)
+    {
+        if (string.IsNullOrEmpty(_refundUrl))
+        {
+            return new ZaloPayRefundResponse
+            {
+                ReturnCode = -1,
+                ReturnMessage = "Refund URL not configured"
+            };
+        }
+
+        try
+        {
+            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            var refundRequest = new ZaloPayRefundRequest
+            {
+                AppId = int.Parse(_appId),
+                ZpTransId = zpTransId,
+                Amount = amount,
+                Description = description,
+                Timestamp = timestamp
+            };
+
+            refundRequest.MakeSignature(_key1);
+
+            var formData = new List<KeyValuePair<string, string>>
+            {
+                new("app_id", refundRequest.AppId.ToString()),
+                new("zp_trans_id", refundRequest.ZpTransId),
+                new("amount", refundRequest.Amount.ToString()),
+                new("description", refundRequest.Description),
+                new("timestamp", refundRequest.Timestamp.ToString()),
+                new("mac", refundRequest.Mac)
+            };
+
+            var formContent = new FormUrlEncodedContent(formData);
+            var response = await _httpClient.PostAsync(_refundUrl, formContent);
+            var content = await response.Content.ReadAsStringAsync();
+
+            try
+            {
+                var result = JsonConvert.DeserializeObject<ZaloPayRefundResponse>(content);
+                return result ?? new ZaloPayRefundResponse
+                {
+                    ReturnCode = -1,
+                    ReturnMessage = "Failed to parse refund response"
+                };
+            }
+            catch (JsonException ex)
+            {
+                return new ZaloPayRefundResponse
+                {
+                    ReturnCode = -1,
+                    ReturnMessage = $"JSON parsing failed: {ex.Message}"
+                };
+            }
+        }
+        catch (Exception ex)
+        {
+            return new ZaloPayRefundResponse
+            {
+                ReturnCode = -1,
+                ReturnMessage = $"Error calling refund API: {ex.Message}"
             };
         }
     }
