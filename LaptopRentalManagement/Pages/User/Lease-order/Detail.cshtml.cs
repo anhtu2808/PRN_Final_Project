@@ -1,8 +1,10 @@
 ﻿using LaptopRentalManagement.BLL.DTOs.Request;
 using LaptopRentalManagement.BLL.DTOs.Response;
 using LaptopRentalManagement.BLL.Interfaces;
+using LaptopRentalManagement.Hubs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
 
 namespace LaptopRentalManagement.Pages.User.Lease_order
@@ -12,15 +14,17 @@ namespace LaptopRentalManagement.Pages.User.Lease_order
         private readonly IOrderService _orderService;
         private readonly IOrderLogService _orderLogService;
         private readonly ITicketService _ticketService;
-
+        private readonly IHubContext<RentalHub> _hubContext;
         public DetailModel(
-        IOrderService orderService,
-        IOrderLogService orderLogService,
-        ITicketService ticketService)
+      IOrderService orderService,
+      IOrderLogService orderLogService,
+      ITicketService ticketService,
+      IHubContext<RentalHub> hubContext)
         {
             _orderService = orderService;
             _orderLogService = orderLogService;
             _ticketService = ticketService;
+            _hubContext = hubContext;
         }
 
         public OrderResponse? Order { get; set; }
@@ -48,6 +52,8 @@ namespace LaptopRentalManagement.Pages.User.Lease_order
         public async Task<IActionResult> OnPostApproveAsync(int orderId, int id)
         {
             await _orderService.ApproveAsync(orderId);
+
+            await _hubContext.Clients.All.SendAsync("ReceiveOrderStatusUpdate");
             TempData["Success"] = $"Order #{orderId} approved.";
             return RedirectToPage("/User/Lease-Order/Detail", new { id });
         }
@@ -55,14 +61,20 @@ namespace LaptopRentalManagement.Pages.User.Lease_order
         public async Task<IActionResult> OnPostRejectAsync(int orderId, int id)
         {
             await _orderService.RejectAsync(orderId);
-            TempData["Success"] = $"Order #{orderId} rejected.";
+
+			await _hubContext.Clients.All.SendAsync("ReceiveOrderStatusUpdate");
+
+			TempData["Success"] = $"Order #{orderId} rejected.";
             return RedirectToPage("/User/Lease-Order/Detail", new { id });
         }
 
         public async Task<IActionResult> OnPostConfirmReturnAsync(int orderId, int id)
         {
             await _orderService.ConfirmReturn(orderId);
-            TempData["Success"] = $"Order #{orderId} marked as returned.";
+
+			await _hubContext.Clients.All.SendAsync("ReceiveOrderStatusUpdate");
+
+			TempData["Success"] = $"Order #{orderId} marked as returned.";
             return RedirectToPage("/User/Lease-Order/Detail", new { id });
         }
 
@@ -73,7 +85,10 @@ namespace LaptopRentalManagement.Pages.User.Lease_order
                 OrderId = orderId,
                 NewStatus = "Delivering"
             });
-            TempData["Success"] = $"Order #{orderId} set to 'Delivering'.";
+
+			await _hubContext.Clients.All.SendAsync("ReceiveOrderStatusUpdate");
+
+			TempData["Success"] = $"Order #{orderId} set to 'Delivering'.";
             return RedirectToPage("/User/Lease-Order/Detail", new { id });
         }
 
@@ -84,7 +99,9 @@ namespace LaptopRentalManagement.Pages.User.Lease_order
                 OrderId = orderId,
                 NewStatus = "Renting"
             });
-            TempData["Success"] = $"Order #{orderId} delivered successfully.";
+
+			await _hubContext.Clients.All.SendAsync("ReceiveOrderStatusUpdate");
+			TempData["Success"] = $"Order #{orderId} delivered successfully.";
             return RedirectToPage("/User/Lease-Order/Detail", new { id });
         }
 
@@ -101,7 +118,9 @@ namespace LaptopRentalManagement.Pages.User.Lease_order
                 Forms = Images
             };
 
-            await _orderService.SetStatusAsync(request);
+			await _hubContext.Clients.All.SendAsync("ReceiveOrderStatusUpdate");
+
+			await _orderService.SetStatusAsync(request);
 
             TempData["Warning"] = $"Delivery for order #{orderId} failed. Status reverted to 'Delivering'.";
 

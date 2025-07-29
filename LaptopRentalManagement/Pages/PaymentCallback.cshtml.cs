@@ -1,7 +1,10 @@
 using LaptopRentalManagement.BLL.Interfaces;
 using LaptopRentalManagement.DAL.Entities;
+using LaptopRentalManagement.Hubs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace LaptopRentalManagement.Pages;
@@ -10,12 +13,13 @@ public class PaymentCallbackModel : PageModel
 {
     private readonly IOrderService _orderService;
     private readonly IZaloPayService _zaloPayService;
-
-    public PaymentCallbackModel(IOrderService orderService, IZaloPayService zaloPayService)
-    {
+	private readonly IHubContext<RentalHub> _hubContext;
+	public PaymentCallbackModel(IOrderService orderService, IZaloPayService zaloPayService, IHubContext<RentalHub> hubContext)
+	{
         _orderService = orderService;
         _zaloPayService = zaloPayService;
-    }
+		_hubContext = hubContext;
+	}
 
     public bool IsSuccess { get; set; }
     public string Message { get; set; } = string.Empty;
@@ -55,9 +59,9 @@ public class PaymentCallbackModel : PageModel
                     // Payment failed, reject the order to free slots
                     await _orderService.RejectAsync(orderId);
                 }
-
-            // Redirect to payment result page
-            return RedirectToPage("/Payment/Index", new { orderId = orderId });
+			await _hubContext.Clients.All.SendAsync("ReceiveOrderStatusUpdate");
+			// Redirect to payment result page
+			return RedirectToPage("/Payment/Index", new { orderId = orderId });
         }
         catch (Exception ex)
         {
@@ -124,8 +128,8 @@ public class PaymentCallbackModel : PageModel
                         // Payment failed, reject the order
                         await _orderService.RejectAsync(int.Parse(orderId));
                     }
-
-                    return new JsonResult(new { return_code = 1, return_message = "Success" });
+					
+					return new JsonResult(new { return_code = 1, return_message = "Success" });
                 }
                 else
                 {

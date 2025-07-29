@@ -96,3 +96,20 @@
 @section Styles {
 	<link rel="stylesheet" href="~/css/order-progress.css" />
 }
+
+@section Scripts {
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+	<script>
+		const connection = new signalR.HubConnectionBuilder()
+			.withUrl("/rentalHub")
+			.build();
+
+		connection.start().then(() => {
+			console.log("SignalR connected to /rentalHub");
+		}).catch(err => console.error("SignalR connection failed:", err));
+
+		connection.on("ReceiveOrderStatusUpdate", () => {
+			location.reload();
+		});
+	</script>
+}

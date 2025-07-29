@@ -3,8 +3,11 @@ using LaptopRentalManagement.BLL.DTOs.Request;
 using LaptopRentalManagement.BLL.DTOs.Response;
 using LaptopRentalManagement.BLL.Interfaces;
 using LaptopRentalManagement.DAL.Interfaces;
+using LaptopRentalManagement.Hubs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 
 namespace LaptopRentalManagement.Pages
 {
@@ -16,16 +19,17 @@ namespace LaptopRentalManagement.Pages
         private readonly ISlotService _slotService;
         private readonly IZaloPayService _zaloPayService;
         private readonly IOrderRepository _orderRepository;
-
-        public Checkout(ILaptopService laptopService, IOrderService orderService, ISlotService slotService,
-            IZaloPayService zaloPayService, IOrderRepository orderRepository)
-        {
+		private readonly IHubContext<RentalHub> _hubContext;
+		public Checkout(ILaptopService laptopService, IOrderService orderService, ISlotService slotService,
+            IZaloPayService zaloPayService, IOrderRepository orderRepository, IHubContext<RentalHub> hubContext)
+		{
             _laptopService = laptopService;
             _orderService = orderService;
             _slotService = slotService;
             _zaloPayService = zaloPayService;
             _orderRepository = orderRepository;
-        }
+			_hubContext = hubContext;
+		}
 
         public LaptopResponse Laptop { get; set; }
         public List<SlotResponse> Slots { get; set; }
@@ -130,11 +134,11 @@ namespace LaptopRentalManagement.Pages
                 if (zaloPayResponse.ReturnCode != 1)
                 {
                     TempData["Error"] = $"Payment initialization failed: {zaloPayResponse.ReturnMessage}";
-                    return Page();
+					return Page();
                 }
-
-                // Step 5: Redirect to ZaloPay
-                return Redirect(zaloPayResponse.OrderUrl);
+				await _hubContext.Clients.All.SendAsync("ReceiveOrderStatusUpdate");
+				// Step 5: Redirect to ZaloPay
+				return Redirect(zaloPayResponse.OrderUrl);
             }
             catch (Exception ex)
             {

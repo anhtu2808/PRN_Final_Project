@@ -1,8 +1,10 @@
 ﻿using LaptopRentalManagement.BLL.DTOs.Request;
 using LaptopRentalManagement.BLL.DTOs.Response;
 using LaptopRentalManagement.BLL.Interfaces;
+using LaptopRentalManagement.Hubs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
 
 namespace LaptopRentalManagement.Pages.User.Rental_order
@@ -12,15 +14,17 @@ namespace LaptopRentalManagement.Pages.User.Rental_order
 		private readonly IOrderService _orderService;
 		private readonly IOrderLogService _orderLogService;
 		private readonly ITicketService _ticketService;
-
+		private readonly IHubContext<RentalHub> _hubContext;
 		public DetailModel(
 		IOrderService orderService,
 		IOrderLogService orderLogService,
-		ITicketService ticketService)
+		ITicketService ticketService,
+		IHubContext<RentalHub> hubContext)
 		{
 			_orderService = orderService;
 			_orderLogService = orderLogService;
 			_ticketService = ticketService;
+			_hubContext = hubContext;
 		}
 
 		public OrderResponse? Order { get; set; }
@@ -51,7 +55,9 @@ namespace LaptopRentalManagement.Pages.User.Rental_order
 		public async Task<IActionResult> OnPostConfirmReturnAsync(int orderId)
 		{
 			await _orderService.ConfirmReturn(orderId);
-                        TempData["Success"] = $"Order #{orderId} marked as returned.";
+
+			await _hubContext.Clients.All.SendAsync("ReceiveOrderStatusUpdate");
+			TempData["Success"] = $"Order #{orderId} marked as returned.";
 			return RedirectToPage("/User/Rental-Order/Detail", new { orderId });
 		}
 
@@ -65,7 +71,8 @@ namespace LaptopRentalManagement.Pages.User.Rental_order
 			}
 
 			await _ticketService.CreateTicketAsync(TicketRequest);
-                        TempData["Success"] = "Support request submitted successfully!";
+			await _hubContext.Clients.All.SendAsync("ReceiveOrderStatusUpdate");
+			TempData["Success"] = "Support request submitted successfully!";
 			return RedirectToPage("/User/Rental-Order/Detail", new { TicketRequest.OrderId });
 		}
 
