@@ -41,7 +41,7 @@ namespace LaptopRentalManagement.Pages
         {
             if (selectedSlots == null || !selectedSlots.Any())
             {
-                TempData["Error"] = "Vui lòng chọn ít nhất một ngày thuê.";
+                TempData["Error"] = "Please select at least one rental day.";
                 return RedirectToPage("/Laptops/Details", new { id = id });
             }
 
@@ -50,7 +50,7 @@ namespace LaptopRentalManagement.Pages
             Laptop = await _laptopService.GetByIdAsync(id);
             if (Laptop == null)
             {
-                return NotFound("Không tìm thấy laptop.");
+                return NotFound("Laptop not found.");
             }
 
             LaptopId = Laptop.LaptopId;

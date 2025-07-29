@@ -25,7 +25,7 @@ public class IndexModel : PageModel
         }
         catch (Exception ex)
         {
-            TempData["Error"] = "Lỗi khi tải danh sách danh mục: " + ex.Message;
+            TempData["Error"] = "Error loading categories: " + ex.Message;
             Categories = new List<CategoryResponse>();
         }
     }
@@ -61,7 +61,7 @@ public class IndexModel : PageModel
         {
             var request = new CreateCategoryRequest { Name = name, Description = description };
             var result = await _categoryService.CreateCategoryAsync(request);
-            TempData["Success"] = $"Tạo danh mục '{result.Name}' thành công!";
+            TempData["Success"] = $"Category '{result.Name}' created successfully!";
             return new JsonResult(new { success = true });
         }
         catch (InvalidOperationException ex)
@@ -71,7 +71,7 @@ public class IndexModel : PageModel
         catch (Exception ex)
         {
             return new JsonResult(new
-                { success = false, errors = new { General = new[] { "Lỗi khi tạo danh mục: " + ex.Message } } });
+                { success = false, errors = new { General = new[] { "Error creating category: " + ex.Message } } });
         }
     }
 
@@ -91,7 +91,7 @@ public class IndexModel : PageModel
         {
             var request = new UpdateCategoryRequest { CategoryId = categoryId, Name = name, Description = description };
             var result = await _categoryService.UpdateCategoryAsync(request);
-            TempData["Success"] = $"Cập nhật danh mục '{result.Name}' thành công!";
+            TempData["Success"] = $"Category '{result.Name}' updated successfully!";
             return new JsonResult(new { success = true });
         }
         catch (ArgumentException ex)
@@ -105,7 +105,7 @@ public class IndexModel : PageModel
         catch (Exception ex)
         {
             return new JsonResult(new
-                { success = false, errors = new { General = new[] { "Lỗi khi cập nhật danh mục: " + ex.Message } } });
+                { success = false, errors = new { General = new[] { "Error updating category: " + ex.Message } } });
         }
     }
 
@@ -115,13 +115,13 @@ public class IndexModel : PageModel
         {
             var success = await _categoryService.DeleteCategoryAsync(id);
             if (success)
-                TempData["Success"] = "Xóa danh mục thành công!";
+                TempData["Success"] = "Category deleted successfully!";
             else
-                TempData["Error"] = "Không thể xóa danh mục!";
+                TempData["Error"] = "Cannot delete category!";
         }
         catch (Exception ex)
         {
-            TempData["Error"] = "Lỗi khi xóa danh mục: " + ex.Message;
+            TempData["Error"] = "Error deleting category: " + ex.Message;
         }
 
         return RedirectToPage();

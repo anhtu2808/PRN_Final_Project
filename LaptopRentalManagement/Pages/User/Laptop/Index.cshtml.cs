@@ -75,11 +75,11 @@ namespace LaptopRentalManagement.Pages.User.Rental_orders
             try
             {
                 await _slotService.CreateAsync(NewSlot);
-                TempData["Success"] = "Tạo slot thành công!";
+                TempData["Success"] = "Slot created successfully!";
             }
             catch (Exception ex)
             {
-                TempData["Error"] = "Có lỗi xảy ra khi tạo slot: " + ex.Message;
+                TempData["Error"] = "Error while creating slot: " + ex.Message;
             }
 
             return RedirectToPage();

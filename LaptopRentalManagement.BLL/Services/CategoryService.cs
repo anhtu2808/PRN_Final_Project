@@ -63,10 +63,10 @@ namespace LaptopRentalManagement.BLL.Services
 
         public async Task<CategoryResponse> CreateCategoryAsync(CreateCategoryRequest request)
         {
-            // Kiểm tra tên category đã tồn tại chưa
+            // Check if category name already exists
             if (await _categoryRepository.ExistsByNameAsync(request.Name))
             {
-                throw new InvalidOperationException($"Danh mục với tên '{request.Name}' đã tồn tại.");
+                throw new InvalidOperationException($"A category with name '{request.Name}' already exists.");
             }
 
             var category = _mapper.Map<Category>(request);
@@ -79,17 +79,17 @@ namespace LaptopRentalManagement.BLL.Services
 
         public async Task<CategoryResponse> UpdateCategoryAsync(UpdateCategoryRequest request)
         {
-            // Kiểm tra category có tồn tại không
+            // Check if category exists
             var existingCategory = await _categoryRepository.GetByIdAsync(request.CategoryId);
             if (existingCategory == null)
             {
-                throw new ArgumentException($"Không tìm thấy danh mục với ID {request.CategoryId}");
+                throw new ArgumentException($"Category with ID {request.CategoryId} not found.");
             }
 
-            // Kiểm tra tên category đã tồn tại chưa (trừ chính nó)
+            // Check if category name already exists (excluding current one)
             if (await _categoryRepository.ExistsByNameAsync(request.Name, request.CategoryId))
             {
-                throw new InvalidOperationException($"Danh mục với tên '{request.Name}' đã tồn tại.");
+                throw new InvalidOperationException($"A category with name '{request.Name}' already exists.");
             }
 
             // Cập nhật thông tin
@@ -105,10 +105,10 @@ namespace LaptopRentalManagement.BLL.Services
 
         public async Task<bool> DeleteCategoryAsync(int id)
         {
-            // Kiểm tra có thể xóa được không
+            // Check if the category can be deleted
             if (!await CanDeleteCategoryAsync(id))
             {
-                throw new InvalidOperationException("Không thể xóa danh mục này vì đang có laptop thuộc danh mục.");
+                throw new InvalidOperationException("Cannot delete this category because laptops are assigned to it.");
             }
 
             return await _categoryRepository.DeleteAsync(id);
