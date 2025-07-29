@@ -102,6 +102,8 @@ builder.Services.AddScoped<ITicketService, TicketService>();
 builder.Services.AddScoped<IChatRoomRepository, ChatRoomRepository>();
 builder.Services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
 builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<ITicketChatMessageRepository, TicketChatMessageRepository>();
+builder.Services.AddScoped<ITicketChatService, TicketChatService>();
 
 // Register ZaloPay services
 builder.Services.AddScoped<IZaloPayService, ZaloPayService>();
@@ -132,7 +134,8 @@ app.UseAuthorization();
 app.MapRazorPages();
 
 // Map new ChatHub
-app.MapHub<ChatHub>("/chathub"); 
+app.MapHub<ChatHub>("/chathub");
 app.MapHub<RentalHub>("/rentalHub");
+app.MapHub<TicketChatHub>("/ticketChatHub");
 
 app.Run();

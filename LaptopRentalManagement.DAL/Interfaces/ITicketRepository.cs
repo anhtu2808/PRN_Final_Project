@@ -9,9 +9,11 @@ namespace LaptopRentalManagement.DAL.Interfaces
 {
     public interface ITicketRepository
     {
-		Task<Ticket> CreateAsync(Ticket ticket);
-		Task<IList<Ticket>> GetAllByOrderIdAsync(int id);
-		Task<IList<Ticket>> GetAllAsync();
+        Task<Ticket> CreateAsync(Ticket ticket);
+        Task<IList<Ticket>> GetAllByOrderIdAsync(int id);
+        Task<IList<Ticket>> GetByRenterIdAsync(int renterId);
+        Task<IList<Ticket>> GetByAccountIdAsync(int accountId);
+        Task<IList<Ticket>> GetAllAsync();
 		Task<Ticket?> GetByIdAsync(int id);
 		Task<Ticket> UpdateAsync(Ticket ticket);
 		Task DeleteAsync(int id);
