@@ -18,6 +18,8 @@ namespace LaptopRentalManagement.BLL.Interfaces
         Task DeleteReviewAsync(int reviewId, int userId);
         Task<bool> CanUserReviewOrderAsync(int orderId, int userId);
 
+        Task<int?> GetEligibleOrderIdForReviewAsync(int laptopId, int userId);
+
         Task<(IEnumerable<ReviewResponse> Reviews, int TotalPages)> GetFilteredReviewsAsync(
     string? searchTerm, int? selectedRating, DateTime? dateFrom, DateTime? dateTo, int currentPage, int pageSize);
 
