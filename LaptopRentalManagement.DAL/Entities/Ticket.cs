@@ -16,6 +16,7 @@ public class Ticket
 
     // Navigation
     public virtual Order  Order    { get; set; }    
-    public virtual Account Renter   { get; set; }   
-    public virtual Account Owner  { get; set; }   
+    public virtual Account Renter   { get; set; }
+    public virtual Account Owner  { get; set; }
+    public virtual ICollection<TicketChatMessage> ChatMessages { get; set; } = new List<TicketChatMessage>();
 }
