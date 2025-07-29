@@ -7,11 +7,13 @@
 	var status = Model.Order?.Status ?? "Unknown";
 
 	var slotDates = Model.Order.Slots.Select(s => s.SlotDate).OrderBy(d => d).ToList();
-	var start = slotDates.FirstOrDefault();
-	var end = slotDates.LastOrDefault();
-	var totalDays = slotDates.Count;
-	var isRenting = status == "Renting";
-	var currentStep = status switch
+        var start = slotDates.FirstOrDefault();
+        var end = slotDates.LastOrDefault();
+        var totalDays = slotDates.Count;
+        var isRenting = status == "Renting";
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var canConfirmReturn = isRenting && today >= end.AddDays(1);
+        var currentStep = status switch
 	{
 		"Pending" => 1,
 		"Approved" => 2,
@@ -47,16 +49,16 @@
 				<h5 class="fw-bold mb-0">Order Progress</h5>
 
 
-				<div class="d-flex gap-2">
-					@if (isRenting)
-					{
-						<!-- Nút xác nhận đã trả -->
-						<form method="post" asp-page-handler="ConfirmReturn" asp-route-orderId="@Model.Order.OrderId">
-							<button type="submit" class="btn btn-success btn-sm">
-								<i class="fas fa-check-circle me-1"></i> Confirm Return
-							</button>
-						</form>
-					}
+                                <div class="d-flex gap-2">
+                                        @if (canConfirmReturn)
+                                        {
+                                                <!-- Nút xác nhận đã trả -->
+                                                <form method="post" asp-page-handler="ConfirmReturn" asp-route-orderId="@Model.Order.OrderId">
+                                                        <button type="submit" class="btn btn-success btn-sm">
+                                                                <i class="fas fa-check-circle me-1"></i> Confirm Return
+                                                        </button>
+                                                </form>
+                                        }
 					<!-- Nút khiếu nại -->
 					<button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#ticketModal">
 						<i class="fas fa-life-ring me-1"></i> Send ticket
