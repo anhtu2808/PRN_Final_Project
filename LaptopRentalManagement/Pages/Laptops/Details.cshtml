@@ -73,7 +73,7 @@ var summary = Model.ReviewSummary;
                 </div>
 
                 <div class="deposit-info mb-3">
-                    <span class="fw-bold">Tiền cọc:</span>
+                    <span class="fw-bold">Deposit:</span>
                     <span class="h5 text-success">@Model.Laptop?.Deposit.ToString("N0") ₫</span>
                 </div>
 
@@ -83,7 +83,7 @@ var summary = Model.ReviewSummary;
 
                     <input type="hidden" name="id" value="@Model.Laptop.LaptopId" />
 
-                    <h5 class="mb-3">Chọn ngày thuê</h5>
+                    <h5 class="mb-3">Select Rental Dates</h5>
 
                     <div class="row g-2 mb-3">
                         @foreach (var slot in Model.Slots.OrderBy(s => s.SlotDate))
@@ -106,20 +106,20 @@ var summary = Model.ReviewSummary;
 
                     <div class="rental-summary mb-3 p-3 bg-white rounded">
                         <div class="d-flex justify-content-between">
-                            <span>Ngày đã chọn:</span>
-                            <span id="selectedCount">0 ngày</span>
+                            <span>Selected Days:</span>
+                            <span id="selectedCount">0 days</span>
                         </div>
                         <div class="d-flex justify-content-between">
-                            <span>Giá mỗi ngày:</span>
+                            <span>Daily Price:</span>
                             <span>@Model.Laptop?.PricePerDay.ToString("N0")₫</span>
                         </div>
                         <div class="d-flex justify-content-between">
-                            <span>Tiền cọc (hoàn lại):</span>
+                            <span>Deposit (refundable):</span>
                             <span>@Model.Laptop?.Deposit.ToString("N0")₫</span>
                         </div>
                         <hr/>
                         <div class="d-flex justify-content-between fw-bold">
-                            <span>Tổng tiền:</span>
+                            <span>Total:</span>
                             <span id="totalPrice">₫0</span>
                         </div>
                     </div>
@@ -352,6 +352,14 @@ var summary = Model.ReviewSummary;
                 <div class="tab-pane fade" id="policies" role="tabpanel">
                     <div class="policies-content p-4">
                         <h5>Rental Terms & Conditions</h5>
+                        <ul>
+                            <li>A valid ID and deposit are required before pickup.</li>
+                            <li>Rental charges are calculated per day. Late returns incur additional fees.</li>
+                            <li>Any damage to the laptop will be charged to the renter.</li>
+                            <li>Cancellations made 24 hours in advance receive a full refund.</li>
+                            <li>Pick up before 9&nbsp;AM and return by 8&nbsp;AM the next day. Late returns will be fined 10% of the total order for each hour.</li>
+                            <li>See our policy page for complete details.</li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -396,22 +404,22 @@ var summary = Model.ReviewSummary;
         const selectedCount = document.getElementById('selectedCount');
         const totalPrice = document.getElementById('totalPrice');
         const dailyRate = @(Model.Laptop?.PricePerDay ?? 0);
-        const deposit = @(Model.Laptop?.Deposit ?? 0); // Lấy giá trị tiền cọc
+        const deposit = @(Model.Laptop?.Deposit ?? 0); // Deposit amount
 
         function updateSummary() {
             const selected = Array.from(slotCheckboxes).filter(cb => cb.checked).length;
             const rentalCost = selected * dailyRate;
 
-            // Chỉ cộng tiền cọc nếu có ít nhất 1 ngày được chọn
+            // Include the deposit only when at least one day is selected
             const total = selected > 0 ? rentalCost + deposit : 0;
 
-            selectedCount.textContent = `${selected} ngày`;
+            selectedCount.textContent = `${selected} day${selected !== 1 ? 's' : ''}`;
             totalPrice.textContent = `₫${total.toLocaleString()}`;
         }
 
         slotCheckboxes.forEach(cb => cb.addEventListener('change', updateSummary));
 
-        // Cập nhật giá lần đầu khi tải trang
+        // Update summary on initial load
         updateSummary();
     });
 </script>
