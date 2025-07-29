@@ -56,7 +56,80 @@
     <h4 class="mb-3">Rental History</h4>
     @if (Model.Orders != null && Model.Orders.Any())
     {
-        @* Bảng lịch sử thuê không đổi *@
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Renter</th>
+                    <th>Rental Dates</th>
+                    <th>Total Days</th>
+                    <th>Status</th>
+                    <th>Total Charge</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model.Orders.OrderByDescending(o => o.OrderId))
+                {
+                    <tr>
+                        <td>@order.OrderId</td>
+                        <td>@(order.Renter?.Name ?? "Not assigned")</td>
+                        <td>@string.Join(", ", order.Slots.Select(s => s.SlotDate.ToString("dd/MM/yyyy")))</td>
+                        <td>@order.Slots.Count</td>
+                        <td>@order.Status</td>
+                        <td>@order.TotalCharge.ToString("N0") đ</td>
+                        @*<td class="text-nowrap">
+                @switch (order.Status)
+                {
+                case "Pending":
+                <form method="post" asp-page-handler="Approve" asp-route-orderId="@order.OrderId" asp-route-id="@Model.Laptop.LaptopId" class="d-inline">
+                <button type="submit" class="btn btn-sm btn-success">
+                <i class="fas fa-check me-1"></i>Approve
+                </button>
+                </form>
+                <form method="post" asp-page-handler="Reject" asp-route-orderId="@order.OrderId" asp-route-id="@Model.Laptop.LaptopId" class="d-inline ms-1">
+                <button type="submit" class="btn btn-sm btn-danger">
+                <i class="fas fa-times me-1"></i>Reject
+                </button>
+                </form>
+                break;
+
+                case "Approved":
+                <form method="post" asp-page-handler="Delivering" asp-route-orderId="@order.OrderId" asp-route-id="@Model.Laptop.LaptopId" class="d-inline">
+                <button type="submit" class="btn btn-sm btn-warning">
+                <i class="fas fa-truck me-1"></i>Start Delivery
+                </button>
+                </form>
+                break;
+
+                case "Delivering":
+                <form method="post" asp-page-handler="Delivered" asp-route-orderId="@order.OrderId" asp-route-id="@Model.Laptop.LaptopId" class="d-inline">
+                <button type="submit" class="btn btn-sm btn-success">
+                <i class="fas fa-box-check me-1"></i>Delivered
+                </button>
+                </form>
+                <button type="button" class="btn btn-sm btn-danger"
+                data-bs-toggle="modal"
+                data-bs-target="#deliveryFailModal"
+                onclick="openDeliveryFailModal(@order.OrderId)">
+                <i class="fas fa-times-circle me-1"></i>Delivery Failed
+                </button>
+                break;
+
+                default:
+                <span class="text-muted">No actions</span>
+                break;
+                }
+                </td>*@
+                        <td class="text-nowrap">
+                            <a href="/user/lease-order/detail/@order.OrderId" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-info-circle me-1"></i>View Details
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     }
     else
     {
@@ -66,7 +139,28 @@
     <hr class="my-4" />
 
     <h4 class="mb-3">Rental Slots</h4>
-    @* Phần quản lý slot không đổi *@
+
+    <form class="d-flex gap-2 mb-3">
+        <select id="monthSelect" class="form-select w-auto">
+            @for (int m = 1; m <= 12; m++)
+            {
+                <option value="@m" selected="@(m == DateTime.Now.Month ? "selected" : null)">
+                    @System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m)
+                </option>
+            }
+        </select>
+        <select id="yearSelect" class="form-select w-auto">
+            @for (int y = DateTime.Now.Year - 2; y <= DateTime.Now.Year + 2; y++)
+            {
+                <option value="@y" selected="@(y == DateTime.Now.Year ? "selected" : null)">@y</option>
+            }
+        </select>
+        <input type="hidden" id="laptopId" value="@Model.Laptop.LaptopId" />
+    </form>
+
+    <div id="slots-container">
+        @await Html.PartialAsync("_RentalSlotsPartial", Model.RentalSlot)
+    </div>
 
 </div>
 
@@ -167,22 +261,29 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
-        // Script cho slot không đổi
-        async function updateSlots() { /* ... */ }
-        function initSlotSelector() { /* ... */ }
+        async function updateSlots() {
+            const month = document.getElementById("monthSelect").value;
+            const year = document.getElementById("yearSelect").value;
+            const id = document.getElementById("laptopId").value;
+
+            try {
+                const response = await fetch(`?handler=RentalSlots&id=${id}&month=${month}&year=${year}`);
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                const html = await response.text();
+                document.getElementById("slots-container").innerHTML = html;
+            } catch (err) {
+                console.error("Failed to fetch rental slots:", err);
+            }
+        }
+
+        function initSlotSelector() {
+            document.getElementById("monthSelect").addEventListener("change", updateSlots);
+            document.getElementById("yearSelect").addEventListener("change", updateSlots);
+        }
+
         document.addEventListener("DOMContentLoaded", initSlotSelector);
-
-			const response = await fetch(`?handler=RentalSlots&id=${id}&month=${month}&year=${year}`);
-			const html = await response.text();
-			document.getElementById("slots-container").innerHTML = html;
-		}
-
-		function initSlotSelector() {
-			document.getElementById("monthSelect").addEventListener("change", updateSlots);
-			document.getElementById("yearSelect").addEventListener("change", updateSlots);
-		}
-
-		document.addEventListener("DOMContentLoaded", initSlotSelector);
 
 		let selectedFiles = [];
 

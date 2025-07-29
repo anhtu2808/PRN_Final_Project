@@ -66,7 +66,7 @@
                                             <td>
                                                 @if (ticket.Order != null)
                                                 {
-                                                    <a href="/manage/orders/details/@ticket.Order.OrderId" 
+                                                    <a href="/manage/orders/detail/@ticket.Order.OrderId" 
                                                        class="btn btn-sm btn-outline-primary" 
                                                        title="View Order Details">
                                                         <i class="fas fa-external-link-alt me-1"></i>
@@ -306,7 +306,7 @@
                 const orderDisplay = document.getElementById('displayOrder');
                 if (ticket.orderId) {
                     orderDisplay.innerHTML = `
-                        <a href="/manage/orders/details/${ticket.orderId}" 
+                        <a href="/manage/orders/detail/${ticket.orderId}" 
                            class="btn btn-sm btn-outline-primary" target="_blank">
                             <i class="fas fa-external-link-alt me-1"></i>
                             Order #${ticket.orderId}

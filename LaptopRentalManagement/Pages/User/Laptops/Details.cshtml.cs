@@ -91,16 +91,22 @@ public class DetailsModel : PageModel
 
     public async Task<PartialViewResult> OnGetRentalSlotsAsync(int id, int month, int year)
     {
-        // ... (logic không đổi)
         IList<SlotResponse> slots = await _slotService.GetAllAsync(new() { LaptopId = id, Month = month, Year = year });
-        var daysInMonth = Enumerable.Range(1, DateTime.DaysInMonth(year, month)).Select(d => new DateTime(year, month, d)).ToList();
-        var rentalSlot = new RentalSlotResponse { Slots = slots, DaysInMonth = daysInMonth };
+        var daysInMonth = Enumerable.Range(1, DateTime.DaysInMonth(year, month))
+            .Select(d => new DateTime(year, month, d))
+            .ToList();
+
+        var rentalSlot = new RentalSlotResponse
+        {
+            Slots = slots,
+            DaysInMonth = daysInMonth
+        };
+
         return Partial("_RentalSlotsPartial", rentalSlot);
     }
-    
+
     public async Task<IActionResult> OnPostRentOutAsync()
     {
-        // ... (logic không đổi)
         try
         {
             await _slotService.CreateAsync(NewSlot);
