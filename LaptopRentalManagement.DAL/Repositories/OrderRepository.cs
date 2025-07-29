@@ -64,12 +64,13 @@ namespace LaptopRentalManagement.DAL.Repositories
 			if (orderFilter.LaptopId.HasValue)
 				query = query.Where(o => o.LaptopId == orderFilter.LaptopId.Value);
 
-			return await query
-				.Include(o => o.Laptop)
-				.Include(o => o.Owner)
-				.Include(o => o.Renter)
-				.ToListAsync();
-		}
+                        return await query
+                                .Include(o => o.Laptop)
+                                .Include(o => o.Owner)
+                                .Include(o => o.Renter)
+                                .OrderByDescending(o => o.CreatedAt)
+                                .ToListAsync();
+                }
 
 		public async Task<Order?> GetByIdAsync(int id)
 		{

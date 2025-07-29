@@ -21,6 +21,10 @@ namespace LaptopRentalManagement.Pages.User.Lease_order
         public IList<OrderResponse> MyLeaseOrder { get; set; } = new List<OrderResponse>();
 
         public decimal TotalRevenue { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public string? Status { get; set; }
+
         public async Task<IActionResult> OnGet()
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("AccountId");
@@ -31,7 +35,8 @@ namespace LaptopRentalManagement.Pages.User.Lease_order
             }
             OrderFilter orderFilter = new()
             {
-                OwnerId = int.Parse(userIdClaim)
+                OwnerId = int.Parse(userIdClaim),
+                Status = Status
             };
 
             MyLeaseOrder = await _orderService.GetAllAsync(orderFilter);

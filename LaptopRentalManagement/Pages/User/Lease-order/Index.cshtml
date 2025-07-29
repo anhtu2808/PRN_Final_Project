@@ -22,6 +22,32 @@
 			<!-- Order Status -->
 			<div class="col-md-9">
                                 <h3 class="mb-4">Your Lease Order</h3>
+                                <ul class="nav nav-tabs mb-3">
+                                    <li class="nav-item">
+                                        <a class="nav-link @(string.IsNullOrEmpty(Model.Status) ? "active" : "")" href="/user/lease-order">All</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link @(Model.Status == "Unpaid" ? "active" : "")" href="/user/lease-order?status=Unpaid">Unpaid</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link @(Model.Status == "Pending" ? "active" : "")" href="/user/lease-order?status=Pending">Pending</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link @(Model.Status == "Approved" ? "active" : "")" href="/user/lease-order?status=Approved">Approved</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link @(Model.Status == "Delivering" ? "active" : "")" href="/user/lease-order?status=Delivering">Delivering</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link @(Model.Status == "Renting" ? "active" : "")" href="/user/lease-order?status=Renting">Renting</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link @(Model.Status == "Completed" ? "active" : "")" href="/user/lease-order?status=Completed">Completed</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link @(Model.Status == "Cancelled" ? "active" : "")" href="/user/lease-order?status=Cancelled">Cancelled</a>
+                                    </li>
+                                </ul>
                                 <div class="alert alert-info" role="alert">
                                     Total Earnings (Completed Orders):
                                     <strong>@Model.TotalRevenue.ToString("N0")₫</strong>
