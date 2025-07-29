@@ -21,6 +21,7 @@
                 "Delivering" => 4,
                 "Renting" => 5,
                 "Completed" => 6,
+                "Cancelled" => 7,
                 _ => 0
         };
 }
@@ -134,9 +135,15 @@
                                 </div>
 
                                 <!-- Step 6: Complete -->
-                                <div class="step @(currentStep == 6 ? "active" : "upcoming")">
+                                <div class="step @(currentStep > 6 ? "complete" : currentStep == 6 ? "active" : "upcoming")">
                                         <div class="circle">6</div>
                                         <div class="step-label">Complete</div>
+                                </div>
+
+                                <!-- Step 7: Cancelled -->
+                                <div class="step @(currentStep == 7 ? "active" : "upcoming")">
+                                        <div class="circle">7</div>
+                                        <div class="step-label">Cancelled</div>
                                 </div>
                         </div>
 		</div>
