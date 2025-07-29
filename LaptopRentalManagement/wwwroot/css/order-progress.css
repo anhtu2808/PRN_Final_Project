@@ -46,6 +46,10 @@
         background-color: #adb5bd;
     }
 
+    .step.cancelled .circle {
+        background-color: #dc3545;
+    }
+
 .step-label {
     margin-top: 0.5rem;
     font-size: 0.95rem;

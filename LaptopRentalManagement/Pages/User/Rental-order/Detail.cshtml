@@ -24,6 +24,8 @@
                 "Cancelled" => 7,
                 _ => 0
         };
+
+        var isCancelled = status == "Cancelled";
 }
 
 
@@ -70,43 +72,43 @@
 			</div>
                         <div class="stepper">
                                 <!-- Step 1: Unpaid -->
-                                <div class="step @(currentStep > 1 ? "complete" : currentStep == 1 ? "active" : "upcoming")">
+                                <div class="step @(isCancelled ? "upcoming" : currentStep > 1 ? "complete" : currentStep == 1 ? "active" : "upcoming")">
                                         <div class="circle">1</div>
                                         <div class="step-label">Unpaid</div>
                                 </div>
 
                                 <!-- Step 2: Pending -->
-                                <div class="step @(currentStep > 2 ? "complete" : currentStep == 2 ? "active" : "upcoming")">
+                                <div class="step @(isCancelled ? "upcoming" : currentStep > 2 ? "complete" : currentStep == 2 ? "active" : "upcoming")">
                                         <div class="circle">2</div>
                                         <div class="step-label">Pending</div>
                                 </div>
 
                                 <!-- Step 3: Approved -->
-                                <div class="step @(currentStep > 3 ? "complete" : currentStep == 3 ? "active" : "upcoming")">
+                                <div class="step @(isCancelled ? "upcoming" : currentStep > 3 ? "complete" : currentStep == 3 ? "active" : "upcoming")">
                                         <div class="circle">3</div>
                                         <div class="step-label">Approved</div>
                                 </div>
 
                                 <!-- Step 4: Delivering -->
-                                <div class="step @(currentStep > 4 ? "complete" : currentStep == 4 ? "active" : "upcoming")">
+                                <div class="step @(isCancelled ? "upcoming" : currentStep > 4 ? "complete" : currentStep == 4 ? "active" : "upcoming")">
                                         <div class="circle">4</div>
                                         <div class="step-label">Delivering</div>
                                 </div>
 
                                 <!-- Step 5: Renting -->
-                                <div class="step @(currentStep > 5 ? "complete" : currentStep == 5 ? "active" : "upcoming")">
+                                <div class="step @(isCancelled ? "upcoming" : currentStep > 5 ? "complete" : currentStep == 5 ? "active" : "upcoming")">
                                         <div class="circle">5</div>
                                         <div class="step-label">Renting</div>
                                 </div>
 
                                 <!-- Step 6: Complete -->
-                                <div class="step @(currentStep > 6 ? "complete" : currentStep == 6 ? "active" : "upcoming")">
+                                <div class="step @(isCancelled ? "upcoming" : currentStep > 6 ? "complete" : currentStep == 6 ? "active" : "upcoming")">
                                         <div class="circle">6</div>
                                         <div class="step-label">Complete</div>
                                 </div>
 
                                 <!-- Step 7: Cancelled -->
-                                <div class="step @(currentStep == 7 ? "active" : "upcoming")">
+                                <div class="step @(isCancelled ? "cancelled" : currentStep == 7 ? "active" : "upcoming")">
                                         <div class="circle">7</div>
                                         <div class="step-label">Cancelled</div>
                                 </div>
