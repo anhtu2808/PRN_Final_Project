@@ -1,3 +1,24 @@
+@using System.Security.Claims
+@using LaptopRentalManagement.BLL.Interfaces
+@inject IAccountService AccountService
+
+@{
+    string currentUserName = "Profile";
+    
+    if (User.Identity?.IsAuthenticated == true)
+    {
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("AccountId");
+        if (int.TryParse(userIdClaim, out var userId))
+        {
+            var userAccount = await AccountService.GetById(userId);
+            if (userAccount != null)
+            {
+                currentUserName = !string.IsNullOrEmpty(userAccount.Name) ? userAccount.Name : userAccount.Email;
+            }
+        }
+    }
+}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -103,7 +124,7 @@
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                                     <i class="fas fa-user-circle"></i>
-                                    @(User.Identity.Name ?? "Profile")
+                                    @currentUserName
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li>
