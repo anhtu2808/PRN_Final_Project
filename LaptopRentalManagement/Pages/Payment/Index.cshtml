@@ -36,10 +36,11 @@
                                 </div>
                                 <div class="row text-start">
                                     <div class="col-6">
-                                        <strong>Total Amount:</strong>
+                                        <strong>Rental Fee:</strong>
                                     </div>
                                     <div class="col-6">
-                                        <span class="text-success fw-bold">@string.Format("{0:N0} VNĐ", Model.Order.TotalCharge)</span>
+                                        <span
+                                            class="text-success fw-bold">@string.Format("{0:N0} VNĐ", Model.Order.RentalFee)</span>
                                     </div>
                                 </div>
                                 @if (Model.Order.DepositAmount > 0)
@@ -49,10 +50,20 @@
                                             <strong>Deposit:</strong>
                                         </div>
                                         <div class="col-6">
-                                            <span class="text-warning fw-bold">@string.Format("{0:N0} VNĐ", Model.Order.DepositAmount)</span>
+                                            <span
+                                                class="text-warning fw-bold">@string.Format("{0:N0} VNĐ", Model.Order.DepositAmount)</span>
                                         </div>
                                     </div>
                                 }
+                                <div class="row text-start">
+                                    <div class="col-6">
+                                        <strong>Total Amount:</strong>
+                                    </div>
+                                    <div class="col-6">
+                                        <span
+                                            class="text-success fw-bold">@string.Format("{0:N0} VNĐ", Model.Order.TotalCharge)</span>
+                                    </div>
+                                </div>
                                 <div class="row text-start">
                                     <div class="col-6">
                                         <strong>Status:</strong>
@@ -74,8 +85,8 @@
 
                         <!-- Action Buttons -->
                         <div class="d-grid gap-2">
-                            <a href="/User/Rental-order" class="btn btn-primary btn-lg">
-                                <i class="fas fa-list me-2"></i>View My Orders
+                            <a href="/user/rental-order/detail/@Model.Order.OrderId" class="btn btn-primary btn-lg">
+                                <i class="fas fa-list me-2"></i>View My Order
                             </a>
                             <a href="/Laptops" class="btn btn-outline-secondary">
                                 <i class="fas fa-arrow-left me-2"></i>Continue Shopping
@@ -90,7 +101,8 @@
                                 <i class="fas fa-times-circle text-danger" style="font-size: 4rem;"></i>
                             </div>
                             <h2 class="text-danger mb-3">@Model.StatusMessage</h2>
-                            <p class="text-muted mb-4">Your payment could not be processed. Please try again or contact our support team.</p>
+                            <p class="text-muted mb-4">Your payment could not be processed. Please try again or contact
+                                our support team.</p>
                         </div>
 
                         @if (Model.Order != null)
@@ -108,7 +120,23 @@
                                 </div>
                                 <div class="row text-start">
                                     <div class="col-6">
-                                        <strong>Amount:</strong>
+                                        <strong>Rental Fee:</strong>
+                                    </div>
+                                    <div class="col-6">
+                                        @string.Format("{0:N0} VNĐ", Model.Order.RentalFee)
+                                    </div>
+                                </div>
+                                <div class="row text-start">
+                                    <div class="col-6">
+                                        <strong>Deposit:</strong>
+                                    </div>
+                                    <div class="col-6">
+                                        @string.Format("{0:N0} VNĐ", Model.Order.DepositAmount)
+                                    </div>
+                                </div>
+                                <div class="row text-start">
+                                    <div class="col-6">
+                                        <strong>Total Amount:</strong>
                                     </div>
                                     <div class="col-6">
                                         @string.Format("{0:N0} VNĐ", Model.Order.TotalCharge)
@@ -129,7 +157,7 @@
                         <div class="d-grid gap-2">
                             @if (Model.Order != null)
                             {
-                                <a href="/checkout?laptopId=@Model.Order.Laptop.LaptopId&slotIds=@string.Join(",", Model.Order.Slots?.Select(s => s.SlotId) ?? new List<int>())" 
+                                <a href="/checkout?laptopId=@Model.Order.Laptop.LaptopId&slotIds=@string.Join(",", Model.Order.Slots?.Select(s => s.SlotId) ?? new List<int>())"
                                    class="btn btn-primary btn-lg">
                                     <i class="fas fa-redo me-2"></i>Try Payment Again
                                 </a>
@@ -147,7 +175,8 @@
                         <!-- Processing/Error State -->
                         <div class="mb-4">
                             <div class="warning-icon mb-3">
-                                <i class="fas fa-exclamation-triangle text-@Model.StatusClass" style="font-size: 4rem;"></i>
+                                <i class="fas fa-exclamation-triangle text-@Model.StatusClass"
+                                   style="font-size: 4rem;"></i>
                             </div>
                             <h2 class="text-@Model.StatusClass mb-3">@Model.StatusMessage</h2>
                             <p class="text-muted mb-4">
@@ -185,20 +214,20 @@
     .card {
         border-radius: 15px;
     }
-    
+
     .success-icon, .error-icon, .warning-icon {
         animation: bounceIn 0.6s ease-out;
     }
-   
-    
+
+
     .order-summary {
         border: 1px solid #e0e0e0;
     }
-    
+
     .order-summary .row {
         margin-bottom: 0.5rem;
     }
-    
+
     .order-summary .row:last-child {
         margin-bottom: 0;
     }

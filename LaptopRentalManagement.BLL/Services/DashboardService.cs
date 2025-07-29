@@ -58,8 +58,8 @@ namespace LaptopRentalManagement.BLL.Services
                 .Where(o => o.EndDate >= startOfLastMonth && o.EndDate <= endOfLastMonth)
                 .ToListAsync();
 
-            var thisMonthRevenue = thisMonthOrders.Where(o => o.Status == "Completed").Sum(o => o.TotalCharge);
-            var lastMonthRevenue = lastMonthOrders.Where(o => o.Status == "Completed").Sum(o => o.TotalCharge);
+            var thisMonthRevenue = thisMonthOrders.Where(o => o.Status == "Completed").Sum(o => o.RentalFee);
+            var lastMonthRevenue = lastMonthOrders.Where(o => o.Status == "Completed").Sum(o => o.RentalFee);
 
             // Tính toán tăng trưởng
             double revenueGrowth = (lastMonthRevenue > 0)
@@ -83,7 +83,7 @@ namespace LaptopRentalManagement.BLL.Services
             return new DashboardStats
             {
                 TotalOrders = await _context.Orders.CountAsync(),
-                Revenue = await _context.Orders.Where(o => o.Status == "Completed").SumAsync(o => o.TotalCharge),
+                Revenue = await _context.Orders.Where(o => o.Status == "Completed").SumAsync(o => o.RentalFee),
                 ActiveRentals = activeRentals,
                 TotalCustomers = totalCustomers,
                 RevenueGrowth = Math.Round(revenueGrowth, 2),
@@ -106,7 +106,7 @@ namespace LaptopRentalManagement.BLL.Services
                     LaptopModel = o.Laptop.Name,  // Lấy tên từ Laptop
                     OrderDate = o.CreatedAt,
                     Status = o.Status,
-                    Amount = o.TotalCharge
+                    Amount = o.RentalFee
                 })
                 .ToListAsync();
         }
@@ -121,7 +121,7 @@ namespace LaptopRentalManagement.BLL.Services
                     Model = g.Key.Name,
                     Brand = g.Key.Brand.Name, // Lấy tên từ Brand
                     RentCount = g.Count(),
-                    Revenue = g.Where(o => o.Status == "Completed").Sum(o => o.TotalCharge)
+                    Revenue = g.Where(o => o.Status == "Completed").Sum(o => o.RentalFee)
                 })
                 .OrderByDescending(t => t.RentCount)
                 .ThenByDescending(t => t.Revenue)
@@ -143,7 +143,7 @@ namespace LaptopRentalManagement.BLL.Services
 
                 var monthlyRevenue = await _context.Orders
                     .Where(o => o.Status == "Completed" && o.EndDate >= startOfMonth && o.EndDate <= endOfMonth)
-                    .SumAsync(o => o.TotalCharge);
+                    .SumAsync(o => o.RentalFee);
 
                 result.Add(new ChartData
                 {

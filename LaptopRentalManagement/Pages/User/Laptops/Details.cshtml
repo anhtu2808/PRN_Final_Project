@@ -64,6 +64,8 @@
                     <th>Rental Dates</th>
                     <th>Total Days</th>
                     <th>Status</th>
+                    <th>Rental Fee</th>
+                    <th>Deposit</th>
                     <th>Total Charge</th>
                     <th>Actions</th>
                 </tr>
@@ -77,6 +79,8 @@
                         <td>@string.Join(", ", order.Slots.Select(s => s.SlotDate.ToString("dd/MM/yyyy")))</td>
                         <td>@order.Slots.Count</td>
                         <td>@order.Status</td>
+                        <td>@order.RentalFee.ToString("N0") đ</td>
+                        <td>@order.DepositAmount.ToString("N0") đ</td>
                         <td>@order.TotalCharge.ToString("N0") đ</td>
                         @*<td class="text-nowrap">
                 @switch (order.Status)

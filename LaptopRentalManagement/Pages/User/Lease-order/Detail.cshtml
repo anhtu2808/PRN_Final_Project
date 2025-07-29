@@ -140,19 +140,16 @@
 						<h5 class="card-title">@Model.Order.Laptop.Name</h5>
 						<p class="text-muted">Brand: @Model.Order.Laptop.Brand.Name</p>
 						<p><strong>Price/day:</strong> @Model.Order.Laptop.PricePerDay.ToString("N0")₫</p>
-						<p><strong>Total:</strong> <span class="text-primary fw-bold">@Model.Order.TotalCharge.ToString("N0")₫</span></p>
-                                                <p>
-                                                        <strong>Owner:</strong><br />
-                                                        @Model.Order.Owner.Name<br />
-                                                        <small class="text-muted">@Model.Order.Owner.Email</small>
-                                                </p>
-                                                <div class="text-end">
-                                                        <a href="/laptops/details/@Model.Order.Laptop.LaptopId" class="btn btn-sm btn-outline-primary">
-                                                                <i class="fas fa-info-circle me-1"></i>View Laptop
-                                                        </a>
-                                                </div>
-                                        </div>
-                                </div>
+                                                <p><strong>Rental Fee:</strong> <span class="text-primary fw-bold">@Model.Order.RentalFee.ToString("N0")₫</span></p>
+                                                <p><strong>Deposit:</strong> <span class="text-warning fw-bold">@Model.Order.DepositAmount.ToString("N0")₫</span></p>
+                                                <p><strong>Total:</strong> <span class="text-primary fw-bold">@Model.Order.TotalCharge.ToString("N0")₫</span></p>
+						<p>
+							<strong>Owner:</strong><br />
+							@Model.Order.Owner.Name<br />
+							<small class="text-muted">@Model.Order.Owner.Email</small>
+						</p>
+					</div>
+				</div>
 
 				<!-- Card: Hiển thị Slots -->
 				<div class="card mb-4">
