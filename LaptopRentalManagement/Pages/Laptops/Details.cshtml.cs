@@ -44,6 +44,16 @@ namespace LaptopRentalManagement.Pages.Laptops
             Slots = Laptop.Slots;
             ReviewSummary = await _feedbackService.GetLaptopReviewsAsync(id);
 
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+                EligibleOrderId = await _feedbackService.GetEligibleOrderIdForReviewAsync(id, userId);
+                if (EligibleOrderId.HasValue)
+                {
+                    NewReview.OrderId = EligibleOrderId.Value;
+                }
+            }
+
 
             var filter = new LaptopFilter()
             {

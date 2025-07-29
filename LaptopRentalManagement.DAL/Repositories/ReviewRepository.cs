@@ -119,14 +119,25 @@ namespace LaptopRentalManagement.DAL.Repositories
 
             // Chỉ cho phép renter review và order phải đã hoàn thành
             var canReview = order.RenterId == userId &&
-                           order.Status == "Completed" &&
-                           order.EndDate < DateOnly.FromDateTime(DateTime.Now);
+                           order.Status == "Completed";
 
             // Kiểm tra chưa có review nào cho order này
             var existingReview = await _context.Reviews
                 .AnyAsync(r => r.OrderId == orderId);
 
             return canReview && !existingReview;
+        }
+
+        public async Task<int?> GetEligibleOrderIdForReviewAsync(int laptopId, int userId)
+        {
+            var order = await _context.Orders
+                .Include(o => o.Reviews)
+                .Where(o => o.LaptopId == laptopId &&
+                            o.RenterId == userId &&
+                            o.Status == "Completed")
+                .FirstOrDefaultAsync(o => !o.Reviews.Any());
+
+            return order?.OrderId;
         }
 
         public async Task<(IEnumerable<Review> Reviews, int TotalCount)> GetFilteredAsync(

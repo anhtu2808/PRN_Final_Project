@@ -93,6 +93,11 @@ namespace LaptopRentalManagement.BLL.Services
             return await _reviewRepository.CanUserReviewOrderAsync(orderId, userId);
         }
 
+        public async Task<int?> GetEligibleOrderIdForReviewAsync(int laptopId, int userId)
+        {
+            return await _reviewRepository.GetEligibleOrderIdForReviewAsync(laptopId, userId);
+        }
+
         // --- TRIỂN KHAI ĐẦY ĐỦ CÁC PHƯƠNG THỨC MỚI CHO TRANG QUẢN TRỊ ---
 
         public async Task<(IEnumerable<ReviewResponse> Reviews, int TotalPages)> GetFilteredReviewsAsync(string? searchTerm, int? selectedRating, DateTime? dateFrom, DateTime? dateTo, int currentPage, int pageSize)
