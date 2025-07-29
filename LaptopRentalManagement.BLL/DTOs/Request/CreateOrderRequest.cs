@@ -12,6 +12,7 @@ namespace LaptopRentalManagement.BLL.DTOs.Request
         public IList<int> SlotIds { get; set; }
         public decimal DepositAmount { get; set; }
         public decimal TotalCharge { get; set; }
+        public decimal RentalFee { get; set; }
         public int RenterId { get; set; }
     }
 }

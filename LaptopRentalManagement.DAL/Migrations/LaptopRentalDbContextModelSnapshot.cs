@@ -378,6 +378,9 @@ namespace LaptopRentalManagement.DAL.Migrations
                     b.Property<decimal>("DepositAmount")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<decimal>("RentalFee")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<DateOnly>("EndDate")
                         .HasColumnType("date");
 

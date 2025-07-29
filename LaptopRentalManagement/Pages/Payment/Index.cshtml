@@ -36,10 +36,10 @@
                                 </div>
                                 <div class="row text-start">
                                     <div class="col-6">
-                                        <strong>Total Amount:</strong>
+                                        <strong>Rental Fee:</strong>
                                     </div>
                                     <div class="col-6">
-                                        <span class="text-success fw-bold">@string.Format("{0:N0} VNĐ", Model.Order.TotalCharge)</span>
+                                        <span class="text-success fw-bold">@string.Format("{0:N0} VNĐ", Model.Order.RentalFee)</span>
                                     </div>
                                 </div>
                                 @if (Model.Order.DepositAmount > 0)
@@ -53,6 +53,14 @@
                                         </div>
                                     </div>
                                 }
+                                <div class="row text-start">
+                                    <div class="col-6">
+                                        <strong>Total Amount:</strong>
+                                    </div>
+                                    <div class="col-6">
+                                        <span class="text-success fw-bold">@string.Format("{0:N0} VNĐ", Model.Order.TotalCharge)</span>
+                                    </div>
+                                </div>
                                 <div class="row text-start">
                                     <div class="col-6">
                                         <strong>Status:</strong>
@@ -108,7 +116,23 @@
                                 </div>
                                 <div class="row text-start">
                                     <div class="col-6">
-                                        <strong>Amount:</strong>
+                                        <strong>Rental Fee:</strong>
+                                    </div>
+                                    <div class="col-6">
+                                        @string.Format("{0:N0} VNĐ", Model.Order.RentalFee)
+                                    </div>
+                                </div>
+                                <div class="row text-start">
+                                    <div class="col-6">
+                                        <strong>Deposit:</strong>
+                                    </div>
+                                    <div class="col-6">
+                                        @string.Format("{0:N0} VNĐ", Model.Order.DepositAmount)
+                                    </div>
+                                </div>
+                                <div class="row text-start">
+                                    <div class="col-6">
+                                        <strong>Total Amount:</strong>
                                     </div>
                                     <div class="col-6">
                                         @string.Format("{0:N0} VNĐ", Model.Order.TotalCharge)

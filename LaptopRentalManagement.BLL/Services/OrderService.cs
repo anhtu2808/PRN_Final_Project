@@ -93,6 +93,7 @@ namespace LaptopRentalManagement.BLL.Services
             var owner = await _accountRepository.GetByIdAsync(laptop.AccountId);
             order.OwnerId = owner.AccountId;
             order.DepositAmount = request.DepositAmount;
+            order.RentalFee = request.RentalFee;
             order = await _orderRepository.CreateAsync(order);
 
             foreach (int index in request.SlotIds)             
@@ -262,6 +263,7 @@ namespace LaptopRentalManagement.BLL.Services
                 LaptopId = request.LaptopId,
                 RenterId = request.RenterId,
                 DepositAmount = request.DepositAmount,
+                RentalFee = request.RentalFee,
                 TotalCharge = request.TotalCharge,
                 Status = "Unpaid",
                 CreatedAt = DateTime.UtcNow,

@@ -55,8 +55,8 @@ namespace LaptopRentalManagement.Pages
 
             LaptopId = Laptop.LaptopId;
             SelectedSlots = selectedSlots;
-            // Cập nhật công thức tính tổng tiền, cộng thêm tiền cọc
-            TotalCharge = (SelectedSlots.Count * Laptop.PricePerDay) + Laptop.Deposit;
+            var rentalFee = SelectedSlots.Count * Laptop.PricePerDay;
+            TotalCharge = rentalFee + Laptop.Deposit;
 
             return Page();
         }
@@ -72,7 +72,8 @@ namespace LaptopRentalManagement.Pages
                     // Cập nhật công thức tính tổng tiền nếu có lỗi
                     if (Laptop != null)
                     {
-                        TotalCharge = (SelectedSlots.Count * Laptop.PricePerDay) + Laptop.Deposit;
+                        var rentalFee = SelectedSlots.Count * Laptop.PricePerDay;
+                        TotalCharge = rentalFee + Laptop.Deposit;
                     }
                 }
                 return Page();
@@ -95,14 +96,18 @@ namespace LaptopRentalManagement.Pages
                 }
 
                 // Cập nhật công thức tính tổng tiền, cộng thêm tiền cọc
-                var totalCharge = (SelectedSlots.Count * laptop.PricePerDay) + laptop.Deposit;
+                var rentalFee = SelectedSlots.Count * laptop.PricePerDay;
+                var depositAmount = laptop.Deposit;
+                var totalCharge = rentalFee + depositAmount;
 
                 // Step 1: Create order with Unpaid status
                 var orderResponse = await _orderService.CreateOrderForPaymentAsync(new CreateOrderRequest
                 {
                     LaptopId = LaptopId,
                     RenterId = userId,
-                    TotalCharge = totalCharge, // Sử dụng tổng tiền mới
+                    TotalCharge = totalCharge,
+                    DepositAmount = depositAmount,
+                    RentalFee = rentalFee,
                     SlotIds = this.SelectedSlots
                 });
 
