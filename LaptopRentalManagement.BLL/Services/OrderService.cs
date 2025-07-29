@@ -80,7 +80,7 @@ namespace LaptopRentalManagement.BLL.Services
                     slot.Status = "Available";
                     await _slotRepository.Update(slot);
                 }
-                await _orderRepository.DeleteAsync(order.OrderId);
+                await this.UpdateStatusAsync(orderId, "Cancelled");
                 response = _mapper.Map<OrderResponse>(order);
             }
             return response;
