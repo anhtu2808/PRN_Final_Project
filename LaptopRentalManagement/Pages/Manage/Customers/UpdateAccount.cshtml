@@ -82,33 +82,33 @@
     <div class="form-title"><i class="bi bi-pencil-square"></i> Update Account</div>
 
     <form method="post" novalidate>
-        <input type="hidden" asp-for="Account.AccountId" />
+        <input type="hidden" asp-for="Input.AccountId" />
         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
         <div class="mb-3">
-            <label asp-for="Account.Email" class="form-label">Email</label>
-            <input asp-for="Account.Email" class="form-control" />
-            <span asp-validation-for="Account.Email" class="text-danger"></span>
+            <label asp-for="Input.Email" class="form-label">Email</label>
+            <input asp-for="Input.Email" class="form-control" />
+            <span asp-validation-for="Input.Email" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
-            <label asp-for="Account.PasswordHash" class="form-label">Password</label>
-            <input asp-for="Account.PasswordHash" type="password" class="form-control" />
-            <span asp-validation-for="Account.PasswordHash" class="text-danger"></span>
+            <label asp-for="Input.NewPassword" class="form-label">Password</label>
+            <input asp-for="Input.NewPassword" type="password" class="form-control" />
+            <span asp-validation-for="Input.NewPassword" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
-            <label asp-for="Account.Role" class="form-label">Role</label>
-            <select asp-for="Account.Role" asp-items="Model.Roles" class="form-select">
+            <label asp-for="Input.Role" class="form-label">Role</label>
+            <select asp-for="Input.Role" asp-items="Model.Roles" class="form-select">
                 <option value="">-- Select a Role --</option>
             </select>
-            <span asp-validation-for="Account.Role" class="text-danger"></span>
+            <span asp-validation-for="Input.Role" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
-            <label asp-for="Account.Name" class="form-label">Full Name</label>
-            <input asp-for="Account.Name" class="form-control" />
-            <span asp-validation-for="Account.Name" class="text-danger"></span>
+            <label asp-for="Input.Name" class="form-label">Full Name</label>
+            <input asp-for="Input.Name" class="form-control" />
+            <span asp-validation-for="Input.Name" class="text-danger"></span>
         </div>
 
         <button type="submit" class="btn-submit">Save Changes</button>
