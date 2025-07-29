@@ -22,8 +22,6 @@
 	};
 }
 
-
-
 <div class="container py-5">
 
 	<!-- Breadcrumb -->
@@ -46,48 +44,64 @@
 			<div class="d-flex justify-content-between align-items-center mb-4">
 				<h5 class="fw-bold mb-0">Order Progress</h5>
 
-
 				<div class="d-flex gap-2">
-					@switch (Model.Order.Status)
+					@if (Model.CanShowStatusButtons)
 					{
-						case "Pending":
-							<form method="post" asp-page-handler="Approve" asp-route-orderId="@Model.Order.OrderId" asp-route-id="@Model.Order.Laptop.LaptopId" class="d-inline">
-								<button type="submit" class="btn btn-sm btn-success">
-									<i class="fas fa-check me-1"></i>Approve
-								</button>
-							</form>
-							<form method="post" asp-page-handler="Reject" asp-route-orderId="@Model.Order.OrderId" asp-route-id="@Model.Order.Laptop.LaptopId" class="d-inline ms-1">
-								<button type="submit" class="btn btn-sm btn-danger">
-									<i class="fas fa-times me-1"></i>Reject
-								</button>
-							</form>
-							break;
+						@switch (Model.Order.Status)
+						{
+							case "Pending":
+								<form method="post" asp-page-handler="Approve" asp-route-orderId="@Model.Order.OrderId" asp-route-id="@Model.Order.Laptop.LaptopId" class="d-inline">
+									<button type="submit" class="btn btn-sm btn-success">
+										<i class="fas fa-check me-1"></i>Approve
+									</button>
+								</form>
+								<form method="post" asp-page-handler="Reject" asp-route-orderId="@Model.Order.OrderId" asp-route-id="@Model.Order.Laptop.LaptopId" class="d-inline ms-1">
+									<button type="submit" class="btn btn-sm btn-danger">
+										<i class="fas fa-times me-1"></i>Reject
+									</button>
+								</form>
+								break;
 
-						case "Approved":
-							<form method="post" asp-page-handler="Delivering" asp-route-orderId="@Model.Order.OrderId" asp-route-id="@Model.Order.Laptop.LaptopId" class="d-inline">
-								<button type="submit" class="btn btn-sm btn-warning">
-									<i class="fas fa-truck me-1"></i>Start Delivery
-								</button>
-							</form>
-							break;
+							case "Approved":
+								<form method="post" asp-page-handler="Delivering" asp-route-orderId="@Model.Order.OrderId" asp-route-id="@Model.Order.Laptop.LaptopId" class="d-inline">
+									<button type="submit" class="btn btn-sm btn-warning">
+										<i class="fas fa-truck me-1"></i>Start Delivery
+									</button>
+								</form>
+								break;
 
-						case "Delivering":
-							<form method="post" asp-page-handler="Delivered" asp-route-orderId="@Model.Order.OrderId" asp-route-id="@Model.Order.Laptop.LaptopId" class="d-inline">
-								<button type="submit" class="btn btn-sm btn-success">
-									<i class="fas fa-box-check me-1"></i>Delivered
+							case "Delivering":
+								<form method="post" asp-page-handler="Delivered" asp-route-orderId="@Model.Order.OrderId" asp-route-id="@Model.Order.Laptop.LaptopId" class="d-inline">
+									<button type="submit" class="btn btn-sm btn-success">
+										<i class="fas fa-box-check me-1"></i>Delivered
+									</button>
+								</form>
+								<button type="button" class="btn btn-sm btn-danger"
+										data-bs-toggle="modal"
+										data-bs-target="#deliveryFailModal"
+										onclick="openDeliveryFailModal(@Model.Order.OrderId)">
+									<i class="fas fa-times-circle me-1"></i>Delivery Failed
 								</button>
-							</form>
-							<button type="button" class="btn btn-sm btn-danger"
-									data-bs-toggle="modal"
-									data-bs-target="#deliveryFailModal"
-									onclick="openDeliveryFailModal(@Model.Order.OrderId)">
-								<i class="fas fa-times-circle me-1"></i>Delivery Failed
-							</button>
-							break;
+								break;
 
-						default:
+							default:
+								<span class="text-muted">No actions</span>
+								break;
+						}
+					}
+					else
+					{
+						@if (!Model.IsOrderDateValid)
+						{
+							<span class="text-muted">
+								<i class="fas fa-info-circle me-1"></i>
+								Order date has passed - No actions available
+							</span>
+						}
+						else
+						{
 							<span class="text-muted">No actions</span>
-							break;
+						}
 					}
 				</div>
 

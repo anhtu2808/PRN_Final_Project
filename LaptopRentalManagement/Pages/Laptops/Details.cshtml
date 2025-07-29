@@ -24,13 +24,13 @@ var summary = Model.ReviewSummary;
                         src="https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=600&h=400&fit=crop"
                         alt="@Model.Laptop?.Name" class="img-fluid rounded shadow">
                     <div class="image-badges">
-                        @if (Model.Laptop?.Status == "Available")
+                        @if (Model.Laptop?.Status == "Available" && Model.HasAvailableSlots)
                         {
                         <span class="badge bg-success">Available</span>
                         }
                         else
                         {
-                        <span class="badge bg-secondary">Rented</span>
+                        <span class="badge bg-secondary">No Available Slots</span>
                         }
                     </div>
                 </div>
@@ -72,52 +72,79 @@ var summary = Model.ReviewSummary;
                     @Model.Laptop?.PricePerDay.ToString("N0") ₫ <span class="price-label h6 text-muted">per day</span>
                 </div>
 
-                <form method="post" asp-page="/Checkout/Index" class="booking-form bg-light p-4 rounded mb-4">
-                    @Html.AntiForgeryToken()
+                @if (Model.HasAvailableSlots)
+                {
+                    <form method="post" asp-page="/Checkout/Index" class="booking-form bg-light p-4 rounded mb-4">
+                        @Html.AntiForgeryToken()
 
-                    <input type="hidden" name="id" value="@Model.Laptop.LaptopId" />
+                        <input type="hidden" name="id" value="@Model.Laptop.LaptopId" />
 
-                    <h5 class="mb-3">Chọn ngày thuê</h5>
+                        <h5 class="mb-3">Chọn ngày thuê (@Model.AvailableSlotsCount ngày có sẵn)</h5>
 
-                    <div class="row g-2 mb-3">
-                        @foreach (var slot in Model.Slots.OrderBy(s => s.SlotDate))
-                        {
-                        var isAvailable = slot.Status == "Available";
-                        var dateLabel = slot.SlotDate.ToString("dd/MM/yyyy");
-                        var id = $"slot_{slot.SlotId}";
+                        <div class="row g-2 mb-3">
+                            @foreach (var slot in Model.Slots.OrderBy(s => s.SlotDate))
+                            {
+                            var isAvailable = slot.Status == "Available" && slot.SlotDate >= DateOnly.FromDateTime(DateTime.UtcNow);
+                            var dateLabel = slot.SlotDate.ToString("dd/MM/yyyy");
+                            var id = $"slot_{slot.SlotId}";
 
-                        <div class="col-6 col-md-4 col-lg-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="@id" name="SelectedSlots"
-                                       value="@slot.SlotId" @(isAvailable ? "" : "disabled")/>
-                                <label class="form-check-label @(isAvailable ? "" : "text-muted")" for="@id">
-                                    @dateLabel
-                                </label>
+                            <div class="col-6 col-md-4 col-lg-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="@id" name="SelectedSlots"
+                                           value="@slot.SlotId" @(isAvailable ? "" : "disabled")/>
+                                    <label class="form-check-label @(isAvailable ? "" : "text-muted")" for="@id">
+                                        @dateLabel
+                                        @if (!isAvailable && slot.SlotDate < DateOnly.FromDateTime(DateTime.UtcNow))
+                                        {
+                                            <small class="text-muted d-block">(Past date)</small>
+                                        }
+                                        else if (!isAvailable)
+                                        {
+                                            <small class="text-muted d-block">(Booked)</small>
+                                        }
+                                    </label>
+                                </div>
+                            </div>
+                            }
+                        </div>
+
+                        <div class="rental-summary mb-3 p-3 bg-white rounded">
+                            <div class="d-flex justify-content-between">
+                                <span>Ngày đã chọn:</span>
+                                <span id="selectedCount">0 ngày</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Giá mỗi ngày:</span>
+                                <span>@Model.Laptop?.PricePerDay.ToString("N0")₫</span>
+                            </div>
+                            <hr/>
+                            <div class="d-flex justify-content-between fw-bold">
+                                <span>Tổng tiền:</span>
+                                <span id="totalPrice">₫0</span>
                             </div>
                         </div>
-                        }
-                    </div>
 
-                    <div class="rental-summary mb-3 p-3 bg-white rounded">
-                        <div class="d-flex justify-content-between">
-                            <span>Ngày đã chọn:</span>
-                            <span id="selectedCount">0 ngày</span>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <span>Giá mỗi ngày:</span>
-                            <span>@Model.Laptop?.PricePerDay.ToString("N0")₫</span>
-                        </div>
-                        <hr/>
-                        <div class="d-flex justify-content-between fw-bold">
-                            <span>Tổng tiền:</span>
-                            <span id="totalPrice">₫0</span>
-                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg w-100 mb-2">
+                            <i class="fas fa-shopping-cart me-2"></i>Đặt thuê
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <div class="booking-form bg-light p-4 rounded mb-4">
+                        <h5 class="mb-3 text-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Không có slot trống
+                        </h5>
+                        <p class="text-muted mb-3">
+                            Laptop này hiện tại không có ngày nào có sẵn để thuê. 
+                            Vui lòng kiểm tra lại sau hoặc tìm laptop khác.
+                        </p>
+                        <button type="button" class="btn btn-secondary btn-lg w-100 mb-2" disabled>
+                            <i class="fas fa-ban me-2"></i>Không thể đặt thuê
+                        </button>
                     </div>
-
-                    <button type="submit" class="btn btn-primary btn-lg w-100 mb-2">
-                        <i class="fas fa-shopping-cart me-2"></i>Đặt thuê
-                    </button>
-                </form>
+                }
 
                 <div class="quick-info">
                     <div class="row text-center">
@@ -378,7 +405,7 @@ var summary = Model.ReviewSummary;
 @section Scripts {
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const slotCheckboxes = document.querySelectorAll('input[name="SelectedSlots"]');
+        const slotCheckboxes = document.querySelectorAll('input[name="SelectedSlots"]:not(:disabled)');
         const selectedCount = document.getElementById('selectedCount');
         const totalPrice = document.getElementById('totalPrice');
         const dailyRate = @(Model.Laptop?.PricePerDay ?? 0);
@@ -386,8 +413,8 @@ var summary = Model.ReviewSummary;
         function updateSummary() {
             const selected = Array.from(slotCheckboxes).filter(cb => cb.checked).length;
             const total = selected * dailyRate;
-            selectedCount.textContent = `${selected} ngày`;
-            totalPrice.textContent = `₫${total.toLocaleString()}`;
+            if (selectedCount) selectedCount.textContent = `${selected} ngày`;
+            if (totalPrice) totalPrice.textContent = `₫${total.toLocaleString()}`;
         }
 
         slotCheckboxes.forEach(cb => cb.addEventListener('change', updateSummary));

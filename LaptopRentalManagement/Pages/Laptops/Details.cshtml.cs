@@ -14,7 +14,6 @@ namespace LaptopRentalManagement.Pages.Laptops
         private readonly ILaptopService _laptopService;
         private readonly IFeedbackService _feedbackService;
 
-        // IOrderService đã được xóa khỏi đây vì logic tạo đơn hàng đã chuyển qua trang Checkout
         public DetailsModel(ILaptopService laptopService, IFeedbackService feedbackService)
         {
             _laptopService = laptopService;
@@ -28,6 +27,10 @@ namespace LaptopRentalManagement.Pages.Laptops
         [BindProperty] public List<int> SelectedSlots { get; set; }
         public LaptopResponse? Laptop { get; set; } = new LaptopResponse();
         public IList<LaptopResponse> SimilarLaptops { get; set; } = new List<LaptopResponse>();
+        
+        // Add property for slot validation
+        public bool HasAvailableSlots { get; set; }
+        public int AvailableSlotsCount { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
@@ -37,6 +40,9 @@ namespace LaptopRentalManagement.Pages.Laptops
                 return NotFound();
             }
             Slots = Laptop.Slots;
+
+            // Validate slot availability
+            ValidateSlotAvailability();
 
             var filter = new LaptopFilter()
             {
@@ -51,18 +57,39 @@ namespace LaptopRentalManagement.Pages.Laptops
             return Page();
         }
 
-        // Phương thức này được gọi khi form trên trang Details được submit
+        private void ValidateSlotAvailability()
+        {
+            if (Slots == null || !Slots.Any())
+            {
+                HasAvailableSlots = false;
+                AvailableSlotsCount = 0;
+                return;
+            }
+
+            var currentDate = DateOnly.FromDateTime(DateTime.UtcNow);
+            
+            // Count available slots that are today or in the future
+            var availableSlots = Slots.Where(s => 
+                s.Status == "Available" && 
+                s.SlotDate >= currentDate
+            ).ToList();
+
+            AvailableSlotsCount = availableSlots.Count;
+            HasAvailableSlots = AvailableSlotsCount > 0;
+        }
+
         public IActionResult OnPost(int id, List<int> selectedSlots)
         {
-            // Kiểm tra xem người dùng đã chọn ngày nào chưa
+            // Validate slot availability before processing
             if (!selectedSlots.Any())
             {
                 TempData["Error"] = "Vui lòng chọn ít nhất một ngày thuê.";
-                return RedirectToPage(new { id = id }); // Tải lại trang Details nếu chưa chọn
+                return RedirectToPage(new { id = id });
             }
 
-            // Chuyển hướng đến trang Checkout, truyền kèm ID laptop và mảng các slot đã chọn
-            // ASP.NET Core sẽ tự động chuyển thành URL dạng: /Checkout/Index?id=123&selectedSlots=1&selectedSlots=2
+            // Additional validation: check if selected slots are still available
+            // This would require another service call to verify current slot status
+            
             return RedirectToPage("/Checkout", new { id = id, selectedSlots = selectedSlots });
         }
 
