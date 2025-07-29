@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using LaptopRentalManagement.BLL.DTOs.Request;
 using LaptopRentalManagement.BLL.DTOs.Response;
 using LaptopRentalManagement.BLL.Interfaces;
@@ -5,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis.Scripting;
 
 namespace LaptopRentalManagement.Pages.Manage.Customers
 {
@@ -17,60 +19,82 @@ namespace LaptopRentalManagement.Pages.Manage.Customers
         {
             _accountService = accountService;
         }
-        public List<SelectListItem> Roles { get; set; }
+        public List<SelectListItem> Roles { get; set; } = new();
+
         [BindProperty]
-        public AccountDetailResponse Account { get; set; } = default!;
+        public InputModel Input { get; set; } = new();
+
+        public class InputModel
+        {
+            public int AccountId { get; set; }
+
+            [Required]
+            [EmailAddress]
+            public string Email { get; set; } = null!;
+
+            [Required]
+            public string Role { get; set; } = null!;
+
+            [Required]
+            public string Name { get; set; } = null!;
+
+            [DataType(DataType.Password)]
+            public string? NewPassword { get; set; }
+        }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            Roles = new List<SelectListItem>
-{
-    new SelectListItem { Value = "Admin", Text = "Admin" },
-    new SelectListItem { Value = "Customer", Text = "Customer" },
-    new SelectListItem { Value = "Staff", Text = "Staff" }
-};
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var account = await _accountService.GetById(id.Value);
             if (account == null)
-            {
                 return NotFound();
-            }
-            Account = account;
+
+            Input = new InputModel
+            {
+                AccountId = account.AccountId,
+                Email = account.Email,
+                Role = account.Role,
+                Name = account.Name
+            };
+
+            Roles = GetRoleList();
             return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            Roles = GetRoleList();
+
             if (!ModelState.IsValid)
-            {
-                Roles = new List<SelectListItem>
-                {
-                    new SelectListItem { Value = "Admin", Text = "Admin" },
-                    new SelectListItem { Value = "Customer", Text = "Customer" },
-                    new SelectListItem { Value = "Staff", Text = "Staff" }
-                };
                 return Page();
-            }
+
+            var existingAccount = await _accountService.GetById(Input.AccountId);
+            if (existingAccount == null)
+                return NotFound();
 
             var updateRequest = new AccountUpdateRequest
             {
-                AccountId = Account.AccountId,
-                Email = Account.Email,
-                Role = Account.Role,
-                Name = Account.Name,
-                PasswordHash = Account.PasswordHash
+                AccountId = Input.AccountId,
+                Email = Input.Email,
+                Role = Input.Role,
+                Name = Input.Name,
+                PasswordHash = string.IsNullOrWhiteSpace(Input.NewPassword)
+                    ? existingAccount.PasswordHash
+                    : Input.NewPassword
             };
 
             await _accountService.Update(updateRequest);
-
             return RedirectToPage("./AccountList");
         }
+
+        private List<SelectListItem> GetRoleList() => new()
+        {
+            new SelectListItem { Value = "Admin", Text = "Admin" },
+            new SelectListItem { Value = "Customer", Text = "Customer" },
+            new SelectListItem { Value = "Staff", Text = "Staff" }
+        };
 
     }
 }

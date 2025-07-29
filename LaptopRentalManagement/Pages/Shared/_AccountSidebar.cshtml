@@ -1,12 +1,31 @@
-@model string?
+@using System.Security.Claims
+@using LaptopRentalManagement.BLL.Interfaces
+@inject IAccountService AccountService
+
+@{
+    string userName = "Guest";
+    
+    if (User.Identity?.IsAuthenticated == true)
+    {
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("AccountId");
+        if (int.TryParse(userIdClaim, out var userId))
+        {
+            var userAccount = await AccountService.GetById(userId);
+            if (userAccount != null)
+            {
+                userName = !string.IsNullOrEmpty(userAccount.Name) ? userAccount.Name : userAccount.Email;
+            }
+        }
+    }
+}
 
 <div class="card shadow-sm">
     <div class="card-body">
         <div class="text-center mb-3">
             <i class="fas fa-user-circle fa-3x text-primary"></i>
-            <h5 class="mt-2">@Model</h5>
+            <h5 class="mt-2">@userName</h5>
             <a asp-page="/User/UpdateProfile" class="btn btn-sm btn-outline-secondary mt-2">
-                <i class="bi bi-arrow-left"></i> Edit Profile
+                <i class="bi bi-pencil"></i> Edit Profile
             </a>
         </div>
         <hr />

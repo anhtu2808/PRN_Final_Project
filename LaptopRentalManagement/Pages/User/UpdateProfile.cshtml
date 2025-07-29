@@ -2,6 +2,7 @@
 @model LaptopRentalManagement.Pages.User.UpdateProfileModel
 @{
     ViewData["Title"] = "Update Profile";
+    Layout = "~/Pages/Shared/_CustomerLayout.cshtml";
 }
 
 <style>
@@ -91,9 +92,13 @@
         </div>
 
         <div class="mb-3">
-            <label asp-for="Account.PasswordHash" class="form-label">Password</label>
-            <input asp-for="Account.PasswordHash" type="password" class="form-control" />
-            <span asp-validation-for="Account.PasswordHash" class="text-danger"></span>
+            <label for="new-password" class="form-label">New Password</label>
+            <input asp-for="Account.NewPassword" type="password" class="form-control" placeholder="Leave blank to keep current password" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Account.Role" class="form-label">Role</label>
+            <input asp-for="Account.Role" class="form-control" readonly />
         </div>
 
         <div class="mb-3">
@@ -105,7 +110,7 @@
         <button type="submit" class="btn-submit">Save Changes</button>
     </form>
 
-    <a asp-page="./AccountList" class="back-link">
+    <a asp-page="./Index" class="back-link">
         <i class="bi bi-arrow-left"></i> Back to Account List
     </a>
 </div>

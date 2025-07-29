@@ -14,10 +14,9 @@ namespace LaptopRentalManagement.BLL.DTOs.Request
         [EmailAddress(ErrorMessage = "Please input valid email")]
         public string Email { get; set; } = null!;
 
-        [Required(ErrorMessage = "Password is required")]
         [StringLength(100, MinimumLength = 6, ErrorMessage = "Length must be greater than 6")]
         [DataType(DataType.Password)]
-        public string PasswordHash { get; set; } = null!;
+        public string? PasswordHash { get; set; }
 
         public string? Role { get; set; } = null!;
 

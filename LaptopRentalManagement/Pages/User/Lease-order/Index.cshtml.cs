@@ -1,8 +1,6 @@
 ﻿using LaptopRentalManagement.BLL.DTOs.Request;
 using LaptopRentalManagement.BLL.DTOs.Response;
 using LaptopRentalManagement.BLL.Interfaces;
-using LaptopRentalManagement.BLL.Services;
-using LaptopRentalManagement.DAL.Entities;
 using LaptopRentalManagement.Model.DTOs.Request;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -21,6 +19,8 @@ namespace LaptopRentalManagement.Pages.User.Lease_order
 			_orderService = orderService;
 		}
         public IList<OrderResponse> MyLeaseOrder { get; set; } = new List<OrderResponse>();
+
+        public decimal TotalRevenue { get; set; }
         public async Task<IActionResult> OnGet()
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("AccountId");
@@ -35,6 +35,9 @@ namespace LaptopRentalManagement.Pages.User.Lease_order
             };
 
             MyLeaseOrder = await _orderService.GetAllAsync(orderFilter);
+
+            TotalRevenue = await _orderService.GetCompletedRevenueAsync(userId);
+
             return Page();
         }
     }

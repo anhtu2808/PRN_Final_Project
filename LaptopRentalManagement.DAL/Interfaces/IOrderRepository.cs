@@ -18,6 +18,8 @@ namespace LaptopRentalManagement.DAL.Interfaces
 		
 		// ZaloPay methods
 		Task<Order?> GetByZaloPayTransactionIdAsync(string transactionId);
-		Task UpdateZaloPayTransactionIdAsync(int orderId, string transactionId);
-	}
+        Task UpdateZaloPayTransactionIdAsync(int orderId, string transactionId);
+
+        Task<decimal> GetCompletedRevenueAsync(int ownerId);
+    }
 }

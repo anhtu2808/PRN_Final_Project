@@ -31,6 +31,7 @@ public partial class LaptopRentalDbContext : DbContext
     // Chat system
     public virtual DbSet<ChatRoom> ChatRooms { get; set; }
     public virtual DbSet<ChatMessage> ChatMessages { get; set; }
+    public virtual DbSet<TicketChatMessage> TicketChatMessages { get; set; }
 
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -238,11 +239,17 @@ public partial class LaptopRentalDbContext : DbContext
 				  .HasConstraintName("fk_Ticket_RenterAccount");
 
 			// 3) Ticket → Owner (Account)
-			entity.HasOne(t => t.Owner)
-				  .WithMany(a => a.OwnerTickets)  // <-- Account.OwnerTickets
-				  .HasForeignKey(t => t.OwnerId)
-				  .OnDelete(DeleteBehavior.ClientSetNull)
-				  .HasConstraintName("fk_Ticket_OwnerAccount");
+                        entity.HasOne(t => t.Owner)
+                                  .WithMany(a => a.OwnerTickets)  // <-- Account.OwnerTickets
+                                  .HasForeignKey(t => t.OwnerId)
+                                  .OnDelete(DeleteBehavior.ClientSetNull)
+                                  .HasConstraintName("fk_Ticket_OwnerAccount");
+
+                        entity.HasMany(t => t.ChatMessages)
+                                  .WithOne(m => m.Ticket)
+                                  .HasForeignKey(m => m.TicketId)
+                                  .OnDelete(DeleteBehavior.Cascade)
+                                  .HasConstraintName("fk_TicketChatMessage_Ticket");
 
 
 		});
@@ -294,6 +301,27 @@ public partial class LaptopRentalDbContext : DbContext
                 .HasForeignKey(cm => cm.SenderId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_ChatMessage_Sender");
+        });
+
+        modelBuilder.Entity<TicketChatMessage>(entity =>
+        {
+            entity.HasKey(e => e.TicketChatMessageId);
+            entity.ToTable("TicketChatMessage");
+
+            entity.Property(e => e.Content).IsRequired().HasMaxLength(2000);
+            entity.Property(e => e.SentAt).HasDefaultValueSql("(sysutcdatetime())");
+
+            entity.HasOne(m => m.Ticket)
+                .WithMany(t => t.ChatMessages)
+                .HasForeignKey(m => m.TicketId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("fk_TicketChatMessage_Ticket");
+
+            entity.HasOne(m => m.Sender)
+                .WithMany()
+                .HasForeignKey(m => m.SenderId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_TicketChatMessage_Sender");
         });
 
         OnModelCreatingPartial(modelBuilder);

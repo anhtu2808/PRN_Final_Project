@@ -40,10 +40,10 @@ namespace LaptopRentalManagement.BLL.Services
 
 		}
 
-		public async Task<IList<TicketResponse>> GetAllByOrderIdAsync(int id)
-		{
-			var tickets = await _ticketRepository.GetAllByOrderIdAsync(id);
-			IList<TicketResponse> responses = new List<TicketResponse>();
+        public async Task<IList<TicketResponse>> GetAllByOrderIdAsync(int id)
+        {
+                var tickets = await _ticketRepository.GetAllByOrderIdAsync(id);
+                IList<TicketResponse> responses = new List<TicketResponse>();
 			foreach (Ticket ticket in tickets)
 			{
 				var response = _mapper.Map<TicketResponse>(ticket);
@@ -59,8 +59,60 @@ namespace LaptopRentalManagement.BLL.Services
 				response.Order = order;
 				responses.Add(response);
 			}
-			return responses;
-		}
+                return responses;
+        }
+
+        public async Task<IList<TicketResponse>> GetByRenterIdAsync(int renterId)
+        {
+                var tickets = await _ticketRepository.GetByRenterIdAsync(renterId);
+                IList<TicketResponse> responses = new List<TicketResponse>();
+
+                foreach (Ticket ticket in tickets)
+                {
+                        var response = _mapper.Map<TicketResponse>(ticket);
+                        var renter = _mapper.Map<AccountResponse>(await _accountRepository.GetByIdAsync(ticket.RenterId));
+                        var order = _mapper.Map<OrderResponse>(await _orderRepository.GetByIdAsync(ticket.OrderId));
+
+                        AccountResponse? owner = null;
+                        if (ticket.OwnerId.HasValue)
+                        {
+                                owner = _mapper.Map<AccountResponse>(await _accountRepository.GetByIdAsync(ticket.OwnerId.Value));
+                        }
+
+                        response.Renter = renter;
+                        response.Owner = owner;
+                        response.Order = order;
+                        responses.Add(response);
+                }
+
+                return responses;
+        }
+
+        public async Task<IList<TicketResponse>> GetByAccountIdAsync(int accountId)
+        {
+                var tickets = await _ticketRepository.GetByAccountIdAsync(accountId);
+                IList<TicketResponse> responses = new List<TicketResponse>();
+
+                foreach (Ticket ticket in tickets)
+                {
+                        var response = _mapper.Map<TicketResponse>(ticket);
+                        var renter = _mapper.Map<AccountResponse>(await _accountRepository.GetByIdAsync(ticket.RenterId));
+                        var order = _mapper.Map<OrderResponse>(await _orderRepository.GetByIdAsync(ticket.OrderId));
+
+                        AccountResponse? owner = null;
+                        if (ticket.OwnerId.HasValue)
+                        {
+                                owner = _mapper.Map<AccountResponse>(await _accountRepository.GetByIdAsync(ticket.OwnerId.Value));
+                        }
+
+                        response.Renter = renter;
+                        response.Owner = owner;
+                        response.Order = order;
+                        responses.Add(response);
+                }
+
+                return responses;
+        }
 
 		public async Task<IList<TicketResponse>> GetAllAsync()
 		{

@@ -1,3 +1,24 @@
+@using System.Security.Claims
+@using LaptopRentalManagement.BLL.Interfaces
+@inject IAccountService AccountService
+
+@{
+    string currentUserName = "Profile";
+    
+    if (User.Identity?.IsAuthenticated == true)
+    {
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("AccountId");
+        if (int.TryParse(userIdClaim, out var userId))
+        {
+            var userAccount = await AccountService.GetById(userId);
+            if (userAccount != null)
+            {
+                currentUserName = !string.IsNullOrEmpty(userAccount.Name) ? userAccount.Name : userAccount.Email;
+            }
+        }
+    }
+}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -97,17 +118,22 @@
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                                     <i class="fas fa-user-circle"></i>
-                                    @(User.Identity.Name ?? "Profile")
+                                    @currentUserName
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
-                                    <li>
-                                        <a class="dropdown-item" href="/User">
-                                            <i class="fas fa-user me-2"></i>My Orders
-                                        </a>
-                                    </li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <a class="dropdown-item" href="/Account/Logout">
+                                     <li>
+                                         <a class="dropdown-item" href="/User">
+                                             <i class="fas fa-user me-2"></i>My Orders
+                                         </a>
+                                     </li>
+                                     <li>
+                                         <a class="dropdown-item" href="/chat">
+                                             <i class="fas fa-comments me-2"></i>Support Chat
+                                         </a>
+                                     </li>
+                                     <li><hr class="dropdown-divider"></li>
+                                     <li>
+                                         <a class="dropdown-item" href="/Account/Logout">
                                             <i class="fas fa-sign-out-alt me-2"></i>Logout
                                         </a>
                                     </li>

@@ -25,12 +25,34 @@ namespace LaptopRentalManagement.DAL.Repositories
 			return ticket;
 		}
 
-		public async Task<IList<Ticket>> GetAllByOrderIdAsync(int id)
-		{
-			return await _context.Tickets
-				.Where(t => t.OrderId == id)
-				.ToListAsync();
-		}
+        public async Task<IList<Ticket>> GetAllByOrderIdAsync(int id)
+        {
+                return await _context.Tickets
+                        .Where(t => t.OrderId == id)
+                        .ToListAsync();
+        }
+
+        public async Task<IList<Ticket>> GetByRenterIdAsync(int renterId)
+        {
+                return await _context.Tickets
+                        .Include(t => t.Order)
+                        .Include(t => t.Renter)
+                        .Include(t => t.Owner)
+                        .Where(t => t.RenterId == renterId)
+                        .OrderByDescending(t => t.CreatedAt)
+                        .ToListAsync();
+        }
+
+        public async Task<IList<Ticket>> GetByAccountIdAsync(int accountId)
+        {
+                return await _context.Tickets
+                        .Include(t => t.Order)
+                        .Include(t => t.Renter)
+                        .Include(t => t.Owner)
+                        .Where(t => t.RenterId == accountId || t.OwnerId == accountId)
+                        .OrderByDescending(t => t.CreatedAt)
+                        .ToListAsync();
+        }
 
 		public async Task<IList<Ticket>> GetAllAsync()
 		{

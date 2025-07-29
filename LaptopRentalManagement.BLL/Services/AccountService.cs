@@ -60,7 +60,10 @@ namespace LaptopRentalManagement.BLL.Services
                 return null;
             account.Name = request.Name;
             account.Email = request.Email;
-            account.PasswordHash = request.PasswordHash;
+            if (!string.IsNullOrWhiteSpace(request.PasswordHash))
+            {
+                account.PasswordHash = request.PasswordHash;
+            }
             account.Role = request.Role ?? account.Role;
             var updatedAccount = await _accountRepository.UpdateAsync(account);
             return _mapper.Map<AccountDetailResponse>(updatedAccount);
