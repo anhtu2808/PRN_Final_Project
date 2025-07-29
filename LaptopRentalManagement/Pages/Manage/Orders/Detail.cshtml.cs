@@ -48,21 +48,21 @@ namespace LaptopRentalManagement.Pages.Manage.Orders
 		public async Task<IActionResult> OnPostApproveAsync(int orderId, int id)
 		{
 			await _orderService.ApproveAsync(orderId);
-			TempData["Success"] = $"Đã duyệt đơn #{orderId}.";
+                        TempData["Success"] = $"Order #{orderId} approved.";
 			return RedirectToPage("/manage/orders/Detail", new { id });
 		}
 
 		public async Task<IActionResult> OnPostRejectAsync(int orderId, int id)
 		{
 			await _orderService.RejectAsync(orderId);
-			TempData["Success"] = $"Đã từ chối đơn #{orderId}.";
+                        TempData["Success"] = $"Order #{orderId} rejected.";
 			return RedirectToPage("/manage/orders/Detail", new { id });
 		}
 
 		public async Task<IActionResult> OnPostConfirmReturnAsync(int orderId, int id)
 		{
 			await _orderService.ConfirmReturn(orderId);
-			TempData["Success"] = $"Đơn #{orderId} đã được xác nhận là đã trả.";
+                        TempData["Success"] = $"Order #{orderId} marked as returned.";
 			return RedirectToPage("/manage/orders/Detail", new { id });
 		}
 
@@ -73,7 +73,7 @@ namespace LaptopRentalManagement.Pages.Manage.Orders
 				OrderId = orderId,
 				NewStatus = "Delivering"
 			});
-			TempData["Success"] = $"Đơn #{orderId} đang giao hàng.";
+                        TempData["Success"] = $"Order #{orderId} set to 'Delivering'.";
 			return RedirectToPage("/manage/orders/Detail", new { id });
 		}
 
@@ -84,7 +84,7 @@ namespace LaptopRentalManagement.Pages.Manage.Orders
 				OrderId = orderId,
 				NewStatus = "Renting"
 			});
-			TempData["Success"] = $"Đơn #{orderId} đã giao thành công.";
+                        TempData["Success"] = $"Order #{orderId} delivered successfully.";
 			return RedirectToPage("/manage/orders/Detail", new { id });
 		}
 
@@ -103,7 +103,7 @@ namespace LaptopRentalManagement.Pages.Manage.Orders
 
 			await _orderService.SetStatusAsync(request);
 
-			TempData["Warning"] = $"Giao hàng đơn #{orderId} thất bại. Trạng thái quay về 'Delivering'.";
+                        TempData["Warning"] = $"Delivery for order #{orderId} failed. Status reverted to 'Delivering'.";
 
 			return RedirectToPage("/manage/orders/Detail", new { id });
 		}

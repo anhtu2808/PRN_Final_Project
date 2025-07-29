@@ -51,7 +51,7 @@ namespace LaptopRentalManagement.Pages.User.Rental_order
 		public async Task<IActionResult> OnPostConfirmReturnAsync(int orderId)
 		{
 			await _orderService.ConfirmReturn(orderId);
-			TempData["Success"] = $"Đơn #{orderId} đã được xác nhận là đã trả.";
+                        TempData["Success"] = $"Order #{orderId} marked as returned.";
 			return RedirectToPage("/User/Rental-Order/Detail", new { orderId });
 		}
 
@@ -65,7 +65,7 @@ namespace LaptopRentalManagement.Pages.User.Rental_order
 			}
 
 			await _ticketService.CreateTicketAsync(TicketRequest);
-			TempData["Success"] = "Yêu cầu hỗ trợ đã được gửi thành công!";
+                        TempData["Success"] = "Support request submitted successfully!";
 			return RedirectToPage("/User/Rental-Order/Detail", new { TicketRequest.OrderId });
 		}
 
