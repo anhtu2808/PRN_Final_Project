@@ -1,11 +1,13 @@
 using LaptopRentalManagement.BLL.DTOs.Response;
 using LaptopRentalManagement.BLL.Interfaces;
 using LaptopRentalManagement.Model.DTOs.Request;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace LaptopRentalManagement.Pages.Manage.Orders
 {
+    [Authorize(Policy = "AdminOnly")]
     public class OrderListModel : PageModel
     {
         private readonly IOrderService _orderService;

@@ -1,6 +1,7 @@
 using LaptopRentalManagement.BLL.DTOs.Request;
 using LaptopRentalManagement.BLL.DTOs.Response;
 using LaptopRentalManagement.BLL.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -8,6 +9,7 @@ namespace LaptopRentalManagement.Pages.Manage.Categories;
 
 public class IndexModel : PageModel
 {
+    [Authorize(Policy = "AdminOnly")]
     private readonly ICategoryService _categoryService;
 
     public IndexModel(ICategoryService categoryService)

@@ -1,14 +1,16 @@
+using System.Security.Claims;
 using LaptopRentalManagement.BLL.DTOs.Request;
 using LaptopRentalManagement.BLL.DTOs.Response;
 using LaptopRentalManagement.BLL.Interfaces;
 using LaptopRentalManagement.DAL.Entities;
 using LaptopRentalManagement.Model.DTOs.Request;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Security.Claims;
 
 namespace LaptopRentalManagement.Pages.User.Laptops
 {
+    [Authorize(Policy = "CustomerOnly")]
     public class Index : PageModel
     {
         private readonly ILaptopService _laptopService;

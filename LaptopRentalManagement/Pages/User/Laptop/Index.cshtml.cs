@@ -3,11 +3,13 @@ using LaptopRentalManagement.BLL.DTOs.Response;
 using LaptopRentalManagement.BLL.Interfaces;
 using LaptopRentalManagement.BLL.Services;
 using LaptopRentalManagement.DAL.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace LaptopRentalManagement.Pages.User.Rental_orders
 {
+    [Authorize(Policy = "CustomerOnly")]
     public class IndexModel : PageModel
     {
         private readonly IOrderService _orderService;

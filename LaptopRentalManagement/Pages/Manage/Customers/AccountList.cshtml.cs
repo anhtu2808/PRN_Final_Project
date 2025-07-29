@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace LaptopRentalManagement.Pages.Manage.Customers
 {
-    //[Authorize(Policy = "AdminOnly")]
+    [Authorize(Policy = "AdminOnly")]
     public class AccountListModel : PageModel
     {
         private readonly IAccountService _accountService;

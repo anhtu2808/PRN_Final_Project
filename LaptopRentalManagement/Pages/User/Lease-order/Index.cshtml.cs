@@ -1,15 +1,17 @@
-﻿using LaptopRentalManagement.BLL.DTOs.Request;
+﻿using System.Security.Claims;
+using LaptopRentalManagement.BLL.DTOs.Request;
 using LaptopRentalManagement.BLL.DTOs.Response;
 using LaptopRentalManagement.BLL.Interfaces;
 using LaptopRentalManagement.BLL.Services;
 using LaptopRentalManagement.DAL.Entities;
 using LaptopRentalManagement.Model.DTOs.Request;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Security.Claims;
 
 namespace LaptopRentalManagement.Pages.User.Lease_order
 {
+    [Authorize(Policy = "CustomerOnly")]
     public class IndexModel : PageModel
     {
 

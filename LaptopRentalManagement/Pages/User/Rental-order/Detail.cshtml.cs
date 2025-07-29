@@ -1,12 +1,14 @@
-﻿using LaptopRentalManagement.BLL.DTOs.Request;
+﻿using System.Security.Claims;
+using LaptopRentalManagement.BLL.DTOs.Request;
 using LaptopRentalManagement.BLL.DTOs.Response;
 using LaptopRentalManagement.BLL.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Security.Claims;
 
 namespace LaptopRentalManagement.Pages.User.Rental_order
 {
+    [Authorize(Policy = "CustomerOnly")]
     public class DetailModel : PageModel
     {
 		private readonly IOrderService _orderService;

@@ -2,11 +2,13 @@
 using LaptopRentalManagement.BLL.Interfaces;
 using LaptopRentalManagement.Model.DTOs.Request;
 using LaptopRentalManagement.Model.DTOs.Response.Brand;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace LaptopRentalManagement.Pages.Manage.Brands
 {
+    [Authorize(Policy = "AdminOnly")]
     public class IndexModel : PageModel
     {
         private readonly IBrandService _brandService;
