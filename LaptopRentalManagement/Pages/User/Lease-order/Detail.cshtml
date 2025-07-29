@@ -11,15 +11,16 @@
 	var end = slotDates.LastOrDefault();
 	var totalDays = slotDates.Count;
 	var isRenting = status == "Renting";
-	var currentStep = status switch
-	{
-		"Pending" => 1,
-		"Approved" => 2,
-		"Delivering" => 3,
-		"Renting" => 4,
-		"Completed" => 5,
-		_ => 0
-	};
+        var currentStep = status switch
+        {
+                "Unpaid" => 1,
+                "Pending" => 2,
+                "Approved" => 3,
+                "Delivering" => 4,
+                "Renting" => 5,
+                "Completed" => 6,
+                _ => 0
+        };
 }
 
 
@@ -92,37 +93,43 @@
 				</div>
 
 			</div>
-			<div class="stepper">
-				<!-- Step 1: Pending -->
-				<div class="step @(currentStep > 1 ? "complete" : currentStep == 1 ? "active" : "upcoming")">
-					<div class="circle">1</div>
-					<div class="step-label">Pending</div>
-				</div>
+                        <div class="stepper">
+                                <!-- Step 1: Unpaid -->
+                                <div class="step @(currentStep > 1 ? "complete" : currentStep == 1 ? "active" : "upcoming")">
+                                        <div class="circle">1</div>
+                                        <div class="step-label">Unpaid</div>
+                                </div>
 
-				<!-- Step 2: Approved -->
-				<div class="step @(currentStep > 2 ? "complete" : currentStep == 2 ? "active" : "upcoming")">
-					<div class="circle">2</div>
-					<div class="step-label">Approved</div>
-				</div>
+                                <!-- Step 2: Pending -->
+                                <div class="step @(currentStep > 2 ? "complete" : currentStep == 2 ? "active" : "upcoming")">
+                                        <div class="circle">2</div>
+                                        <div class="step-label">Pending</div>
+                                </div>
 
-				<!-- Step 3: Delivering -->
-				<div class="step @(currentStep > 3 ? "complete" : currentStep == 3 ? "active" : "upcoming")">
-					<div class="circle">3</div>
-					<div class="step-label">Delivering</div>
-				</div>
+                                <!-- Step 3: Approved -->
+                                <div class="step @(currentStep > 3 ? "complete" : currentStep == 3 ? "active" : "upcoming")">
+                                        <div class="circle">3</div>
+                                        <div class="step-label">Approved</div>
+                                </div>
 
-				<!-- Step 4: Renting -->
-				<div class="step @(currentStep > 4 ? "complete" : currentStep == 4 ? "active" : "upcoming")">
-					<div class="circle">4</div>
-					<div class="step-label">Renting</div>
-				</div>
+                                <!-- Step 4: Delivering -->
+                                <div class="step @(currentStep > 4 ? "complete" : currentStep == 4 ? "active" : "upcoming")">
+                                        <div class="circle">4</div>
+                                        <div class="step-label">Delivering</div>
+                                </div>
 
-				<!-- Step 5: Complete -->
-				<div class="step @(currentStep == 5 ? "active" : "upcoming")">
-					<div class="circle">5</div>
-					<div class="step-label">Complete</div>
-				</div>
-			</div>
+                                <!-- Step 5: Renting -->
+                                <div class="step @(currentStep > 5 ? "complete" : currentStep == 5 ? "active" : "upcoming")">
+                                        <div class="circle">5</div>
+                                        <div class="step-label">Renting</div>
+                                </div>
+
+                                <!-- Step 6: Complete -->
+                                <div class="step @(currentStep == 6 ? "active" : "upcoming")">
+                                        <div class="circle">6</div>
+                                        <div class="step-label">Complete</div>
+                                </div>
+                        </div>
 		</div>
 		<div class="row">
 			<!-- LEFT: Thông tin laptop + Slots -->
@@ -134,13 +141,18 @@
 						<p class="text-muted">Brand: @Model.Order.Laptop.Brand.Name</p>
 						<p><strong>Price/day:</strong> @Model.Order.Laptop.PricePerDay.ToString("N0")₫</p>
 						<p><strong>Total:</strong> <span class="text-primary fw-bold">@Model.Order.TotalCharge.ToString("N0")₫</span></p>
-						<p>
-							<strong>Owner:</strong><br />
-							@Model.Order.Owner.Name<br />
-							<small class="text-muted">@Model.Order.Owner.Email</small>
-						</p>
-					</div>
-				</div>
+                                                <p>
+                                                        <strong>Owner:</strong><br />
+                                                        @Model.Order.Owner.Name<br />
+                                                        <small class="text-muted">@Model.Order.Owner.Email</small>
+                                                </p>
+                                                <div class="text-end">
+                                                        <a href="/laptops/details/@Model.Order.Laptop.LaptopId" class="btn btn-sm btn-outline-primary">
+                                                                <i class="fas fa-info-circle me-1"></i>View Laptop
+                                                        </a>
+                                                </div>
+                                        </div>
+                                </div>
 
 				<!-- Card: Hiển thị Slots -->
 				<div class="card mb-4">
