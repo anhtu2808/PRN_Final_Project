@@ -52,20 +52,28 @@
 
 
 				<div class="d-flex gap-2">
-					@switch (Model.Order.Status)
-					{
-						case "Pending":
-							<form method="post" asp-page-handler="Approve" asp-route-orderId="@Model.Order.OrderId" asp-route-id="@Model.Order.Laptop.LaptopId" class="d-inline">
-								<button type="submit" class="btn btn-sm btn-success">
-									<i class="fas fa-check me-1"></i>Approve
-								</button>
-							</form>
-							<form method="post" asp-page-handler="Reject" asp-route-orderId="@Model.Order.OrderId" asp-route-id="@Model.Order.Laptop.LaptopId" class="d-inline ms-1">
-								<button type="submit" class="btn btn-sm btn-danger">
-									<i class="fas fa-times me-1"></i>Reject
-								</button>
-							</form>
-							break;
+                                @switch (Model.Order.Status)
+                                {
+                                        case "Unpaid":
+                                                <form method="post" asp-page-handler="Reject" asp-route-orderId="@Model.Order.OrderId" asp-route-id="@Model.Order.Laptop.LaptopId" class="d-inline">
+                                                        <button type="submit" class="btn btn-sm btn-danger">
+                                                                <i class="fas fa-times me-1"></i>Reject
+                                                        </button>
+                                                </form>
+                                                break;
+
+                                        case "Pending":
+                                                <form method="post" asp-page-handler="Approve" asp-route-orderId="@Model.Order.OrderId" asp-route-id="@Model.Order.Laptop.LaptopId" class="d-inline">
+                                                        <button type="submit" class="btn btn-sm btn-success">
+                                                                <i class="fas fa-check me-1"></i>Approve
+                                                        </button>
+                                                </form>
+                                                <form method="post" asp-page-handler="Reject" asp-route-orderId="@Model.Order.OrderId" asp-route-id="@Model.Order.Laptop.LaptopId" class="d-inline ms-1">
+                                                        <button type="submit" class="btn btn-sm btn-danger">
+                                                                <i class="fas fa-times me-1"></i>Reject
+                                                        </button>
+                                                </form>
+                                                break;
 
                                                 case "Approved":
                                                         @if (canStartDelivery)
