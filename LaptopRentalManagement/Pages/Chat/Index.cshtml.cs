@@ -32,7 +32,7 @@ public class IndexModel : PageModel
             return RedirectToPage("/Account/Login");
         }
         CurrentUserId = userId;
-        Tickets = (await _ticketService.GetByRenterIdAsync(userId)).ToList();
+        Tickets = (await _ticketService.GetByAccountIdAsync(userId)).ToList();
         SelectedTicketId = ticketId;
         if (ticketId.HasValue)
         {

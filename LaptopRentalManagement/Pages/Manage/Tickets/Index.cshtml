@@ -262,6 +262,9 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a id="chatOtherBtn" class="btn btn-outline-success me-auto" target="_blank" style="display:none;">
+                        <i class="fas fa-comments me-2"></i>Chat Other Party
+                    </a>
                     <button type="submit" class="btn btn-primary" id="saveTicketBtn" style="display: none;">
                         <i class="fas fa-save me-2"></i>Update Ticket
                     </button>
@@ -279,6 +282,7 @@
         const spinner = document.getElementById('editModalSpinner');
         const content = document.getElementById('editModalContent');
         const saveBtn = document.getElementById('saveTicketBtn');
+        const chatOtherBtn = document.getElementById('chatOtherBtn');
 
         editModal.addEventListener('show.bs.modal', async function (event) {
             const button = event.relatedTarget;
@@ -305,6 +309,8 @@
                 document.getElementById('displayOwner').textContent = ticket.ownerName || 'N/A';
                 document.getElementById('displayContent').textContent = ticket.content;
                 document.getElementById('displayRespondedAt').textContent = ticket.respondedAt || 'Not responded yet';
+                chatOtherBtn.href = `/manage/tickets/chat/${ticket.ticketId}`;
+                chatOtherBtn.style.display = 'inline-block';
                 
                 // Order link
                 const orderDisplay = document.getElementById('displayOrder');
@@ -343,6 +349,7 @@
         editModal.addEventListener('hidden.bs.modal', function () {
             editForm.reset();
             spinner.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>';
+            chatOtherBtn.style.display = 'none';
         });
 
         // Delete confirmation

@@ -90,7 +90,9 @@ public class IndexModel : PageModel
                 response = ticket.Response,
                 createdAt = ticket.CreatedAt.ToString("yyyy-MM-dd HH:mm"),
                 respondedAt = ticket.RespondedAt?.ToString("yyyy-MM-dd HH:mm"),
+                renterId = ticket.Renter?.AccountId,
                 renterName = ticket.Renter?.Name,
+                ownerId = ticket.Owner?.AccountId,
                 ownerName = ticket.Owner?.Name,
                 orderId = ticket.Order?.OrderId
             });

@@ -14,6 +14,7 @@ namespace LaptopRentalManagement.BLL.Interfaces
         Task CreateTicketAsync(CreateTicketRequest request);
         Task<IList<TicketResponse>> GetAllByOrderIdAsync(int id);
         Task<IList<TicketResponse>> GetByRenterIdAsync(int renterId);
+        Task<IList<TicketResponse>> GetByAccountIdAsync(int accountId);
         Task<IList<TicketResponse>> GetAllAsync();
 		Task<TicketResponse?> GetByIdAsync(int id);
 		Task UpdateAsync(UpdateTicketRequest request);
