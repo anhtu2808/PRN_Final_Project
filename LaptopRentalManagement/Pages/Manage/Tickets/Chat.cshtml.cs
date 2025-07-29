@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Linq;
+using System.Security.Claims;
 
 namespace LaptopRentalManagement.Pages.Manage.Tickets;
 
@@ -19,10 +20,16 @@ public class ChatModel : PageModel
 
     public int TicketId { get; set; }
     public List<TicketChatMessageDto> Messages { get; set; } = new();
+    public int CurrentUserId { get; set; }
 
     public async Task OnGetAsync(int ticketId)
     {
         TicketId = ticketId;
         Messages = (await _chatService.GetMessagesAsync(ticketId)).ToList();
+
+        if(int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("AccountId"), out var uid))
+        {
+            CurrentUserId = uid;
+        }
     }
 }
